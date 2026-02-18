@@ -1,4 +1,4 @@
-import { Building2Icon, UserPlus, Users } from 'lucide-react';
+import { Building2Icon, Megaphone, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,12 +11,12 @@ export default function RegistrationModal({ onClose }: RegistrationModalProps) {
     const [accountType, setAccountType] = useState('');
 
     const handleContinue = () => {
-        if (accountType === 'newTenant') {
+        if (accountType === 'agencyOrIndividual') {
             onClose();
-            navigate('/register-tenant');
-        } else if (accountType === 'existingTenant') {
+            navigate('/register-agency-or-individual');
+        } else if (accountType === 'mediaPartner') {
             onClose();
-            navigate('/signup');
+            navigate('/register-media-partner');
         }
     };
 
@@ -40,7 +40,7 @@ export default function RegistrationModal({ onClose }: RegistrationModalProps) {
                         </svg>
                     </button>
                     <div className="text-center">
-                        <div className="w-16 h-16 bg-linear-to-br from-[#1a0633] via-[#2D0A4E] to-[#3d1166] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <div className="w-16 h-16 bg-linear-to-br from-primary via-[#2D0A4E] to-[#3d1166] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                             {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                             </svg> */}
@@ -57,10 +57,10 @@ export default function RegistrationModal({ onClose }: RegistrationModalProps) {
                     <div className="flex flex-col gap-3">
                         {/* New Tenant Option */}
                         <label 
-                            htmlFor="newTenant" 
+                            htmlFor="agencyOrIndividual" 
                             className={`
                                 flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200
-                                ${accountType === 'newTenant' 
+                                ${accountType === 'agencyOrIndividual' 
                                     ? 'border-purple-600 bg-purple-50 shadow-md' 
                                     : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
                                 }
@@ -69,17 +69,17 @@ export default function RegistrationModal({ onClose }: RegistrationModalProps) {
                             <div className="flex items-center h-6">
                                 <input
                                     type="radio"
-                                    id="newTenant"
+                                    id="agencyOrIndividual"
                                     name="accountType"
-                                    value="newTenant"
-                                    checked={accountType === 'newTenant'}
+                                    value="agencyOrIndividual"
+                                    checked={accountType === 'agencyOrIndividual'}
                                     onChange={(e) => setAccountType(e.target.value)}
                                     className="w-5 h-5 text-purple-600 focus:ring-purple-500 focus:ring-2 cursor-pointer"
                                 />
                             </div>
                             <div className="flex-1">
-                                <div className="font-semibold text-gray-900 mb-1">Create New Organization</div>
-                                <div className="text-sm text-gray-600">Set up a new company or organization account</div>
+                                <div className="font-semibold text-gray-900 mb-1">Create Agency or Individual Account</div>
+                                <div className="text-sm text-gray-600">Set up a new agency or individual account</div>
                             </div>
                             <div className="flex items-center">
                                 {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,12 +89,12 @@ export default function RegistrationModal({ onClose }: RegistrationModalProps) {
                             </div>
                         </label>
 
-                        {/* Existing Tenant Option */}
+                        {/* Media Partner Option */}
                         <label 
-                            htmlFor="existingTenant" 
+                            htmlFor="mediaPartner" 
                             className={`
                                 flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200
-                                ${accountType === 'existingTenant' 
+                                ${accountType === 'mediaPartner' 
                                     ? 'border-purple-600 bg-purple-50 shadow-md' 
                                     : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
                                 }
@@ -103,23 +103,23 @@ export default function RegistrationModal({ onClose }: RegistrationModalProps) {
                             <div className="flex items-center h-6">
                                 <input
                                     type="radio"
-                                    id="existingTenant"
+                                    id="mediaPartner"
                                     name="accountType"
-                                    value="existingTenant"
-                                    checked={accountType === 'existingTenant'}
+                                    value="mediaPartner"
+                                    checked={accountType === 'mediaPartner'}
                                     onChange={(e) => setAccountType(e.target.value)}
                                     className="w-5 h-5 text-purple-600 focus:ring-purple-500 focus:ring-2 cursor-pointer"
                                 />
                             </div>
                             <div className="flex-1">
-                                <div className="font-semibold text-gray-900 mb-1">Join Existing Organization</div>
-                                <div className="text-sm text-gray-600">Join a company or organization with an invitation code</div>
+                                <div className="font-semibold text-gray-900 mb-1">Onboard as Media Partner</div>
+                                <div className="text-sm text-gray-600">Set up a new media partner account</div>
                             </div>
                             <div className="flex items-center">
                                 {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg> */}
-                                <Users className="h-6 w-6 text-purple-600" />
+                                <Megaphone className="h-6 w-6 text-purple-600" />
                             </div>
                         </label>
                     </div>
@@ -133,7 +133,7 @@ export default function RegistrationModal({ onClose }: RegistrationModalProps) {
                         className={`
                             w-full py-3 px-6 rounded-xl font-semibold text-white transition-all duration-200 transform
                             ${accountType 
-                                ? 'bg-linear-to-r from-[#1a0633] via-[#2D0A4E] to-[#3d1166] hover:to-[#4a1a7e] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]' 
+                                ? 'bg-linear-to-r from-primary via-[#2D0A4E] to-[#3d1166] hover:to-[#4a1a7e] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]' 
                                 : 'bg-gray-300 cursor-not-allowed'
                             }
                         `}

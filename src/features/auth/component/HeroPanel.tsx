@@ -32,7 +32,7 @@ export default function HeroPanel() {
 
   
   return (
-    <div className="relative w-full h-full bg-linear-to-br from-[#1a0633] via-[#2D0A4E] to-[#3d1166] overflow-hidden flex flex-col justify-between p-8 lg:p-12">
+    <div className="relative w-full h-full bg-linear-to-br from-primary via-[#2D0A4E] to-[#3d1166] overflow-hidden flex flex-col justify-between p-8 lg:p-12">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-[-10%] right-[-10%] w-125 h-125 rounded-full bg-[#C8F526] opacity-[0.04] blur-3xl" />
@@ -51,7 +51,7 @@ export default function HeroPanel() {
           <div className="w-9 h-9 rounded-lg bg-[#C8F526] flex items-center justify-center">
             <BarChart3 className="w-5 h-5 text-[#2D0A4E]" />
           </div>
-          <span className="text-white text-xl font-bold tracking-tight">PHD Media Marketplace</span>
+          <span className="text-white text-xl font-bold tracking-tight">The Media Landscape</span>
         </div>
       </div>
 

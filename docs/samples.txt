@@ -1,0 +1,93 @@
+Organisation Name: Hemorestore Technologies Ltd
+Slug: hemorestore-technologies-ltd
+
+For Media Partner tenant:
+  {
+    "email": "admin@tvstation.com",
+    "password": "SecurePass123",
+    "firstName": "John",
+    "lastName": "Doe",
+    "phone": "+1234567890",
+    "tenantName": "ABC Television",
+    "tenantSlug": "abc-television",
+    "tenantType": "MEDIA_PARTNER",
+    "mediaPartnerType": "TV"
+  }
+
+  For Agency tenant:
+  {
+    "email": "admin@mediaagency.com",
+    "password": "SecurePass123",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "phone": "+1234567890",
+    "tenantName": "Creative Media Agency",
+    "tenantSlug": "creative-media",
+    "tenantType": "AGENCY"
+  }
+
+  For Client tenant:
+  {
+    "email": "admin@brandcorp.com",
+    "password": "SecurePass123",
+    "firstName": "Bob",
+    "lastName": "Johnson",
+    "tenantName": "Brand Corporation",
+    "tenantSlug": "brand-corp",
+    "tenantType": "CLIENT"
+  }
+  
+// lib/slugify.ts
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+  "use client";
+
+import { useState } from "react";
+import { slugify } from "@/lib/slugify";
+
+export default function OrganisationForm() {
+  const [organisationName, setOrganisationName] = useState("");
+  const [slug, setSlug] = useState("");
+
+  function handleNameChange(value: string) {
+    setOrganisationName(value);
+    setSlug(slugify(value));
+  }
+
+  return (
+    <div className="max-w-md space-y-4">
+      {/* Organisation Name */}
+      <div>
+        <label className="block text-sm font-medium">
+          Organisation Name
+        </label>
+        <input
+          type="text"
+          value={organisationName}
+          onChange={(e) => handleNameChange(e.target.value)}
+          className="w-full border rounded p-2"
+          placeholder="Enter organisation name"
+        />
+      </div>
+
+      {/* Slug (auto-generated & disabled) */}
+      <div>
+        <label className="block text-sm font-medium">Slug</label>
+        <input
+          type="text"
+          value={slug}
+          disabled
+          className="w-full border rounded p-2 bg-gray-100 text-gray-500"
+          placeholder="auto-generated slug"
+        />
+      </div>
+    </div>
+  );
+}

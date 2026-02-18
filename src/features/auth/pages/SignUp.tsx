@@ -1,5 +1,5 @@
 import HeroPanel from "../component/HeroPanel";
-import SignUpForm from "../component/registration/SignUpForm";
+import SignUpForm from "../component/registration/MediaPartnerRegistrationForm";
 
 export default function SignUp() {
   return (
