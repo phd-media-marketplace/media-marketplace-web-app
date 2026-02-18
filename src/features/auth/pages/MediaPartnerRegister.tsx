@@ -1,7 +1,7 @@
 import HeroPanel from "../component/HeroPanel";
-import SignUpForm from "../component/registration/SignUpForm";
+import MediaPartnerRegistrationForm from "../component/registration/MediaPartnerRegistrationForm";
 
-export default function RegisterNewTenant() {
+export default function MediaPartnerRegister() {
   return (
     <div className="bg-linear-to-br from-primary/10 to-secondary/10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-12 xl:px-16"  >
@@ -10,7 +10,7 @@ export default function RegisterNewTenant() {
             <HeroPanel />
           </div>
           <div className="flex-1 order-1">
-            <SignUpForm />
+            <MediaPartnerRegistrationForm />
           </div>
         </div>
       </div>

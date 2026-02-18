@@ -6,8 +6,11 @@ import type { LogInFormData } from "../types";
 import { EyeOff, LockKeyhole, User, Eye } from "lucide-react";
 import RegistrationModal from "./RegistrationModal";
 import { toast } from "sonner";
+import { useLogin } from "../hooks/useLogin";
+import { useNavigate } from "react-router-dom";
 
 export default function LogInForm() {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const { control, handleSubmit, formState: { errors } } = useForm<LogInFormData>({
@@ -17,11 +20,26 @@ export default function LogInForm() {
         }
     });
 
+    const { mutate, isPending } = useLogin();
+
+
     const onSubmit = (data: LogInFormData) => {
-        // TODO: Implement actual login logic here (e.g., API call)
-        toast.success("Logged in successfully!");
-        console.log(data);
-    }
+        mutate(data, {
+            onSuccess: (data) => {
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem("refreshToken", data.refreshToken);
+                toast.success("Logged in successfully! Redirecting to dashboard...");
+                console.log('Login successful:', data);
+                navigate("/dashboard"); // Redirect to dashboard page after successful login
+            },
+            onError: (error) => {
+                console.log(data)
+                toast.error("Login failed. Please check your credentials and try again.");
+                console.error('Login error:', error);
+                console.log('Login error:', error);
+            }
+        });
+    };
 
   return (
     <div
@@ -107,9 +125,10 @@ export default function LogInForm() {
                 <Link to="/forget-password" className="text-sm text-primary hover:underline self-end">Forgot password?</Link>
                 <button
                     type="submit"
-                    className="w-full bg-linear-to-br bg-secondary font-semibold py-3 rounded-lg hover:bg-secondary transition-colors"
+                    disabled={isPending}
+                    className={`w-full bg-linear-to-br bg-secondary font-semibold py-3 rounded-lg hover:bg-secondary transition-colors ${isPending ? 'bg-gray-400 cursor-not-allowed' : ''}`}
                 >
-                    Log In
+                    {isPending ? "Logging In..." : "Log In"}
                 </button>
             </motion.form>
 

@@ -40,7 +40,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
                 transition={{ duration: 0.5 }}
                 className="flex flex-col items-center"
             >
-                <div className="w-16 h-16 bg-linear-to-br from-[#1a0633] via-[#2D0A4E] to-[#3d1166] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-16 h-16 bg-linear-to-br from-primary via-[#2D0A4E] to-[#3d1166] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <LockKeyhole className="w-8 h-8 text-white" />
                 </div>
                 <h1 className="text-3xl font-bold text-black mb-2 tracking-li">Reset Your Password</h1>
