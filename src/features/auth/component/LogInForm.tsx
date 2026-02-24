@@ -8,6 +8,7 @@ import RegistrationModal from "./RegistrationModal";
 import { toast } from "sonner";
 import { useLogin } from "../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 
 export default function LogInForm() {
     const navigate = useNavigate();
@@ -25,18 +26,20 @@ export default function LogInForm() {
 
     const onSubmit = (data: LogInFormData) => {
         mutate(data, {
-            onSuccess: (data) => {
-                localStorage.setItem('authToken', data.token);
-                localStorage.setItem("refreshToken", data.refreshToken);
+            onSuccess: () => {
                 toast.success("Logged in successfully! Redirecting to dashboard...");
-                console.log('Login successful:', data);
+                // console.log('Login successful:', data);
                 navigate("/dashboard"); // Redirect to dashboard page after successful login
             },
-            onError: (error) => {
-                console.log(data)
-                toast.error("Login failed. Please check your credentials and try again.");
+            onError: (error: Error) => {
+                let errorMessage = "Login failed. Please check your credentials and try again.";
+                
+                if (isAxiosError(error) && error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
+                }
+                
+                toast.error(errorMessage);
                 console.error('Login error:', error);
-                console.log('Login error:', error);
             }
         });
     };

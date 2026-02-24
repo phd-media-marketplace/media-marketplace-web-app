@@ -26,9 +26,19 @@ export const Register = async (formData: RegisterData) => {
     }
 }
 
-export const refreshToken = async () => {
+export const getMe = async () => {
     try {
-        const response = await apiClient.post('/auth/refresh');
+        const response = await apiClient.get('/auth/me');
+        return response.data;
+    } catch (error) {
+        console.error('Me error:', error);
+        throw error;
+    }
+}
+
+export const refreshToken = async (refreshToken: string) => {
+    try {
+        const response = await apiClient.post('/auth/refresh', { refreshToken });
         return response.data;
     } catch (error) {
         console.error('Refresh error:', error);

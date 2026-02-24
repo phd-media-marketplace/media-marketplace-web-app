@@ -1,15 +1,11 @@
 import {
-  LayoutDashboard,
-  ShoppingCart,
-  TrendingUp,
-  FileText,
-  CreditCard,
-  Settings,
   Users,
   ChevronDown,
+  Settings,
   BarChart3,
   LogOut,
-  Sun, Moon
+  Sun,
+  Moon
 } from "lucide-react";
 import {
   Sidebar,
@@ -34,69 +30,54 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import type { NavigationItem } from "../../types/index"
 import { Button } from "@/components/ui/button";
+// import { useAuthStore } from "@/features/auth/store/auth-store";
+import { useLogout } from "@/features/auth/hooks/useLogout";
+import { toast } from "sonner";
+import type { TenantBranding } from "@/config/tenant.config";
+import { useAuthStore } from "@/features/auth/store/auth-store";
+import { getTenantPrefix } from "@/config/routes.config";
 
 // Navigation items
-const navigationItems: NavigationItem[] = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Marketplace",
-    icon: ShoppingCart,
-    items: [
-      { title: "Browse Media", url: "/marketplace/browse" },
-      { title: "My Orders", url: "/marketplace/orders" },
-    ],
-  },
-  {
-    title: "Buying",
-    icon: TrendingUp,
-    items: [
-      { title: "Campaigns", url: "/buying/campaigns" },
-      { title: "Analytics", url: "/buying/analytics" },
-    ],
-  },
-  {
-    title: "Planning",
-    icon: FileText,
-    items: [
-      { title: "Media Plans", url: "/planning/plans" },
-      { title: "Schedule", url: "/planning/schedule" },
-    ],
-  },
-  {
-    title: "Billing",
-    url: "/billing",
-    icon: CreditCard,
-  },
-  {
-    title: "Reporting",
-    url: "/reporting",
-    icon: FileText,
-  },
-];
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  navigationItems: NavigationItem[];
+  branding: TenantBranding;
+}
+
+export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
   const location = useLocation();
+  const user = useAuthStore((state) => state.user);
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  
+  // Get tenant prefix for settings routes
+  const tenantPrefix = user?.tenantType ? getTenantPrefix(user.tenantType) : '';
   
   const isActive = (url: string) => location.pathname === url;
   const isSubItemActive = (items?: { url?: string }[]) => {
     return items?.some(item => item.url && location.pathname === item.url);
   };
 
+  const handleLogout = () => {
+    toast.loading('Logging out...');
+    logout();
+  };
+
   return (
     <Sidebar className="bg-white border-r border-gray-200 rounded-l-md" >
       <SidebarHeader className="border-b border-gray-200">
         <div className="flex items-center gap-2 px-4 py-2">
-          <div className="w-9 h-9 rounded-lg bg-[#C8F526] flex items-center justify-center">
-            <BarChart3 className="w-5 h-5 text-[#2D0A4E]" />
+          <div 
+            className="w-9 h-9 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: branding.logoColor }}
+          >
+            <BarChart3 
+              className="w-5 h-5" 
+              style={{ color: branding.accentColor }}
+            />
           </div>
           <div>
             <h2 className="text-lg font-semibold text-primary">Media Marketplace</h2>
-            {/* Agency name should be dynamic */}
-            <p className="text-xs text-accent">Agency Workspace</p>
+            <p className="text-xs text-accent">{branding.workspaceName}</p>
           </div>
         </div>
       </SidebarHeader>
@@ -162,10 +143,10 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   asChild
-                  isActive={isActive('/settings/team')}
-                  className={isActive('/settings/team') ? 'bg-secondary/50 font-medium' : ''}
+                  isActive={isActive(`${tenantPrefix}/settings/team`)}
+                  className={isActive(`${tenantPrefix}/settings/team`) ? 'bg-secondary/50 font-medium' : ''}
                 >
-                  <Link to="/settings/team">
+                  <Link to={`${tenantPrefix}/settings/team`}>
                     <Users className="w-4 h-4" />
                     <span>Team</span>
                   </Link>
@@ -174,10 +155,10 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   asChild
-                  isActive={isActive('/settings/preferences')}
-                  className={isActive('/settings/preferences') ? 'bg-secondary/50 font-medium' : ''}
+                  isActive={isActive(`${tenantPrefix}/settings/preferences`)}
+                  className={isActive(`${tenantPrefix}/settings/preferences`) ? 'bg-secondary/50 font-medium' : ''}
                 >
-                  <Link to="/settings/preferences">
+                  <Link to={`${tenantPrefix}/settings/preferences`}>
                     <Settings className="w-4 h-4" />
                     <span>Preferences</span>
                   </Link>
@@ -189,19 +170,44 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="h-20 border-t border-gray-200">
-        <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2 px-4 py-3">
-            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <span className="text-purple-700 font-semibold text-xs"><LogOut/></span>
-            </div>
-            <div className="flex flex-col">
-                <span className="text-sm font-medium">Log Out</span>
-            </div>
-            </div>
-            <Button variant="ghost" size="icon" aria-label="Toggle theme">
-                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <div className="flex items-start justify-between gap-4 px-2">
+            {/* <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
+                <span className="text-purple-700 font-semibold text-sm">
+                  {getUserInitials()}
+                </span>
+              </div>
+              <div className="flex flex-col min-w-0 flex-1">
+                <span className="text-sm font-medium text-primary truncate">
+                  {user?.email || 'User'}
+                </span>
+                <span className="text-xs text-accent truncate">
+                  {user?.roles?.[0] || 'Member'}
+                </span>
+              </div>
+            </div> */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              aria-label="Logout"
+              className="shrink-0 hover:bg-red-50 hover:text-red-600 w-2/3 justify-start"
+            >
+              <div className="flex items-center justify-center p-2 text-red-600 bg-red-50 rounded-full">
+                <LogOut className="h-5 w-5" />
+              </div>
+              Logout
             </Button>
+            <div className=" ">
+              <Button variant="ghost" size="icon" className="shrink-0 hover:bg-gray-50">
+                {/* Theme toggle - can be implemented later */}
+                <div>
+                <Sun className="h-5 w-5 hidden" />
+                <Moon className="h-5 w-5" />
+                </div>
+              </Button>
+            </div>
         </div>
       </SidebarFooter>
     </Sidebar>

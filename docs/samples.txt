@@ -91,3 +91,125 @@ export default function OrganisationForm() {
     </div>
   );
 }
+
+{/* Featured Packages Carousel Section - Directly beneath Recommended */}
+        <div className="space-y-4 mt-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-primary">Featured Packages</h3>
+            <Button variant="ghost" size="sm" className="text-xs text-primary">View All</Button>
+          </div>
+        
+        <div className="relative">
+          <div className="overflow-hidden rounded-xl">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={featuredSlide}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className={`bg-linear-to-br ${getCardColors(recommendedPackages[featuredSlide].mediaType).gradient} rounded-xl p-6 shadow-lg`}
+              >
+                {(() => {
+                  const pkg = recommendedPackages[featuredSlide];
+                  const discountedPrice = pkg.discount 
+                    ? pkg.cost * (1 - pkg.discount / 100) 
+                    : pkg.cost;
+                  const colors = getCardColors(pkg.mediaType);
+                  
+                  return (
+                    <div className="space-y-4 text-white">
+                      {/* Header */}
+                      <div className="space-y-2">
+                        <Badge 
+                          variant="secondary" 
+                          className={`${colors.badge} border font-semibold uppercase text-xs`}
+                        >
+                          {pkg.mediaType}
+                        </Badge>
+                        <h4 className="text-lg font-bold leading-tight">{pkg.title}</h4>
+                        <p className="text-sm text-white/70">{pkg.channel}</p>
+                      </div>
+
+                      {/* Pricing */}
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                        {pkg.discount && (
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-sm text-white/60 line-through">
+                              ¢{pkg.cost.toLocaleString()}
+                            </p>
+                            <Badge variant="destructive" className="text-xs font-bold">
+                              -{pkg.discount}%
+                            </Badge>
+                          </div>
+                        )}
+                        <p className="text-3xl font-bold text-white">
+                          ¢{Math.round(discountedPrice).toLocaleString()}
+                        </p>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="space-y-2">
+                        {pkg.location && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <MapPin className="w-4 h-4 text-white/70" />
+                            <span>{pkg.location}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 text-sm">
+                          <Users className="w-4 h-4 text-white/70" />
+                          <span>{pkg.reach} reach</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <Clock1 className="w-4 h-4 text-white/70" />
+                          <span>{pkg.duration}</span>
+                        </div>
+                        {pkg.demographics && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <Target className="w-4 h-4 text-white/70" />
+                            <span>{pkg.demographics}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Badge */}
+                      {pkg.badge && (
+                        <Badge className="bg-[#C8F526] text-[#2D0A4E] hover:bg-[#C8F526]/90 font-bold">
+                          ⭐ {pkg.badge}
+                        </Badge>
+                      )}
+
+                      {/* CTA Button */}
+                      <Button 
+                        className="w-full bg-white hover:bg-white/90 text-primary font-bold py-5 shadow-lg hover:shadow-xl transition-all"
+                        size="sm"
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        View Package Details
+                      </Button>
+                    </div>
+                  );
+                })()}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          
+          {/* Dots Indicator */}
+          <div className="flex gap-1.5 justify-center mt-4">
+            {recommendedPackages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setFeaturedSlide(index)}
+                className={`rounded-full transition-all duration-300 ${
+                  index === featuredSlide 
+                    ? 'w-6 h-1.5 bg-primary' 
+                    : 'w-1.5 h-1.5 bg-gray-300 hover:bg-gray-400'
+                }`}
+                aria-label={`Go to package ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      </div>
