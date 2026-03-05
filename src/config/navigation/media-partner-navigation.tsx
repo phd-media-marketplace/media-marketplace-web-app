@@ -1,11 +1,9 @@
 import type { NavigationItem } from "@/types/index";
 import {
   LayoutDashboard,
-  Package,
   FileText,
   DollarSign,
   BarChart3,
-  Radio,
   CreditCard,
 } from "lucide-react";
 
@@ -24,15 +22,6 @@ export const mediaPartnerNavigationItems: NavigationItem[] = [
     ],
   },
   {
-    title: "Inventory",
-    icon: Package,
-    items: [
-      { title: "All Inventory", url: "/media-partner/inventory/all" },
-      { title: "Add New", url: "/media-partner/inventory/add" },
-      { title: "Availability", url: "/media-partner/inventory/availability" },
-    ],
-  },
-  {
     title: "Orders",
     icon: FileText,
     items: [
@@ -42,21 +31,13 @@ export const mediaPartnerNavigationItems: NavigationItem[] = [
     ],
   },
   {
-    title: "Media Management",
-    icon: Radio,
-    items: [
-      { title: "Channels", url: "/media-partner/media/channels" },
-      { title: "Programs", url: "/media-partner/media/programs" },
-    ],
-  },
-  {
-    title: "Revenue",
-    url: "/media-partner/revenue",
+    title: "Billing",
+    url: "/media-partner/billing",
     icon: DollarSign,
   },
   {
-    title: "Analytics",
-    url: "/media-partner/analytics",
+    title: "Reporting",
+    url: "/media-partner/reporting",
     icon: BarChart3,
   },
 ];

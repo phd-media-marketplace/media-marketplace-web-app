@@ -18,16 +18,16 @@ export const agencyNavigationItems: NavigationItem[] = [
     title: "Marketplace",
     icon: ShoppingCart,
     items: [
-      { title: "Browse Media", url: "/agency/marketplace/browse" },
+      { title: "Browse Media", url: "/agency/marketplace" },
     ],
   },
   {
     title: "Planning",
     icon: FileText,
     items: [
+      { title: "Create Plan", url: "/agency/media-planning/create" },
+      { title: "View Schedules", url: "/agency/media-planning/schedules" },
       { title: "Analytics", url: "/agency/buying/analytics" },
-      { title: "Media Plans", url: "/agency/planning/plans" },
-      { title: "Schedule", url: "/agency/planning/schedule" },
     ],
   },
   {

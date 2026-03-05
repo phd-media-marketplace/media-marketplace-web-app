@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-primary: #1a0633;
+  --color-primary: #2f0d68;
   --color-secondary: #a6e559;
   --color-accent: #4a5568;
   --color-background: #f7fafc;
@@ -83,3 +83,13 @@
     @apply bg-background text-foreground;
   }
 } */
+
+/* label { 
+  color: black;
+} */
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  accent-color: var(--color-secondary);
+  cursor: pointer;
+}

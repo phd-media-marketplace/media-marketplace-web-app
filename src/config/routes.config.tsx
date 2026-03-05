@@ -1,4 +1,8 @@
 import Dashboard from "@/features/agency-features/dashboard/pages/Dashboard";
+import PackageDetails from "@/features/agency-features/marketplace/pages/PackageDetails";
+import Packages from "@/features/agency-features/marketplace/pages/Packages";
+import CreateMediaPlan from "@/features/agency-features/media-planning/pages/CreateMediaPlan";
+import MediaSchedules from "@/features/agency-features/media-planning/pages/MediaSchedules";
 import MediaPartnerDashboard from "@/features/media-partner-features/dashboard/pages/MediaPartnerDashboard";
 import { RateCardsList, CreateRateCard } from "@/features/media-partner-features/rate-cards";
 
@@ -39,7 +43,7 @@ export const appRoutes: RouteConfig[] = [
   // },
   // {
   //   path: "/marketplace",
-  //   element: <Marketplace />,
+  //   element: <Packages />,
   //   roles: ["PLANNER", "DIRECTOR"]
   // }
 ];
@@ -53,12 +57,46 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       path: "/agency/dashboard",
       element: <Dashboard />,
     },
+    {
+      path: "/agency/marketplace",
+      element: <Packages />,
+    },
+    {
+      path: "/agency/marketplace/:id",
+      element: <PackageDetails />,
+      roles: ["TENANT_ADMIN"]
+    },
+    {
+      path: "/agency/media-planning/create",
+      element: <CreateMediaPlan />,
+    },
+    {
+      path: "/agency/media-planning/schedules",
+      element: <MediaSchedules />,
+    },
     // Agency-specific routes will be added here
   ],
   CLIENT: [
     {
       path: "/client/dashboard",
       element: <Dashboard />,
+    },
+    {
+      path: "/client/marketplace",
+      element: <Packages />,
+    },
+    {
+      path: "/client/marketplace/:id",
+      element: <PackageDetails />,
+      roles: ["TENANT_ADMIN"]
+    },
+    {
+      path: "/client/media-planning/create",
+      element: <CreateMediaPlan />,
+    },
+    {
+      path: "/client/media-planning/schedules",
+      element: <MediaSchedules />,
     },
     // Client-specific routes will be added here
   ],

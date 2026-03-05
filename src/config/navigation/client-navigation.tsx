@@ -5,6 +5,7 @@ import {
   FileText,
   CreditCard,
   BarChart3,
+  Megaphone,
 } from "lucide-react";
 
 export const clientNavigationItems: NavigationItem[] = [
@@ -17,17 +18,23 @@ export const clientNavigationItems: NavigationItem[] = [
     title: "Marketplace",
     icon: ShoppingCart,
     items: [
-      { title: "Browse Media", url: "/client/marketplace/browse" },
+      { title: "Browse Media", url: "/client/marketplace" },
       { title: "My Orders", url: "/client/marketplace/orders" },
     ],
+  },{
+    title: "Media Plans",
+    icon: FileText,
+    items: [
+      { title: "Media Analysis", url: "/client/media-planning/media-analysis" },
+      { title: "Planner", url: "/client/media-planning/create" },
+      {title: "Schedules", url: "/client/media-planning/schedules"}
+    ],
+
   },
   {
     title: "Campaigns",
-    icon: FileText,
-    items: [
-      { title: "Active", url: "/client/campaigns/active" },
-      { title: "Archived", url: "/client/campaigns/archived" },
-    ],
+    icon: Megaphone,
+    url: "/client/campaigns",
   },
   {
     title: "Reports",

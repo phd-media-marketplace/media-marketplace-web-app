@@ -5,8 +5,7 @@ import type { MediaPartnerFormData } from "../../types";
 import { Building, LockKeyhole, Mail, Phone, User, EyeOff, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useRegister } from "../../hooks/useRegister";
-import { useNavigate } from "react-router-dom";
-import { 
+import { useNavigate } from "react-router-dom";import { getRegistrationErrorMessage } from "@/utils/error-handler";import { 
     Select,
     SelectTrigger, 
     SelectContent, 
@@ -52,12 +51,12 @@ export default function MediaPartnerRegistrationForm() {
         
         mutate(formattedData, {
             onSuccess: () => {
-                toast.success("Account created successfully! Please log in."); // Show success message
-                navigate("/dashboard"); // Redirect to dashboard page after successful registration
+                toast.success("Account created successfully!"); // Show success message
+                navigate("/signup-success"); // Redirect to signup success page
             },
             onError: (error) => {
-                toast.error("Registration failed. Please try again."); // Show error message
-                console.error("Registration error:", error);
+                const errorMessage = getRegistrationErrorMessage(error);
+                toast.error(errorMessage);
             }
         });
     };

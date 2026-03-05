@@ -93,7 +93,7 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
                     <Collapsible defaultOpen className="group/collapsible">
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton 
-                          className={`text-primary ${isSubItemActive(item.items) ? 'bg-secondary/30' : ''}`}
+                          className={`text-primary ${isSubItemActive(item.items) ? 'bg-primary/20' : ''}`}
                         >
                           <item.icon className="w-4 h-4" />
                           <span>{item.title}</span>
@@ -107,7 +107,7 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
                               <SidebarMenuSubButton 
                                 asChild
                                 isActive={isActive(subItem.url!)}
-                                className={isActive(subItem.url!) ? 'bg-secondary/50 text-primary font-medium' : ''}
+                                className={isActive(subItem.url!) ? 'bg-primary/30 text-primary font-medium' : ''}
                               >
                                 <Link to={subItem.url!}>
                                   <span>{subItem.title}</span>
@@ -122,7 +122,7 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
                     <SidebarMenuButton 
                       asChild 
                       isActive={isActive(item.url!)}
-                      className={`text-primary ${isActive(item.url!) ? 'bg-secondary/50 font-medium' : ''}`}
+                      className={`text-primary ${isActive(item.url!) ? 'bg-primary/30 font-medium' : ''}`}
                     >
                       <Link to={item.url!}>
                         <item.icon className="w-4 h-4" />
@@ -144,7 +144,7 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
                 <SidebarMenuButton 
                   asChild
                   isActive={isActive(`${tenantPrefix}/settings/team`)}
-                  className={isActive(`${tenantPrefix}/settings/team`) ? 'bg-secondary/50 font-medium' : ''}
+                  className={isActive(`${tenantPrefix}/settings/team`) ? 'bg-primary/50 font-medium' : ''}
                 >
                   <Link to={`${tenantPrefix}/settings/team`}>
                     <Users className="w-4 h-4" />
@@ -156,7 +156,7 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
                 <SidebarMenuButton 
                   asChild
                   isActive={isActive(`${tenantPrefix}/settings/preferences`)}
-                  className={isActive(`${tenantPrefix}/settings/preferences`) ? 'bg-secondary/50 font-medium' : ''}
+                  className={isActive(`${tenantPrefix}/settings/preferences`) ? 'bg-primary/50 font-medium' : ''}
                 >
                   <Link to={`${tenantPrefix}/settings/preferences`}>
                     <Settings className="w-4 h-4" />
@@ -171,21 +171,6 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
 
       <SidebarFooter className="h-20 border-t border-gray-200">
         <div className="flex items-start justify-between gap-4 px-2">
-            {/* <div className="flex items-center gap-2 flex-1 min-w-0">
-              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
-                <span className="text-purple-700 font-semibold text-sm">
-                  {getUserInitials()}
-                </span>
-              </div>
-              <div className="flex flex-col min-w-0 flex-1">
-                <span className="text-sm font-medium text-primary truncate">
-                  {user?.email || 'User'}
-                </span>
-                <span className="text-xs text-accent truncate">
-                  {user?.roles?.[0] || 'Member'}
-                </span>
-              </div>
-            </div> */}
             <Button 
               variant="ghost" 
               size="icon" 

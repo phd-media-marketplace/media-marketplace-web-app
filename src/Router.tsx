@@ -3,6 +3,9 @@ import type { RouteObject } from 'react-router-dom';
 import Login from './features/auth/pages/Login';
 import ForgetPassword from './features/auth/pages/ForgetPassword';
 import ResetPassword from './features/auth/pages/ResetPassword';
+import SignUpSuccess from './features/auth/pages/SignUpSuccess';
+import NotFound from './components/universal/Not-found';
+import Unauthorized from './components/universal/Unauthorized';
 import { MainLayout } from './components/layout/MainLayout';
 import AgencyOrIndividualRegister from './features/auth/pages/AgencyOrIndividualRegister';
 import MediaPartnerRegister from './features/auth/pages/MediaPartnerRegister';
@@ -50,13 +53,12 @@ export const router = createBrowserRouter([
         element: <ResetPassword/>
     },
     {
+        path: '/signup-success',
+        element: <SignUpSuccess/>
+    },
+    {
         path: '/unauthorized',
-        element: <div className="flex items-center justify-center h-screen">
-            <div className="text-center">
-                <h1 className="text-2xl font-bold">Unauthorized</h1>
-                <p className="text-gray-600 mt-2">You don't have permission to access this page.</p>
-            </div>
-        </div>
+        element: <Unauthorized />
     },
     // Protected app routes with tenant prefixes
     {
@@ -74,5 +76,10 @@ export const router = createBrowserRouter([
             // Media Partner routes
             ...createTenantRoutes('MEDIA_PARTNER'),
         ]
+    },
+    // Catch-all route for 404
+    {
+        path: '*',
+        element: <NotFound />
     }
 ]);

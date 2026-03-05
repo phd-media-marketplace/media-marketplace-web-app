@@ -6,6 +6,7 @@ import { Building, LockKeyhole, Mail, Phone, User, EyeOff, Eye, Briefcase, UserC
 import { toast } from "sonner";
 import { useRegister } from "../../hooks/useRegister";
 import { useNavigate} from "react-router-dom";
+import { getRegistrationErrorMessage } from "@/utils/error-handler";
 import {
     Select,
     SelectContent,
@@ -51,12 +52,12 @@ export default function AgencyOrIndividualRegistrationForm() {
 
         mutate(formattedData, {
             onSuccess: () => {
-                toast.success(`${data.tenantType} created successfully! Please check your email for further instructions.`); // Show success message
-                navigate("/dashboard"); // Redirect to dashboard page after successful registration
+                toast.success(`${data.tenantType} account created successfully!`); // Show success message
+                navigate("/signup-success"); // Redirect to signup success page
             },
             onError: (error) => {
-                toast.error("Registration failed. Please try again."); // Show error message
-                console.error("Registration error:", error);
+                const errorMessage = getRegistrationErrorMessage(error);
+                toast.error(errorMessage);
             }
         });
     };
