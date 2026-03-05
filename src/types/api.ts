@@ -44,4 +44,17 @@ export interface AuthResponse {
     accesstoken: string;
     refreshToken: string;
 }
+
+export interface User {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    tenantId: string;
+    tenantName: string;
+    tenantType: TenantType;
+    mediaType?: MediaType;
+    roles: string[];
+    permissions: string[];
+}
     

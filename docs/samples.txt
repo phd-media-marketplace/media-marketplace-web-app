@@ -91,3 +91,209 @@ export default function OrganisationForm() {
     </div>
   );
 }
+
+{/* Featured Packages Carousel Section - Directly beneath Recommended */}
+        <div className="space-y-4 mt-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-primary">Featured Packages</h3>
+            <Button variant="ghost" size="sm" className="text-xs text-primary">View All</Button>
+          </div>
+        
+        <div className="relative">
+          <div className="overflow-hidden rounded-xl">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={featuredSlide}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className={`bg-linear-to-br ${getCardColors(recommendedPackages[featuredSlide].mediaType).gradient} rounded-xl p-6 shadow-lg`}
+              >
+                {(() => {
+                  const pkg = recommendedPackages[featuredSlide];
+                  const discountedPrice = pkg.discount 
+                    ? pkg.cost * (1 - pkg.discount / 100) 
+                    : pkg.cost;
+                  const colors = getCardColors(pkg.mediaType);
+                  
+                  return (
+                    <div className="space-y-4 text-white">
+                      {/* Header */}
+                      <div className="space-y-2">
+                        <Badge 
+                          variant="secondary" 
+                          className={`${colors.badge} border font-semibold uppercase text-xs`}
+                        >
+                          {pkg.mediaType}
+                        </Badge>
+                        <h4 className="text-lg font-bold leading-tight">{pkg.title}</h4>
+                        <p className="text-sm text-white/70">{pkg.channel}</p>
+                      </div>
+
+                      {/* Pricing */}
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                        {pkg.discount && (
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-sm text-white/60 line-through">
+                              ¢{pkg.cost.toLocaleString()}
+                            </p>
+                            <Badge variant="destructive" className="text-xs font-bold">
+                              -{pkg.discount}%
+                            </Badge>
+                          </div>
+                        )}
+                        <p className="text-3xl font-bold text-white">
+                          ¢{Math.round(discountedPrice).toLocaleString()}
+                        </p>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="space-y-2">
+                        {pkg.location && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <MapPin className="w-4 h-4 text-white/70" />
+                            <span>{pkg.location}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 text-sm">
+                          <Users className="w-4 h-4 text-white/70" />
+                          <span>{pkg.reach} reach</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <Clock1 className="w-4 h-4 text-white/70" />
+                          <span>{pkg.duration}</span>
+                        </div>
+                        {pkg.demographics && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <Target className="w-4 h-4 text-white/70" />
+                            <span>{pkg.demographics}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Badge */}
+                      {pkg.badge && (
+                        <Badge className="bg-[#C8F526] text-[#2D0A4E] hover:bg-[#C8F526]/90 font-bold">
+                          ⭐ {pkg.badge}
+                        </Badge>
+                      )}
+
+                      {/* CTA Button */}
+                      <Button 
+                        className="w-full bg-white hover:bg-white/90 text-primary font-bold py-5 shadow-lg hover:shadow-xl transition-all"
+                        size="sm"
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        View Package Details
+                      </Button>
+                    </div>
+                  );
+                })()}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          
+          {/* Dots Indicator */}
+          <div className="flex gap-1.5 justify-center mt-4">
+            {recommendedPackages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setFeaturedSlide(index)}
+                className={`rounded-full transition-all duration-300 ${
+                  index === featuredSlide 
+                    ? 'w-6 h-1.5 bg-primary' 
+                    : 'w-1.5 h-1.5 bg-gray-300 hover:bg-gray-400'
+                }`}
+                aria-label={`Go to package ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      </div>
+
+
+      // Media plan and Campaign summary types(DTOs)
+
+
+// Media plan that includes campaign details, target audience, channels, and budget. This structure allows for comprehensive planning and execution of marketing campaigns across multiple media types.
+export interface mediaPlan {
+  CampaignTitle: string;
+  client: string;
+  objective: string;
+  targetAudience: string;
+  Channels: string[];
+  startDate: string;
+  endDate: string;
+  budget: number;
+}
+// The Channels interface represents the different media channels used in a campaign, including the media type and optional segments for each channel. This allows for detailed tracking and management of campaign performance across various media platforms.
+export interface Channels {
+  mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+  Segments?: Segment[];
+}
+//(work order) The Segment interface represents specific segments within a media channel, including the segment type, time interval, days of the week, rates, and optional details such as duration and start/end dates. This structure allows for granular tracking and analysis of campaign performance within each media channel.
+export interface Segment {
+  segmentType: string;
+  timeInterval: TimeInterval;
+  days: DayOfWeek[];
+  uniteRate: number;
+  totalRate: number;
+  TotalSpots: number;
+  spot:sportArray[];
+  durationSeconds?: number;
+  startDate?: string;
+  endDate?: string;
+}
+// The sportArray interface represents the number of spots for a specific day of the week, allowing for detailed tracking of advertising placements across different days. This structure can be used within the Segment interface to manage and analyze the distribution of advertising spots throughout the campaign duration.
+export interface sportArray {
+  day: DayOfWeek;
+  NumOfSpots: number;
+}
+
+// The CampaignSummary interface represents a comprehensive overview of a marketing campaign, including its title, client, objective, target audience, average performance metrics across all channels, detailed channel information, campaign duration, budget, and current status. This structure allows for a holistic view of the campaign's performance and effectiveness across different media types and channels.
+export interface CampaignSummary {
+  campaignTitle: string;
+  client: string;
+  objective: string;
+  targetAudience: string;
+  Avgmetrics: MetricsArray; // Average metrics across all channels
+  channels: Channels[]; // Detailed channel information
+  startDate: string;
+  endDate: string;
+  budget: number;
+  status: 'active' | 'paused' | 'completed' | 'cancelled';
+}
+
+// channel-specific performance data structure, it includes the media type, media partner name, key performance metrics (reach, frequency, impressions, clicks, CTR, CPC), budget, spend, and optional status. This structure allows for detailed tracking and analysis of each channel's contribution to the overall campaign performance.
+export interface CampaignChannel {
+  mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+  mediaPartnerName: string;
+  metrics: MetricsArray;
+  budget: number;
+  spend: number;
+  status?: 'active' | 'paused' | 'completed' | 'cancelled';
+}
+// Metrics array for campaign performance, it can be assigned to both individual channels and the overall campaign summary. It includes key performance indicators such as reach, frequency, impressions, clicks, CTR, and CPC. This allows for a comprehensive analysis of campaign effectiveness across different media types and channels.
+export interface MetricsArray {
+  reach: number;
+  avgFrequency: number;
+  impressions: number;
+  clicks?: number;
+  ctr?: number; // Click-through rate
+  cpc?: number; // Cost per click
+}
+
+// export interface TVMetadata {
+//   mediaType: 'TV';
+//   spotAdverts: SpotAdvert[];
+//   documentary: Documentary;
+//   announcements: TVAnnouncement[];
+//   newsCoverage: NewsCoverageTV[];
+//   executiveInterview: ExecutiveInterview[];
+//   preaching: Preaching[];
+//   airtimeSale: AirtimeSale[];
+//   media: Media[];
+// }

@@ -8,6 +8,9 @@ import RegistrationModal from "./RegistrationModal";
 import { toast } from "sonner";
 import { useLogin } from "../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/auth-store";
+import { getTenantPrefix } from "@/config/routes.config";
+import { getLoginErrorMessage } from "@/utils/error-handler";
 
 export default function LogInForm() {
     const navigate = useNavigate();
@@ -25,18 +28,24 @@ export default function LogInForm() {
 
     const onSubmit = (data: LogInFormData) => {
         mutate(data, {
-            onSuccess: (data) => {
-                localStorage.setItem('authToken', data.token);
-                localStorage.setItem("refreshToken", data.refreshToken);
+            onSuccess: () => {
                 toast.success("Logged in successfully! Redirecting to dashboard...");
-                console.log('Login successful:', data);
-                navigate("/dashboard"); // Redirect to dashboard page after successful login
+                
+                // Get user from store after successful login
+                setTimeout(() => {
+                    const currentUser = useAuthStore.getState().user;
+                    if (currentUser?.tenantType) {
+                        const tenantPrefix = getTenantPrefix(currentUser.tenantType);
+                        navigate(`${tenantPrefix}/dashboard`);
+                    } else {
+                        // Fallback to generic dashboard if tenant type is not available
+                        navigate("/dashboard");
+                    }
+                }, 100);
             },
-            onError: (error) => {
-                console.log(data)
-                toast.error("Login failed. Please check your credentials and try again.");
-                console.error('Login error:', error);
-                console.log('Login error:', error);
+            onError: (error: Error) => {
+                const errorMessage = getLoginErrorMessage(error);
+                toast.error(errorMessage);
             }
         });
     };
