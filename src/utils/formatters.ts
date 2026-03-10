@@ -17,3 +17,9 @@ export const formatCurrency = (amount: number, includeCurrency: boolean = true):
     
     return includeCurrency ? `₵ ${formatted}` : formatted;
 };
+
+// Helper function to format date to a more readable format
+export const formatDate = (dateString: string): string => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-GH', options);
+};

@@ -1,42 +1,53 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+// import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Pencil, Trash2, Eye, Radio, Tv, Calendar, Layers, DollarSign } from "lucide-react";
-import { listRateCards, deleteRateCard } from "../api";
+// import { listRateCards, deleteRateCard } from "../api";
 import type { RateCard, FMMetadata, TVMetadata } from "../types";
+import { dummyRateCards } from "../dummy-data";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
 export default function RateCardsList() {
   const [selectedMediaType, setSelectedMediaType] = useState<'FM' | 'TV' | 'ALL'>('ALL');
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const navigate = useNavigate();
 
+  // ===== DEMO MODE: Using dummy data instead of API =====
   // Fetch rate cards
-  const { data: rateCards, isLoading, error } = useQuery({
-    queryKey: ['rateCards', selectedMediaType],
-    queryFn: () => listRateCards(selectedMediaType !== 'ALL' ? { mediaType: selectedMediaType } : undefined),
-  });
+  // const { data: rateCards, isLoading, error } = useQuery({
+  //   queryKey: ['rateCards', selectedMediaType],
+  //   queryFn: () => listRateCards(selectedMediaType !== 'ALL' ? { mediaType: selectedMediaType } : undefined),
+  // });
+
+  // Filter dummy rate cards based on selected media type
+  const rateCards = selectedMediaType === 'ALL' 
+    ? dummyRateCards 
+    : dummyRateCards.filter(card => card.mediaType === selectedMediaType);
+  const isLoading = false;
+  const error = null;
 
   // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: deleteRateCard,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rateCards'] });
-      toast.success('Rate card deleted successfully');
-    },
-    onError: (error) => {
-      toast.error('Failed to delete rate card');
-      console.error('Delete error:', error);
-    },
-  });
+  // const deleteMutation = useMutation({
+  //   mutationFn: deleteRateCard,
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['rateCards'] });
+  //     toast.success('Rate card deleted successfully');
+  //   },
+  //   onError: (error) => {
+  //     toast.error('Failed to delete rate card');
+  //     console.error('Delete error:', error);
+  //   },
+  // });
 
-  const handleDelete = (id: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleDelete = (_id: string) => {
     if (window.confirm('Are you sure you want to delete this rate card?')) {
-      deleteMutation.mutate(id);
+      // deleteMutation.mutate(id);
+      toast.info('Delete functionality disabled in demo mode');
     }
   };
 
@@ -196,7 +207,7 @@ export default function RateCardsList() {
                         </p>
                       </div>
                     </div>
-                    <Badge variant={rateCard.isActive ? 'default' : 'secondary'} className="shrink-0">
+                    <Badge variant={rateCard.isActive ? 'default' : 'secondary'} className={`shrink-0 px-2 py-1 text-xs ${rateCard.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                       {rateCard.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>
