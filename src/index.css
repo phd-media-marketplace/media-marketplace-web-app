@@ -93,3 +93,6 @@ input[type="checkbox"] {
   accent-color: var(--color-secondary);
   cursor: pointer;
 }
+.input-field {
+  @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-transparent;
+}

@@ -3,3 +3,4 @@ export { default as RateCardsList } from './pages/RateCardsList';
 export { default as CreateRateCard } from './pages/CreateRateCard';
 export * from './types';
 export * from './api';
+export * from './dummy-data';

@@ -24,33 +24,62 @@ export interface mediaPlan {
   client: string;
   objective: string;
   targetAudience: string;
-  Channels: string[];
+  Channels: Channel[];
   startDate: string;
   endDate: string;
   budget: number;
 }
-// The Channels interface represents the different media channels used in a campaign, including the media type and optional segments for each channel. This allows for detailed tracking and management of campaign performance across various media platforms.
-export interface Channels {
+
+// The Channel interface represents the different media channels used in a campaign, including the media type and segments for each channel. This allows for detailed tracking and management of campaign performance across various media platforms.
+export interface Channel {
   mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
-  Segments?: Segment[];
+  channelName: string;
+  segments?: Segment[];
 }
-//(work order) The Segment interface represents specific segments within a media channel, including the segment type, time interval, days of the week, rates, and optional details such as duration and start/end dates. This structure allows for granular tracking and analysis of campaign performance within each media channel.
+
+//(work order) The Segment interface represents specific segments within a media channel, including the segment type, time slot, days of the week, rates, and optional details such as duration and various segment-specific configurations.
 export interface Segment {
+  // Common fields for all segments
   segmentType: string;
-  timeInterval: TimeInterval;
+  programName?: string;
+  timeSlot?: string; // e.g., "06:00 - 08:00"
   days: DayOfWeek[];
-  uniteRate: number;
-  totalRate: number;
-  TotalSpots: number;
-  spot:sportArray[];
+  unitRate: number;
+  spotsPerDay: number;
+  
+  // FM-specific fields
+  announcementType?: string;
+  jingleDuration?: JingleDuration;
+  interviewDuration?: string;
+  livePresenterMentionType?: string;
+  newsCoverageLocation?: string;
+  
+  // TV-specific fields
+  spotAdvertType?: string;
+  documentaryType?: 'COMMERCIAL' | 'SOCIAL';
+  newsCoverageAdType?: AdType;
+  preachingDuration?: string;
+  airtimeSaleDuration?: string;
+  mediaType?: MediaTypeForVideo;
+  mediaDuration?: number;
+  productPlacementDuration?: ProductPlacementDuration;
+  
+  // OOH-specific fields
+  placementType?: string;
+  location?: string;
+  dimensions?: string;
+  
+  // DIGITAL-specific fields
+  platform?: string;
+  adFormat?: string;
+  targeting?: string;
+  
+  // Optional legacy fields
+  startTime?: string;
+  endTime?: string;
   durationSeconds?: number;
   startDate?: string;
   endDate?: string;
-}
-// The sportArray interface represents the number of spots for a specific day of the week, allowing for detailed tracking of advertising placements across different days. This structure can be used within the Segment interface to manage and analyze the distribution of advertising spots throughout the campaign duration.
-export interface sportArray {
-  day: DayOfWeek;
-  NumOfSpots: number;
 }
 
 // The CampaignSummary interface represents a comprehensive overview of a marketing campaign, including its title, client, objective, target audience, average performance metrics across all channels, detailed channel information, campaign duration, budget, and current status. This structure allows for a holistic view of the campaign's performance and effectiveness across different media types and channels.
@@ -60,7 +89,7 @@ export interface CampaignSummary {
   objective: string;
   targetAudience: string;
   Avgmetrics: MetricsArray; // Average metrics across all channels
-  channels: Channels[]; // Detailed channel information
+  channels: Channel[]; // Detailed channel information
   startDate: string;
   endDate: string;
   budget: number;

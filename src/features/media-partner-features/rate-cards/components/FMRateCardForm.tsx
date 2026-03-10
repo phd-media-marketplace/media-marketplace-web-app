@@ -80,7 +80,8 @@ export default function FMRateCardForm({ metadata, setMetadata }: FMRateCardForm
       const label = SEGMENT_TYPE_OPTIONS.find(opt => opt.value === type)?.label || type;
       
       return {
-        segmentsTypes: label,
+        segmentName: label,
+        segmentType: type,
         enabledTypes: [type], // Each segment has only one type
         // Initialize arrays for this specific type only
         ...(type === 'ANNOUNCEMENTS' && { announcements: [] }),
@@ -110,6 +111,17 @@ export default function FMRateCardForm({ metadata, setMetadata }: FMRateCardForm
       ...metadata,
       segments: metadata.segments.filter((_, i) => i !== index),
     });
+  };
+
+  /**
+   * Updates the segment name
+   * @param segmentIndex - Index of the segment
+   * @param name - New segment name
+   */
+  const updateSegmentName = (segmentIndex: number, name: string) => {
+    const newSegments = [...metadata.segments];
+    newSegments[segmentIndex].segmentName = name;
+    setMetadata({ ...metadata, segments: newSegments });
   };
 
   /**
@@ -502,7 +514,7 @@ export default function FMRateCardForm({ metadata, setMetadata }: FMRateCardForm
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <h4 className="font-semibold">
-                      Segment {segmentIndex + 1}: {segment.segmentsTypes || 'Untitled'}
+                      Segment {segmentIndex + 1}: {segment.segmentName || segment.segmentType || 'Untitled'}
                     </h4>
                   </div>
                   <div className="flex items-center gap-2">
@@ -530,6 +542,23 @@ export default function FMRateCardForm({ metadata, setMetadata }: FMRateCardForm
 
               {expandedSegment === segmentIndex && (
                 <CardContent className="space-y-4 pt-4">
+                  {/* Segment Name Input */}
+                  <div className="mb-4 pb-4 border-b border-gray-200">
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Segment Name (Optional)
+                    </label>
+                    <Input
+                      type="text"
+                      value={segment.segmentName || ''}
+                      onChange={(e) => updateSegmentName(segmentIndex, e.target.value)}
+                      placeholder="e.g., Prime Time Package, Weekend Special"
+                      className="max-w-md input-field"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Give this segment a descriptive name to identify it easily
+                    </p>
+                  </div>
+
                   {/* Announcements Section - Only show if enabled */}
                   {segment.enabledTypes?.includes('ANNOUNCEMENTS') && (
                     <div className="border-t border-primary/5 pt-4">
