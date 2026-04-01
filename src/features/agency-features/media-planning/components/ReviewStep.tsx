@@ -46,12 +46,12 @@ export default function ReviewStep({
         <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
+            className="space-y-0 px-1 py-6 border border-primary/10 rounded-lg shadow-md"
         >
-            <Card className="p-6 space-y-6 border border-primary/20 rounded-lg shadow-md bg-gray-50">
+            <div className="p-6 space-y-6 border-b-2 border-b-primary/10 rounded-none shadow-none bg-gray-50">
                 <h2 className="text-xl font-semibold text-primary">Campaign Summary</h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                     <div>
                         <p className="font-semibold text-gray-900">Campaign Title</p>
                         <p className="text-sm text-gray-700 pt-1">{watch('CampaignTitle')}</p>
@@ -83,23 +83,23 @@ export default function ReviewStep({
                         </div>
                     )}
                 </div>
-            </Card>
+            </div>
 
-            <Card className="p-6 space-y-4 border border-primary/20 rounded-lg shadow-md bg-gray-50">
+            <div className="p-6 space-y-4 border-b-2 border-b-primary/10 rounded-none shadow-none bg-gray-50">
                 <h2 className="text-xl font-semibold text-primary">Budget Breakdown</h2>
                 
-                <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                        <p className="text-sm text-gray-600">Total Budget</p>
-                        <p className="text-2xl font-bold text-primary">{formatCurrency(totalBudget)}</p>
+                <div className="grid grid-cols-1 gap-4">
+                    <div className="flex items-center gap-2">
+                        <p className="text-sm text-gray-600">Total Budget:</p>
+                        <p className="text-base font-bold text-primary">{formatCurrency(totalBudget)}</p>
                     </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="flex items-center gap-2">
                         <p className="text-sm text-gray-600">Allocated</p>
-                        <p className="text-2xl font-bold text-green-600">{formatCurrency(totalAllocated)}</p>
+                        <p className="text-base font-bold text-green-600">{formatCurrency(totalAllocated)}</p>
                     </div>
-                    <div className={`text-center p-4 rounded-lg ${remainingBudget >= 0 ? 'bg-gray-50' : 'bg-red-50'}`}>
+                    <div className={`flex items-center gap-2 ${remainingBudget >= 0 ? 'bg-gray-50' : 'bg-red-50'}`}>
                         <p className="text-sm text-gray-600">Remaining</p>
-                        <p className={`text-2xl font-bold ${remainingBudget >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
+                        <p className={`text-base font-bold ${remainingBudget >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
                             {formatCurrency(remainingBudget)}
                         </p>
                     </div>
@@ -112,9 +112,9 @@ export default function ReviewStep({
                         </p>
                     </div>
                 )}
-            </Card>
+            </div>
 
-            <Card className="p-4 space-y-4 max-w-240 overflow-x-auto border border-primary/20 rounded-lg shadow-md bg-gray-50">
+            <Card className="p-4 space-y-4 max-w-240 overflow-x-auto border-none border-primary/20 rounded-none shadow-none bg-gray-50">
                 <h2 className="text-xl font-semibold text-primary">Channels & Segments ({channels.length})</h2>
                 
                 <Table className="min-w-full border border-primary/10 rounded-xl">
@@ -175,9 +175,9 @@ export default function ReviewStep({
                                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                     {channel.segments && channel.segments.map((segment: Record<string, any>, segIdx: number) => {
                                         const unitRate = Number(segment.unitRate) || 0;
-                                        const spotsPerDay = Number(segment.spotsPerDay) || 0;
+                                        const totalSpots = Number(segment.totalSpots) || 0;
                                         const daysCount = (segment.days as DayOfWeek[])?.length || 0;
-                                        const totalSpots = spotsPerDay * daysCount * campaignWeeks;
+                                        const spotsPerDay = totalSpots / daysCount * campaignWeeks;
                                         
                                         // Default values for discounts and commissions (can be made configurable)
                                         const volumeDiscountPercent = 40; // 40%

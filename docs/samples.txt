@@ -297,3 +297,23 @@ export interface MetricsArray {
 //   airtimeSale: AirtimeSale[];
 //   media: Media[];
 // }
+
+
+
+// // FM-specific fields
+  // announcementType?: string;
+  // jingleDuration?: JingleDuration;
+  // interviewDuration?: string;
+  // livePresenterMentionType?: string;
+  // newsCoverageLocation?: string;
+  
+  // // TV-specific fields
+  // spotAdvertType?: string;
+  // documentaryType?: 'COMMERCIAL' | 'SOCIAL';
+  // newsCoverageAdType?: AdType;
+  // preachingDuration?: string;
+  // airtimeSaleDuration?: string;
+  // mediaType?: MediaTypeForVideo;
+  // mediaDuration?: number;
+  // productPlacementDuration?: ProductPlacementDuration;
+  

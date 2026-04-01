@@ -18,13 +18,15 @@ export function MainLayout() {
     return getTenantConfig(user?.tenantType);
   }, [user?.tenantType]);
 
-  // Log for debugging
+  // Debug logs (disabled in production)
   useEffect(() => {
-    console.log('MainLayout - User from store:', user);
-    console.log('MainLayout - User from query:', userData);
-    console.log('MainLayout - Loading:', isLoading);
-    console.log('MainLayout - Error:', error);
-    console.log('MainLayout - Tenant Config:', tenantConfig);
+    if (import.meta.env.DEV && import.meta.env.VITE_DEBUG === 'true') {
+      console.log('MainLayout - User from store:', user);
+      console.log('MainLayout - User from query:', userData);
+      console.log('MainLayout - Loading:', isLoading);
+      console.log('MainLayout - Error:', error);
+      console.log('MainLayout - Tenant Config:', tenantConfig);
+    }
   }, [user, userData, isLoading, error, tenantConfig]);
 
   // Get user display name
@@ -74,7 +76,7 @@ export function MainLayout() {
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>
       </SidebarInset>

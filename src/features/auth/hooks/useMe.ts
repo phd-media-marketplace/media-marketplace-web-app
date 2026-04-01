@@ -14,11 +14,17 @@ export const useMe = () => {
         queryKey: ['me'],
         queryFn: async () => {
             const userData = await getMe();
-            console.log('useMe - GetMe response:', userData);
+            
+            if (import.meta.env.DEV && import.meta.env.VITE_DEBUG === 'true') {
+                console.log('useMe - GetMe response:', userData);
+            }
             
             // Check if userData has nested data property
             const user = userData?.data || userData;
-            console.log('useMe - Processed user data:', user);
+            
+            if (import.meta.env.DEV && import.meta.env.VITE_DEBUG === 'true') {
+                console.log('useMe - Processed user data:', user);
+            }
             
             if (user && user.id) {
                 setUser(user);

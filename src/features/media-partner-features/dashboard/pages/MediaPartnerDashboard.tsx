@@ -12,16 +12,31 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import RevenueChart from "../components/RevenueChart";
+import { useNavigate } from "react-router-dom";
+// import { router } from "@/Router";
 
 
 export default function MediaPartnerDashboard() {
+  const navigate = useNavigate();
+
+  const handleAddRateClick = () => {
+    navigate("/media-partner/rate-cards/create");
+  }
+
   return (
     <div className="space-y-6 w-full h-full overflow-x-hidden">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-3xl font-bold text-primary tracking-tight">Dashboard</h2> 
         <div className="flex gap-2 sm:gap-4">
           <Button variant="outline" size="sm" className="border border-secondary whitespace-nowrap">Create Package 📦</Button>
-          <Button variant="outline" size="sm" className="bg-secondary border-none whitespace-nowrap">Add Rate</Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="bg-secondary border-none whitespace-nowrap"
+            onClick={handleAddRateClick}
+          >
+            Add Rate
+          </Button>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

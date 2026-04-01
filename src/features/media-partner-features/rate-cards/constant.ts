@@ -1,23 +1,28 @@
 
 import type { 
-    DayOfWeek, 
-    Duration, 
+    DayOfWeek,
+    DurationInSec,
+    DurationInMin,
+} from "./types";
+
+// Note: Some types are imported from docs for backward compatibility
+import type {
     IntervalType, 
     InterviewDuration, 
     ProductPlacementDuration, 
-   FMSegmentType, 
-   TvSegmentType, 
-   SpotAdvertType,
-   AnnouncementType,
-} from "./types";
+    FMSegmentType, 
+    TvSegmentType, 
+    SpotAdvertType,
+    AnnouncementType,
+} from "../../../docs/types";
 
 // Constants
 
 export const DAYS: DayOfWeek[] = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
 
-export const JINGLE_DURATIONS: Duration[] = ['10_SECS', '15_SECS', '20_SECS', '25_SECS', '30_SECS', '35_SECS', '40_SECS', '45_SECS', '50_SECS', '55_SECS', '60_SECS'];
+export const JINGLE_DURATIONS: DurationInSec[] = ['10_SECS', '15_SECS', '20_SECS', '25_SECS', '30_SECS', '35_SECS', '40_SECS', '45_SECS', '50_SECS', '55_SECS', '60_SECS'];
 
-export const INTERVIEW_DURATIONS: InterviewDuration[] = ['10_MINS', '15_MINS', '30_MINS', '45_MINS', '60_MINS'];
+export const INTERVIEW_DURATIONS: DurationInMin[] = ['10_MINS', '15_MINS', '30_MINS', '45_MINS', '60_MINS'];
 
 export const INTERVAL_TYPES: IntervalType[] = ['PREMIUM', 'TIME_INTERVAL'];
 
@@ -33,3 +38,18 @@ export const TV_SEGMENT_TYPES:TvSegmentType[] = ['SPOT_ADVERTS', 'DOCUMENTARY', 
 export const LIVE_PRESENTER_MENTION_TYPES = ['LIVE_PRESENTER_MENTION', 'SPONSORSHIP_MENTION'];
 
 export const ANNOUNCEMENT_TYPES: AnnouncementType[] = ['COMMERCIAL/PRODUCTS', 'POLICE_EXTRACT', 'FUNERAL', 'SOCIAL', 'PROMOTIONS', 'OTHER'] as const;
+
+
+/**
+ * Available time intervals
+ */
+export const TIME_INTERVAL_OPTIONS = [
+  { value: '00:00 - 05:00', label: '00:00 - 05:00' },
+  { value: '05:00 - 10:00', label: '05:00 - 10:00' },
+  { value: '10:00 - 12:00', label: '10:00 - 12:00' },
+  { value: '12:00 - 14:00', label: '12:00 - 14:00' },
+  { value: '14:00 - 19:00', label: '14:00 - 19:00' },
+  { value: '19:00 - 00:00', label: '19:00 - 00:00' },
+  { value: '05:00 - 20:00', label: '05:00 - 20:00' },
+  { value: '20:00 - 00:00', label: '20:00 - 00:00' },
+] as const;

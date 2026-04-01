@@ -9,10 +9,16 @@ import type {
 // Create a new rate card
 export const createRateCard = async (data: CreateRateCardRequest): Promise<RateCard> => {
   try {
+    // Log the request payload for debugging
+    console.log('Creating rate card with payload:', JSON.stringify(data, null, 2));
+    console.log('Metadata type:', data.metadata.mediaType);
+    console.log('Media type:', data.mediaType);
+    
     const response = await apiClient.post('/rate-cards', data);
     return response.data;
   } catch (error) {
     console.error('Create rate card error:', error);
+    console.error('Failed payload:', JSON.stringify(data, null, 2));
     throw error;
   }
 };

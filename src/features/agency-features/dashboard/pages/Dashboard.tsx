@@ -27,8 +27,10 @@ import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@
 import SummaryCards from "@/components/universal/SummaryCards";
 import type { SummaryCardsProps } from "@/components/universal/SummaryCards";
 import { agencySummaryCardsData } from "../../contents/dashboard-content";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<'reach' | 'impressions' | 'spend'>('reach');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
@@ -103,6 +105,10 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
+  const handleBuyMedia = () => {
+    navigate('/client/marketplace');
+  }
+
 
   return (
     <div className="space-y-6 overflow-x-hidden">
@@ -110,7 +116,7 @@ export default function Dashboard() {
         <h2 className="text-3xl font-bold text-primary tracking-tight">Dashboard</h2> 
         <div className="flex gap-2 sm:gap-4">
           <Button variant="outline" size="sm" className="border border-secondary whitespace-nowrap">Plan with AI ✨ </Button>
-          <Button variant="outline" size="sm" className="bg-secondary border-none whitespace-nowrap">Buy Media</Button>
+          <Button variant="outline" size="sm" className="bg-secondary border-none whitespace-nowrap" onClick={handleBuyMedia}>Buy Media</Button>
         </div>
       
       </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -6,13 +7,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Save } from "lucide-react";
 import { createRateCard } from "../api";
-import type { CreateRateCardRequest, FMMetadata, TVMetadata, OOHMetadata, DIGITALMetadata } from "../types";
+import type { CreateRateCardRequest, RadioMetadata, TVMetadata, OOHMetadata, DIGITALMetadata, RadioRate, TVRate } from "../types";
 import { toast } from "sonner";
 import FMRateCardForm from "../components/FMRateCardForm";
 import TVRateCardForm from "../components/TVRateCardForm";
 import OOHRateCardForm from "../components/OOHRateCardForm";
 import { useAuthStore } from "@/features/auth/store/auth-store";
 import { getFormErrorMessage } from "@/utils/error-handler";
+
+/**
+ * Helper function to remove undefined/null values from object
+ * Backends often reject undefined fields
+ */
+const sanitizePayload = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map(item => sanitizePayload(item));
+  } else if (obj !== null && typeof obj === 'object') {
+    return Object.entries(obj).reduce((acc, [key, value]) => {
+      // Only include defined, non-null values
+      if (value !== undefined && value !== null) {
+        // Skip empty strings for optional fields only
+        if (value === '' && key !== 'mediaPartnerId' && key !== 'mediaType') {
+          return acc;
+        }
+        acc[key] = sanitizePayload(value);
+      }
+      return acc;
+    }, {} as any);
+  }
+  return obj;
+};
 
 /**
  * CreateRateCard Component
@@ -31,8 +55,8 @@ export default function CreateRateCard() {
       isActive: true,
       metadata: {
         mediaType: 'FM',
-        segments: [],
-      } as FMMetadata,
+        adTypeRates: [],
+      } as RadioMetadata,
     }
   });
 
@@ -62,8 +86,30 @@ export default function CreateRateCard() {
    */
   const onSubmit = handleSubmit((data) => {
     if (!user?.tenantId) {
-      toast.error('Media partner ID not found');
+      toast.error('Media partner ID not found. Please log in again.');
       return;
+    }
+
+    // Validate metadata has required data
+    if (data.mediaType === 'FM' || data.mediaType === 'TV') {
+      const metadata = data.metadata as RadioMetadata | TVMetadata;
+      if (!metadata.adTypeRates || metadata.adTypeRates.length === 0) {
+        toast.error('Please add at least one ad type with segment details');
+        return;
+      }
+
+      // Validate each ad type has segments
+      const hasValidSegments = metadata.adTypeRates.every((adType) => {
+        const segments = data.mediaType === 'FM' 
+          ? (adType as RadioRate).RadioSegment 
+          : (adType as TVRate).TVSegment;
+        return segments && segments.length > 0;
+      });
+
+      if (!hasValidSegments) {
+        toast.error('Each ad type must have at least one segment configured');
+        return;
+      }
     }
 
     const rateCardData: CreateRateCardRequest = {
@@ -71,7 +117,18 @@ export default function CreateRateCard() {
       mediaPartnerId: user.tenantId,
     };
 
-    createMutation.mutate(rateCardData);
+    // Ensure metadata.mediaType matches top-level mediaType
+    if ('mediaType' in rateCardData.metadata) {
+      (rateCardData.metadata as any).mediaType = rateCardData.mediaType;
+    }
+
+    // Sanitize payload to remove undefined/null/empty values
+    const sanitizedData = sanitizePayload(rateCardData);
+    
+    console.log('Submitting rate card (before sanitization):', rateCardData);
+    console.log('Submitting rate card (after sanitization):', sanitizedData);
+    
+    createMutation.mutate(sanitizedData);
   });
 
   /**
@@ -82,9 +139,9 @@ export default function CreateRateCard() {
     
     // Reset metadata based on media type
     if (value === 'FM') {
-      setValue('metadata', { mediaType: 'FM', segments: [] } as FMMetadata);
+      setValue('metadata', { mediaType: 'FM', adTypeRates: [] } as RadioMetadata);
     } else if (value === 'TV') {
-      setValue('metadata', { mediaType: 'TV', segments: [] } as TVMetadata);
+      setValue('metadata', { mediaType: 'TV', adTypeRates: [] } as TVMetadata);
     } else if (value === 'OOH') {
       setValue('metadata', { mediaType: 'OOH' } as OOHMetadata);
     } else {
@@ -139,7 +196,7 @@ export default function CreateRateCard() {
             {/* Media Type Specific Forms */}
             {mediaType === 'FM' ? (
               <FMRateCardForm 
-                metadata={metadata as FMMetadata} 
+                metadata={metadata as RadioMetadata} 
                 setMetadata={(data) => setValue('metadata', data)} 
               />
             ) : mediaType === 'TV' ? (

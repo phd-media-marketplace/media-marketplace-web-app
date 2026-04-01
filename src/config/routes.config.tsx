@@ -3,8 +3,17 @@ import PackageDetails from "@/features/agency-features/marketplace/pages/Package
 import Packages from "@/features/agency-features/marketplace/pages/Packages";
 import CreateMediaPlan from "@/features/agency-features/media-planning/pages/CreateMediaPlan";
 import MediaSchedules from "@/features/agency-features/media-planning/pages/MediaSchedules";
+import MediaPlansList from "@/features/agency-features/media-planning/pages/MediaPlansList";
+import ViewMediaPlan from "@/features/agency-features/media-planning/pages/ViewMediaPlan";
+import WorkOrdersList from "@/features/agency-features/work-orders/pages/WorkOrdersList";
+import ViewWorkOrder from "@/features/agency-features/work-orders/pages/ViewWorkOrder";
+import CampaignsList from "@/features/agency-features/campaigns/pages/CampaignsList";
+import ViewCampaign from "@/features/agency-features/campaigns/pages/ViewCampaign";
+import ViewCampaignCharts from "@/features/agency-features/campaigns/pages/ViewCampaignCharts";
 import MediaPartnerDashboard from "@/features/media-partner-features/dashboard/pages/MediaPartnerDashboard";
-import { RateCardsList, CreateRateCard } from "@/features/media-partner-features/rate-cards";
+import { RateCardsList, CreateRateCard, ViewRateCard, EditRateCard } from "@/features/media-partner-features/rate-cards";
+import { PackagesList, CreatePackage, ViewPackage, EditPackage } from "@/features/media-partner-features/packages";
+import { MediaPartnerWorkOrdersList, MediaPartnerViewWorkOrder } from "@/features/media-partner-features/work-orders";
 
 import type { TenantType } from "@/types/api";
 
@@ -71,8 +80,36 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       element: <CreateMediaPlan />,
     },
     {
+      path: "/agency/media-planning/plans",
+      element: <MediaPlansList />,
+    },
+    {
+      path: "/agency/media-planning/plans/:id",
+      element: <ViewMediaPlan />,
+    },
+    {
       path: "/agency/media-planning/schedules",
       element: <MediaSchedules />,
+    },
+    {
+      path: "/agency/work-orders",
+      element: <WorkOrdersList />,
+    },
+    {
+      path: "/agency/work-orders/:id",
+      element: <ViewWorkOrder />,
+    },
+    {
+      path: "/agency/campaigns",
+      element: <CampaignsList />,
+    },
+    {
+      path: "/agency/campaigns/:id",
+      element: <ViewCampaign />,
+    },
+    {
+      path: "/agency/campaigns/:id/charts",
+      element: <ViewCampaignCharts />,
     },
     // Agency-specific routes will be added here
   ],
@@ -95,8 +132,36 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       element: <CreateMediaPlan />,
     },
     {
+      path: "/client/media-planning/plans",
+      element: <MediaPlansList />,
+    },
+    {
+      path: "/client/media-planning/plans/:id",
+      element: <ViewMediaPlan />,
+    },
+    {
       path: "/client/media-planning/schedules",
       element: <MediaSchedules />,
+    },
+    {
+      path: "/client/work-orders",
+      element: <WorkOrdersList />,
+    },
+    {
+      path: "/client/work-orders/:id",
+      element: <ViewWorkOrder />,
+    },
+    {
+      path: "/client/campaigns",
+      element: <CampaignsList />,
+    },
+    {
+      path: "/client/campaigns/:id",
+      element: <ViewCampaign />,
+    },
+    {
+      path: "/client/campaigns/:id/charts",
+      element: <ViewCampaignCharts />,
     },
     // Client-specific routes will be added here
   ],
@@ -112,6 +177,38 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
     {
       path: "/media-partner/rate-cards/create",
       element: <CreateRateCard />,
+    },
+    {
+      path: "/media-partner/rate-cards/:id",
+      element: <ViewRateCard />,
+    },
+    {
+      path: "/media-partner/rate-cards/:id/edit",
+      element: <EditRateCard />,
+    },
+    {
+      path: "/media-partner/packages",
+      element: <PackagesList />,
+    },
+    {
+      path: "/media-partner/packages/create",
+      element: <CreatePackage />,
+    },
+    {
+      path: "/media-partner/packages/:id",
+      element: <ViewPackage />,
+    },
+    {
+      path: "/media-partner/packages/:id/edit",
+      element: <EditPackage />,
+    },
+    {
+      path: "/media-partner/work-orders",
+      element: <MediaPartnerWorkOrdersList />,
+    },
+    {
+      path: "/media-partner/work-orders/:id",
+      element: <MediaPartnerViewWorkOrder />,
     },
     // Media Partner-specific routes will be added here
   ],

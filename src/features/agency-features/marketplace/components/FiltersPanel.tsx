@@ -11,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { ChevronDown, Filter, X } from "lucide-react";
 import type { MarketplaceFilters } from "../types";
-import type { MediaType } from "@/types/api";
 
 interface FiltersPanelProps {
     filters: MarketplaceFilters;
@@ -19,26 +18,17 @@ interface FiltersPanelProps {
     onReset: () => void;
 }
 
-const mediaTypes: MediaType[] = ["TV", "RADIO", "DIGITAL", "OOH", "TV_RADIO"];
+const mediaTypes: Array<'FM' | 'TV' | 'OOH' | 'DIGITAL'> = ["FM", "TV", "DIGITAL", "OOH"];
 const locations = ["Nationwide", "Greater Accra", "Kumasi", "Accra - Circle", "Accra - Airport Road", "Accra & Kumasi"];
-const timeSlots = [
-    "Morning Drive (06:00-10:00)",
-    "Morning (06:00-09:00)",
-    "Afternoon (14:00-17:00)",
-    "Evening Drive (16:00-19:00)",
-    "Prime Time (18:00-22:00)",
-    "Late Night (22:00-01:00)",
-    "Weekend (10:00-18:00)",
-    "All Day"
-];
 
 export default function FiltersPanel({ filters, onFilterChange, onReset }: FiltersPanelProps) {
     const [isExpanded, setIsExpanded] = useState(true);
 
-    const handleMediaTypeToggle = (type: MediaType) => {
+    const handleMediaTypeToggle = (type: string) => {
+        const mediaType = type === "all" ? undefined : (type as 'FM' | 'TV' | 'OOH' | 'DIGITAL');
         onFilterChange({
             ...filters,
-            mediaType: filters.mediaType === type ? undefined : type
+            mediaType
         });
     };
 
@@ -46,13 +36,6 @@ export default function FiltersPanel({ filters, onFilterChange, onReset }: Filte
         onFilterChange({
             ...filters,
             location: location === "all" ? undefined : location
-        });
-    };
-
-    const handleTimeOfDayChange = (timeOfDay: string) => {
-        onFilterChange({
-            ...filters,
-            timeOfDay: timeOfDay === "all" ? undefined : timeOfDay
         });
     };
 
@@ -67,7 +50,6 @@ export default function FiltersPanel({ filters, onFilterChange, onReset }: Filte
     const activeFiltersCount = [
         filters.mediaType,
         filters.location,
-        filters.timeOfDay,
         filters.minCost,
         filters.maxCost
     ].filter(Boolean).length;
@@ -111,8 +93,8 @@ export default function FiltersPanel({ filters, onFilterChange, onReset }: Filte
                 <div className="p-4 space-y-6">
                     {/* Media Type Filter */}
 
-                    {/* Location and Time Filter Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {/* Filters Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-3">
                             <label className="text-sm font-semibold text-gray-700">
                                 Media Type
@@ -172,28 +154,6 @@ export default function FiltersPanel({ filters, onFilterChange, onReset }: Filte
                             </Select>
                         </div>
 
-                        {/* Time of Day Filter */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold text-gray-700">
-                                Time of Day
-                            </label>
-                            <Select
-                                value={filters.timeOfDay || "all"}
-                                onValueChange={handleTimeOfDayChange}
-                            >
-                                <SelectTrigger className="w-full border border-gray-200">
-                                    <SelectValue placeholder="All Times" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white border-none shadow-lg">
-                                    <SelectItem value="all">All Times</SelectItem>
-                                    {timeSlots.map((slot) => (
-                                        <SelectItem key={slot} value={slot}>
-                                            {slot}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
                         {/* Price Range Filter */}
                         <div className="space-y-3">
                             <label className="text-sm font-semibold text-gray-700">

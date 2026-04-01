@@ -6,6 +6,9 @@ import {
   FileText,
   CreditCard,
   ClipboardCheck,
+  Package,
+  FileCheck,
+  BarChart3,
 } from "lucide-react";
 
 export const agencyNavigationItems: NavigationItem[] = [
@@ -19,6 +22,7 @@ export const agencyNavigationItems: NavigationItem[] = [
     icon: ShoppingCart,
     items: [
       { title: "Browse Media", url: "/agency/marketplace" },
+      { title: "Packages", url: "/agency/packages" },
     ],
   },
   {
@@ -26,15 +30,25 @@ export const agencyNavigationItems: NavigationItem[] = [
     icon: FileText,
     items: [
       { title: "Create Plan", url: "/agency/media-planning/create" },
+      { title: "My Plans", url: "/agency/media-planning/plans" },
       { title: "View Schedules", url: "/agency/media-planning/schedules" },
       { title: "Analytics", url: "/agency/buying/analytics" },
     ],
   },
   {
+    title: "Work Orders",
+    url: "/agency/work-orders",
+    icon: FileCheck,
+  },
+  {
+    title: "Campaigns",
+    url: "/agency/campaigns",
+    icon: BarChart3,
+  },
+  {
     title: "Buying",
     icon: TrendingUp,
     items: [
-      { title: "Campaigns", url: "/agency/buying/campaigns" },
       { title: "My Orders", url: "/agency/marketplace/orders" },
     ],
   },

@@ -82,7 +82,7 @@ export default function ChannelCard({
         : uniqueChannels;
 
     return (
-        <Card className="p-6 space-y-4 border border-primary/20 rounded-lg shadow-md bg-gray-50">
+        <Card className="p-6 space-y-2 border border-primary/20 rounded-lg shadow-md bg-gray-50">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Icon className="w-6 h-6 text-primary" />
@@ -156,7 +156,7 @@ export default function ChannelCard({
             </div>
 
             {/* Segments */}
-            <div className="space-y-3 mt-4">
+            <div className="space-y-3 ">
                 <h4 className="font-medium text-gray-900">Segments</h4>
                 
                 {segmentFields.map((segment, segmentIndex) => (

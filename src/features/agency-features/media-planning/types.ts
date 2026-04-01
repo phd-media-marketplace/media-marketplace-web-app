@@ -17,8 +17,24 @@ export interface TimeInterval {
 }
 // Media plan and Campaign summary types(DTOs)
 
+// Complete media plan with all details including ID, status, timestamps
+export interface MediaPlan {
+  id: string;
+  campaignName: string;
+  clientName: string;
+  campaignObjective: string;
+  targetAudience: string;
+  expectedStartDate: string;
+  expectedEndDate: string;
+  totalBudget: number;
+  budgetAllocated: number;
+  status: 'draft' | 'active' | 'paused' | 'completed' | 'cancelled' | 'pending_approval' | 'approved';
+  channels: Channel[];
+  createdAt: string;
+  updatedAt: string;
+}
 
-// Media plan that includes campaign details, target audience, channels, and budget. This structure allows for comprehensive planning and execution of marketing campaigns across multiple media types.
+// Legacy media plan interface (for backward compatibility)
 export interface mediaPlan {
   CampaignTitle: string;
   client: string;
@@ -40,29 +56,16 @@ export interface Channel {
 //(work order) The Segment interface represents specific segments within a media channel, including the segment type, time slot, days of the week, rates, and optional details such as duration and various segment-specific configurations.
 export interface Segment {
   // Common fields for all segments
-  segmentType: string;
-  programName?: string;
-  timeSlot?: string; // e.g., "06:00 - 08:00"
-  days: DayOfWeek[];
-  unitRate: number;
-  spotsPerDay: number;
-  
-  // FM-specific fields
-  announcementType?: string;
-  jingleDuration?: JingleDuration;
-  interviewDuration?: string;
-  livePresenterMentionType?: string;
-  newsCoverageLocation?: string;
-  
-  // TV-specific fields
-  spotAdvertType?: string;
-  documentaryType?: 'COMMERCIAL' | 'SOCIAL';
-  newsCoverageAdType?: AdType;
-  preachingDuration?: string;
-  airtimeSaleDuration?: string;
-  mediaType?: MediaTypeForVideo;
-  mediaDuration?: number;
-  productPlacementDuration?: ProductPlacementDuration;
+  rateCardId?: string; // Reference to the rate card
+  adType: string; // e.g., 'ANNOUNCEMENTS', 'SPOT_ADVERTS', 'JINGLES', etc.
+  segmentClass: string; // e.g., 'M1', 'M2', 'A1', 'PREMIUM', 'P', etc.
+  segmentName?: string; // Auto-populated from rate card (ClassName)
+  timeSlot?: string; // e.g., "06:00 - 08:00" - auto-populated from rate card
+  days: DayOfWeek[]; // Days when this segment will run
+  unitRate: number; // Auto-populated from rate card based on segment class
+  totalSpots: number; // Number of spots/quantity
+  adForm?: string; // For TV: '30_SECS', 'LIVE', 'SOCIAL', etc. - auto-populated
+  duration?: string; // Optional duration info
   
   // OOH-specific fields
   placementType?: string;
@@ -75,11 +78,9 @@ export interface Segment {
   targeting?: string;
   
   // Optional legacy fields
-  startTime?: string;
-  endTime?: string;
-  durationSeconds?: number;
   startDate?: string;
   endDate?: string;
+  programName?: string; // Optional program/show name
 }
 
 // The CampaignSummary interface represents a comprehensive overview of a marketing campaign, including its title, client, objective, target audience, average performance metrics across all channels, detailed channel information, campaign duration, budget, and current status. This structure allows for a holistic view of the campaign's performance and effectiveness across different media types and channels.

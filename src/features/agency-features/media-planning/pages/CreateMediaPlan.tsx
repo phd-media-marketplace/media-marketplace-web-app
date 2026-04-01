@@ -28,7 +28,7 @@ interface SegmentFormData {
     endTime: string;
     days: DayOfWeek[];
     unitRate: number;
-    spotsPerDay: number;
+    totalSpots: number;
     durationSeconds: number;
 }
 
@@ -82,15 +82,16 @@ export default function CreateMediaPlan() {
                 // Check if segment has required fields
                 if (watchedStartDate && watchedEndDate && segment.days && segment.days.length > 0) {
                     const unitRate = segment.unitRate || 0;
-                    const spotsPerDay = segment.spotsPerDay || 0;
+                    const totalSpots = segment.totalSpots || 0;
                     
-                    if (unitRate > 0 && spotsPerDay > 0) {
+                    if (unitRate > 0 && totalSpots > 0) {
                         const start = new Date(watchedStartDate);
                         const end = new Date(watchedEndDate);
                         const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
                         const weeks = Math.ceil(days / 7);
-                        const totalSpots = spotsPerDay * segment.days.length * weeks;
-                        return segTotal + (unitRate * totalSpots);
+                        const sportsPerDay = Math.ceil(totalSpots / (segment.days.length * weeks));
+                        const overalltotalSpots = sportsPerDay * segment.days.length * weeks;
+                        return segTotal + (unitRate * overalltotalSpots);
                     }
                 }
                 return segTotal;
@@ -108,6 +109,15 @@ export default function CreateMediaPlan() {
             return;
         }
 
+        // // Calculate total spots for a segment
+        // const calculateTotalSpots = (segment: SegmentFormData, startDate: string, endDate: string) => {
+        //     const start = new Date(startDate);
+        //     const end = new Date(endDate);
+        //     const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        //     const weeks = Math.ceil(days / 7);
+        //     return segment.spotsPerDay * segment.days.length * weeks;
+        // };
+
         // Transform data to match mediaPlan interface
         const mediaPlanData: mediaPlan = {
             CampaignTitle: data.CampaignTitle,
@@ -120,7 +130,16 @@ export default function CreateMediaPlan() {
             Channels: data.channels.map(channel => ({
                 mediaType: channel.mediaType,
                 channelName: channel.channelName,
-                segments: channel.segments
+                segments: channel.segments.map(segment => ({
+                    adType: segment.segmentType,
+                    segmentClass: segment.programName, // Using programName as segmentClass
+                    segmentName: segment.programName,
+                    timeSlot: `${segment.startTime} - ${segment.endTime}`,
+                    days: segment.days,
+                    unitRate: segment.unitRate,
+                    totalSpots: segment.totalSpots,
+                    duration: `${segment.durationSeconds} seconds`
+                }))
             }))
         };
         
@@ -132,7 +151,7 @@ export default function CreateMediaPlan() {
     const nextStep = async () => {
         if (step === 1) {
             // Validate basic info using react-hook-form trigger
-            const isValid = await trigger(['CampaignTitle', 'client', 'startDate', 'endDate', 'budget']);
+            const isValid = await trigger(['CampaignTitle', 'client', 'objective', 'targetAudience', 'startDate', 'endDate', 'budget']);
             
             if (!isValid) {
                 toast.error("Please fill in all required fields correctly before proceeding.");

@@ -1,179 +1,66 @@
+// UUID type alias for better type documentation
+export type UUID = string;
+
+export type RadioSegmentClass = 'A1' | 'B' | 'C' | 'P2' | 'A' | 'P' | 'P1' | 'OTHERS';
+export type RadioSegmentAnnouncementClass = 'COMMERCIAL/PRODUCTS' | 'POLICE_EXTRACT' | 'FUNERAL' | 'SOCIAL' | 'PROMOTIONS' | 'OTHER';
 export type DayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+export type DaysOfWeekRange = 'MONDAY - FRIDAY' | 'SATURDAY - SUNDAY';
+export type TimeInterval = '19:00 - 00:00' | '00:00 - 05:00' | '10:00 - 12:00' | '12:00 - 14:00' | '05:00 - 10:00' | '14:00 - 19:00' | '05:00 - 20:00' | '20:00 - 00:00' | '00:00 - 05:00';
+export type DurationInSec = '10_SECS' | '15_SECS' | '20_SECS' | '25_SECS' | '30_SECS' | '35_SECS' | '40_SECS' | '45_SECS' | '50_SECS' | '55_SECS' | '60_SECS';
+export type DurationInMin = '10_MINS' | '15_MINS' | '30_MINS' | '45_MINS' | '60_MINS';
+export type RadioAdType = 'ANNOUNCEMENTS' | 'INTERVIEWS' | 'LIVE_PRESENTER_MENTIONS' | 'JINGLES' | 'NEWS_COVERAGE';
 
-export type Duration = '10_SECS' | '15_SECS' | '20_SECS' | '25_SECS' | '30_SECS' | '35_SECS' | '40_SECS' | '45_SECS' | '50_SECS' | '55_SECS' | '60_SECS';
-
-export type ProductPlacementDuration = '20_MINS' | '30_MINS' | '1_HOUR';
-
-export type InterviewDuration = '10_MINS' | '15_MINS' | '30_MINS' | '45_MINS' | '60_MINS';
-export type IntervalType = 'PREMIUM' | 'TIME_INTERVAL';
-
-export type AdType = 'COMMERCIAL' | 'SOCIAL';
-
-export type MediaTypeForVideo = 'MUSIC_VIDEOS' | 'SOUNDTRACKS' | 'MOVIE_PROMO';
-
-export interface TimeInterval {
-  startTime: string;
-  endTime: string;
+export interface TimeDetails {
+  daysOfWeek: DaysOfWeekRange,
+  timeInterval: TimeInterval[] | string[],
 }
 
-export type AnnouncementType = 'COMMERCIAL/PRODUCTS' | 'POLICE_EXTRACT' | 'FUNERAL' | 'SOCIAL' | 'PROMOTIONS' | 'OTHER';
-
-export type FMSegmentType = 'ANNOUNCEMENTS' | 'INTERVIEWS' | 'LIVE_PRESENTER_MENTIONS' | 'JINGLES' | 'NEWS_COVERAGE';
-
-export type SpotAdvertType = "DURATION_BASED" | "CRAWLERS" | "SQUEEZE_BACK" | "LOGO_DISPLAY" |"PRODUCT_PLACEMENT" | "PRE_PROMOS" | "PRODUCT_ENDORSEMENT" | "OPEN_OR_CLOSE_LIGHT"| "POP_UPS";
-
-export type TvSegmentType = 'SPOT_ADVERTS' | 'DOCUMENTARY' | 'ANNOUNCEMENTS' | 'NEWS_COVERAGE' | 'EXECUTIVE_INTERVIEW' | 'PREACHING' | 'AIRTIME_SALE' | 'MEDIA';
-
-// Main Rate Card Types
-export type RateCardMetadata = FMMetadata | TVMetadata | OOHMetadata | DIGITALMetadata;
-
-
-// FM Radio Types
-export interface Announcement {
-  announcementType: AnnouncementType;
-  timeInterval: TimeInterval;
-  rate: number;
-  day: DayOfWeek[];
+export interface RadioSegment {
+  Class: RadioSegmentClass,
+  ClassName?: string,
+  timeDetails: TimeDetails[],
+  Duration?: DurationInSec | DurationInMin;
+  UnitRate: number;
+  isActive: boolean;
 }
 
-export interface Interview {
-  timeInterval: TimeInterval;
-  durationSeconds: InterviewDuration;
-  rate: number;
-  day: DayOfWeek[];
+export interface RadioRate {
+  adType: RadioAdType;
+  RadioSegment: RadioSegment[];
+  // Duration?: DurationInSec | DurationInMin;
+  // UnitRate: number;
+  // isActive: boolean;
 }
 
-export interface LivePresenterMention {
-  mentionType: "LIVE_PRESENTER_MENTION"|"SPONSORSHIP_MENTION";
-  timeInterval: TimeInterval;
-  rate: number;
-  day: DayOfWeek[];
-}
-
-
-export interface Jingle {
-  timeInterval: TimeInterval;
-  duration: Duration; 
-  rate: number;
-  day: DayOfWeek[];
-}
-
-export interface NewsCoverageRadio {
-  location: string;
-  rate: number;
-  day: DayOfWeek[];
-}
-
-
-export interface FMSegment {
-  segmentName?: string; // Optional custom segment name e.g., "Prime Time Package", "Weekend Special"
-  segmentType: FMSegmentType; // Primary segment type - one of FMSegmentType
-  enabledTypes: FMSegmentType[]; // Track which content types are enabled for this segment
-  announcements?: Announcement[];
-  interviews?: Interview[];
-  livePresenterMentions?: LivePresenterMention[];
-  jingles?: Jingle[];
-  newsCoverage?: NewsCoverageRadio[];
-}
-
-export interface FMMetadata {
+export interface RadioMetadata {
   mediaType: 'FM';
-  segments: FMSegment[];
+  adTypeRates: RadioRate[];
 }
 
-
-
-export interface ProductPlacement {
-  duration: ProductPlacementDuration;
-  rate: number;
-}
-
-export interface DurationBasedAdvert {
-  duration: Duration;
-  rate: number;
-}
-
-export interface SpotAdvert {
-  intervalType: IntervalType;
-  spotAdvertType: SpotAdvertType;
-  programmeType?: string;
-  timeInterval?: TimeInterval;
-  duration?: Duration;
-  rate: number;
-  day: DayOfWeek[];
-  durationBasedAdvert?: DurationBasedAdvert;
-  productPlacement?: ProductPlacement;
-  otherSportAdvertTypeRate?: number; // For non-duration based adverts, if needed
-}
-
-
-export interface Documentary {
-  documentaryType: "COMMERCIAL" | "SOCIAL";
-  durationMinutes: InterviewDuration;
-  timeInterval: TimeInterval;
-  rate: number;
-  day: DayOfWeek[];
-}
-
-export interface TVAnnouncement {
-  announcementType: AnnouncementType;
-  rate: number;
-  day: DayOfWeek[];
-}
-
-export interface NewsCoverageTV {
-  location: string;
-  adType: AdType;
-  rate: number;
-  day: DayOfWeek[];
-}
-
-export interface ExecutiveInterview {
-  durationMinutes: InterviewDuration;
-  rate: number;
-  day: DayOfWeek[];
-}
-
-export interface Preaching {
-  durationMinutes: InterviewDuration;
-  timeInterval: TimeInterval;
-  rate: number;
-  day: DayOfWeek[];
-}
-
-export interface AirtimeSale {
-  durationMinutes: InterviewDuration;
-  timeInterval: TimeInterval;
-  rate: number;
-  day: DayOfWeek[];
-}
-
-export interface Media {
-  mediaType: MediaTypeForVideo;
-  durationSeconds: number;
-  rate: number;
-  day: DayOfWeek[];
-}
-
-
+export type TVSegmentClass = 'PREMIUM' | 'M1' | 'M2' | 'M3' | 'M4' | 'OTHERS';
+export type TVAdType = 'SPOT_ADVERTS' | 'DOCUMENTARY' | 'ANNOUNCEMENTS' | 'NEWS_COVERAGE' | 'EXECUTIVE_INTERVIEW' | 'PREACHING' | 'AIRTIME_SALE' | 'MEDIA';
+export type SpotAdvertForm = "15_SECS" | "30_SECS"| "45_SECS" | "60_SECS" | "LPMS_LESS_THAN_60_WORDS" | "CRAWLERS" | "SQUEEZE_BACK" | "LOGO_DISPLAY" |"PRODUCT_PLACEMENT" | "PRE_PROMOS" | "PRODUCT_ENDORSEMENT" | "OPEN_OR_CLOSE_SLIDEs"| "POP_UPS";
+export type TVTimeInterval = '4:00 - 6:00' | '6:00 - 10:00' | '16:00 - 22:00' | '10:00 - 16:00' | '12:00 - 14:00' | '05:00 - 10:00' | '14:00 - 19:00' | '05:00 - 20:00' | '20:00 - 00:00' | '00:00 - 05:00';
+export type OtherAdvertForm = 'COMMERCIAL' | 'SOCIAL';
 
 export interface TVSegment {
-  segmentName?: string; // Optional custom segment name e.g., "Prime Time Advertising", "Special Programs"
-  segmentType: TvSegmentType; // Primary segment type - one of TvSegmentType
-  enabledTypes: TvSegmentType[]; // Track which content types are enabled for this segment
-  spotAdverts?: SpotAdvert[];
-  documentary?: Documentary[];
-  announcements?: TVAnnouncement[];
-  newsCoverage?: NewsCoverageTV[];
-  executiveInterview?: ExecutiveInterview[];
-  preaching?: Preaching[];
-  airtimeSale?: AirtimeSale[];
-  media?: Media[];
+  Class: TVSegmentClass;
+  ClassName?: string;
+  timeDetails: TimeDetails[];
+  adForm?: SpotAdvertForm | OtherAdvertForm;
+  Duration?: DurationInSec | DurationInMin;
+  UnitRate: number;
+  isActive: boolean;
+}
+
+export interface TVRate {
+  adType: TVAdType;
+  TVSegment: TVSegment[];
 }
 
 export interface TVMetadata {
   mediaType: 'TV';
-  segments: TVSegment[];
+  adTypeRates: TVRate[];
 }
 
 // OOH (Out-of-Home) Types
@@ -194,6 +81,8 @@ export interface OOHMetadata {
   // Add OOH specific fields as needed
 }
 
+
+export type RateCardMetadata = RadioMetadata | TVMetadata | OOHMetadata | DIGITALMetadata;
 // Digital Types
 export interface DIGITALMetadata {
   mediaType: 'DIGITAL';
@@ -202,14 +91,14 @@ export interface DIGITALMetadata {
 
 
 export interface RateCardBase {
-  mediaPartnerId: string;
+  mediaPartnerId: UUID;
   mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
   isActive?: boolean;
   metadata: RateCardMetadata;
 }
 
 export interface RateCard extends RateCardBase {
-  id: string;
+  id: UUID;
   mediaPartnerName: string;
   createdAt: string;
   updatedAt: string;
@@ -220,7 +109,7 @@ export type CreateRateCardRequest = RateCardBase;
 export type BulkUploadRateCard = Omit<RateCardBase, 'mediaPartnerId'>;
 
 export interface BulkUploadRequest {
-  mediaPartnerId: string;
+  mediaPartnerId: UUID;
   rateCards: BulkUploadRateCard[];
 }
 

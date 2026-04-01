@@ -29,15 +29,8 @@ export default function Packages() {
                 return false;
             }
 
-            // Time of day filter
-            if (filters.timeOfDay && pkg.timeOfDay !== filters.timeOfDay) {
-                return false;
-            }
-
-            // Price range filter
-            const finalCost = pkg.discount 
-                ? pkg.cost * (1 - pkg.discount / 100) 
-                : pkg.cost;
+            // Price range filter (using finalPrice from new structure)
+            const finalCost = pkg.finalPrice;
                 
             if (filters.minCost && finalCost < filters.minCost) {
                 return false;

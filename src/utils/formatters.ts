@@ -23,3 +23,9 @@ export const formatDate = (dateString: string): string => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-GH', options);
 };
+
+export const formatLabel = (label: string): string => {
+    // Convert camelCase or snake_case to Title Case
+    const withSpaces = label.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
+    return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+};

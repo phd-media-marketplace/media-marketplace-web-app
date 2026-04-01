@@ -23,9 +23,9 @@ export default function PackageCard({ mediaPackage }: PackageCardProps) {
         }
     };
 
-    const finalCost = mediaPackage.discount 
-        ? mediaPackage.cost * (1 - mediaPackage.discount / 100) 
-        : mediaPackage.cost;
+    const displayPrice = mediaPackage.finalPrice;
+    const originalPrice = mediaPackage.totalPrice;
+    const hasDiscount = mediaPackage.discount && mediaPackage.discount > 0;
     
     return (
         <div className="group relative overflow-hidden rounded-xl bg-white p-5 shadow-md transition-all hover:shadow-xl hover:-translate-y-1 cursor-pointer border border-gray-100">
@@ -33,7 +33,7 @@ export default function PackageCard({ mediaPackage }: PackageCardProps) {
             <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-primary/5 to-secondary/5 rounded-full -mr-16 -mt-16" />
             
             {/* Discount Badge */}
-            {mediaPackage.discount && (
+            {hasDiscount && (
                 <div className="absolute top-3 right-3 z-10">
                     <Badge className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 shadow-sm">
                         {mediaPackage.discount}% OFF
@@ -48,21 +48,23 @@ export default function PackageCard({ mediaPackage }: PackageCardProps) {
                         <Badge className={`${getCardColors(mediaPackage.mediaType).badge} text-xs font-medium`}>
                             {mediaPackage.mediaType.replace('_', ' ')}
                         </Badge>
-                        <span className="text-xs text-gray-500">{mediaPackage.channel}</span>
+                        {mediaPackage.mediaPartnerName && (
+                            <span className="text-xs text-gray-500">{mediaPackage.mediaPartnerName}</span>
+                        )}
                     </div>
                     <h3 className="text-base font-semibold text-gray-900 line-clamp-2 min-h-12">
-                        {mediaPackage.title}
+                        {mediaPackage.packageName}
                     </h3>
                 </div>
 
                 {/* Price Section */}
                 <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-bold text-green-600">
-                        {formatCurrency(finalCost)}
+                        {formatCurrency(displayPrice)}
                     </span>
-                    {mediaPackage.discount && (
+                    {hasDiscount && (
                         <span className="text-sm text-gray-400 line-through">
-                            {formatCurrency(mediaPackage.cost)}
+                            {formatCurrency(originalPrice)}
                         </span>
                     )}
                 </div>
@@ -88,10 +90,10 @@ export default function PackageCard({ mediaPackage }: PackageCardProps) {
                                 <span className="text-xs font-medium line-clamp-1">{mediaPackage.location}</span>
                             </div>
                         )}
-                        {mediaPackage.timeOfDay && (
+                        {mediaPackage.metadata?.timeOfDay && (
                             <div className="flex items-center gap-1.5 text-gray-600">
                                 <Clock className="w-4 h-4 text-primary" />
-                                <span className="text-xs font-medium line-clamp-1">{mediaPackage.timeOfDay}</span>
+                                <span className="text-xs font-medium line-clamp-1">{mediaPackage.metadata.timeOfDay}</span>
                             </div>
                         )}
                     </div>
@@ -100,7 +102,7 @@ export default function PackageCard({ mediaPackage }: PackageCardProps) {
                 {/* Demographics */}
                 <div className="pt-2">
                     <p className="text-xs text-gray-500">
-                        <span className="font-medium">Target:</span> {mediaPackage.demographics}
+                        <span className="font-medium">Target:</span> {Array.isArray(mediaPackage.demographics) ? mediaPackage.demographics.join(', ') : mediaPackage.demographics}
                     </p>
                 </div>
 

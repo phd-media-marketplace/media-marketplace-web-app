@@ -35,15 +35,16 @@ export const getCardColors = (mediaType: string) => {
   };
 
   // Helper function to get day color
-    export const getDayColor = (day: string) => {
-        const colors: Record<string, string> = {
-            'Monday': 'bg-blue-100 text-black hover:bg-blue-100',
-            'Tuesday': 'bg-purple-100 text-black hover:bg-purple-100',
-            'Wednesday': 'bg-green-100 text-black hover:bg-green-100',
-            'Thursday': 'bg-yellow-100 text-black hover:bg-yellow-100',
-            'Friday': 'bg-pink-100 text-black hover:bg-pink-100',
-            'Saturday': 'bg-orange-100 text-black hover:bg-orange-100',
-            'Sunday': 'bg-red-100 text-black hover:bg-red-100',
-        };
-        return colors[day] || 'bg-gray-100 text-gray-700';
+export const getDayColor = (day: string) => {
+    const colors: Record<string, string> = {
+        'Monday': 'bg-blue-100 text-black hover:bg-blue-100',
+        'Tuesday': 'bg-purple-100 text-black hover:bg-purple-100',
+        'Wednesday': 'bg-green-100 text-black hover:bg-green-100',
+        'Thursday': 'bg-yellow-100 text-black hover:bg-yellow-100',
+        'Friday': 'bg-pink-100 text-black hover:bg-pink-100',
+        'Saturday': 'bg-orange-100 text-black hover:bg-orange-100',
+        'Sunday': 'bg-red-100 text-black hover:bg-red-100',
     };
+    return colors[day] || 'bg-gray-100 text-gray-700';
+};
+

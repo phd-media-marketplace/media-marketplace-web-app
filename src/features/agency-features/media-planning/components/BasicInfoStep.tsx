@@ -62,7 +62,7 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
 
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">
-                            Client <span className="text-red-500">*</span>
+                            Client/Brand Name <span className="text-red-500">*</span>
                         </label>
                         <Controller
                             name="client"
@@ -193,7 +193,7 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center">
                             <Target className="w-4 h-4 inline mr-1" />
-                            Campaign Objective
+                            Campaign Objective <span className="text-red-500">*</span>
                         </label>
                         <Controller
                             name="objective"
@@ -214,12 +214,15 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                                 </Select>
                             )}
                         />
+                        {errors.objective && (
+                            <p className="text-sm text-red-500">{errors.objective.message}</p>
+                        )}
                     </div>
 
                     <div className="md:col-span-2 space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center">
                             <Users className="w-4 h-4 inline mr-1" />
-                            Target Audience
+                            Target Audience <span className="text-red-500">*</span>
                         </label>
                         <Controller
                             name="targetAudience"
@@ -232,6 +235,9 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                                 />
                             )}
                         />
+                        {errors.targetAudience && (
+                            <p className="text-sm text-red-500">{errors.targetAudience.message}</p>
+                        )}
                     </div>
                 </div>
             </Card>

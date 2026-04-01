@@ -48,12 +48,12 @@ export default function PackageDetails() {
         );
     }
 
-    const finalCost = mediaPackage.discount 
-        ? mediaPackage.cost * (1 - mediaPackage.discount / 100) 
-        : mediaPackage.cost;
+    const displayPrice = mediaPackage.finalPrice;
+    const originalPrice = mediaPackage.totalPrice;
+    const hasDiscount = mediaPackage.discount && mediaPackage.discount > 0;
 
-    const savings = mediaPackage.discount 
-        ? mediaPackage.cost - finalCost 
+    const savings = hasDiscount
+        ? originalPrice - displayPrice
         : 0;
 
     const handleBack = () => {
@@ -87,7 +87,9 @@ export default function PackageDetails() {
                                     <Badge className={`${getCardColors(mediaPackage.mediaType).badge} text-sm font-medium`}>
                                         {mediaPackage.mediaType.replace('_', ' ')}
                                     </Badge>
-                                    <span className="text-sm text-gray-500">{mediaPackage.channel}</span>
+                                    {mediaPackage.mediaPartnerName && (
+                                        <span className="text-sm text-gray-500">{mediaPackage.mediaPartnerName}</span>
+                                    )}
                                     {mediaPackage.isActive && (
                                         <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
                                             Active
@@ -99,7 +101,7 @@ export default function PackageDetails() {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="text-3xl font-bold text-gray-900"
                                 >
-                                    {mediaPackage.title}
+                                    {mediaPackage.packageName}
                                 </motion.h1>
                             </div>
                             <div className="flex gap-2">
@@ -140,25 +142,25 @@ export default function PackageDetails() {
                                     {mediaPackage.packageDurationValue} {mediaPackage.packageDurationUnit.toLowerCase()}
                                 </p>
                             </div>
-                            {mediaPackage.numberOfSpots && (
+                            {mediaPackage.items && mediaPackage.items.length > 0 && (
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-gray-500">
                                         <TrendingUp className="w-4 h-4" />
-                                        <span className="text-xs font-medium">Spots</span>
+                                        <span className="text-xs font-medium">Items</span>
                                     </div>
                                     <p className="text-lg font-bold text-gray-900">
-                                        {mediaPackage.numberOfSpots}
+                                        {mediaPackage.items.length}
                                     </p>
                                 </div>
                             )}
-                            {mediaPackage.spotDurationSeconds && (
+                            {mediaPackage.metadata?.spotDurationSeconds && (
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-gray-500">
                                         <Clock className="w-4 h-4" />
                                         <span className="text-xs font-medium">Spot Length</span>
                                     </div>
                                     <p className="text-lg font-bold text-gray-900">
-                                        {mediaPackage.spotDurationSeconds}s
+                                        {mediaPackage.metadata.spotDurationSeconds}s
                                     </p>
                                 </div>
                             )}
@@ -188,35 +190,39 @@ export default function PackageDetails() {
                                   </div>
                                     <div>
                                         <p className="font-medium text-gray-900">Target Demographics</p>
-                                        <p className="text-gray-600">{mediaPackage.demographics}</p>
+                                        <p className="text-gray-600">
+                                            {Array.isArray(mediaPackage.demographics) 
+                                                ? mediaPackage.demographics.join(', ') 
+                                                : mediaPackage.demographics}
+                                        </p>
                                     </div>
                                 </div>
 
-                                {mediaPackage.timeOfDay && (
+                                {mediaPackage.metadata?.timeOfDay && (
                                     <div className="flex items-start gap-3">
                                         <div className="border border-purple-100 bg-purple-100 p-2 rounded-md">
                                             <Clock className="w-5 h-5 text-primary mt-0.5" />
                                         </div>
                                         <div>
                                             <p className="font-medium text-gray-900">Time Slot</p>
-                                            <p className="text-gray-600">{mediaPackage.timeOfDay}</p>
+                                            <p className="text-gray-600">{mediaPackage.metadata.timeOfDay}</p>
                                         </div>
                                     </div>
                                 )}
 
-                                {mediaPackage.segment && (
+                                {mediaPackage.metadata?.segment && (
                                     <div className="flex items-start gap-3">
                                         <div className="border border-purple-100 bg-purple-100 p-2 rounded-md">
                                             <Tag className="w-5 h-5 text-primary mt-0.5" />
                                         </div>
                                         <div>
                                             <p className="font-medium text-gray-900">Segment</p>
-                                            <p className="text-gray-600">{mediaPackage.segment}</p>
+                                            <p className="text-gray-600">{mediaPackage.metadata.segment}</p>
                                         </div>
                                     </div>
                                 )}
 
-                                {mediaPackage.daysOfAllocation && mediaPackage.daysOfAllocation.length > 0 && (
+                                {mediaPackage.metadata?.daysOfAllocation && mediaPackage.metadata.daysOfAllocation.length > 0 && (
                                     <div className="flex items-start gap-3">
                                         <div className="border border-purple-100 bg-purple-100 p-2 rounded-md">
                                             <Calendar className="w-5 h-5 text-primary mt-0.5" />
@@ -224,7 +230,7 @@ export default function PackageDetails() {
                                         <div>
                                             <p className="font-medium text-gray-900">Days of Allocation</p>
                                             <div className="flex flex-wrap gap-2 mt-2">
-                                                {mediaPackage.daysOfAllocation.map((day) => (
+                                                {mediaPackage.metadata.daysOfAllocation.map((day: string) => (
                                                     <Badge key={day} className={`text-xs ${getDayColor(day)}`}>
                                                         {day}
                                                     </Badge>
@@ -236,12 +242,12 @@ export default function PackageDetails() {
                             </div>
                         </div>
 
-                        {mediaPackage.notes && (
+                        {mediaPackage.description && (
                             <>
                                 {/* <Separator /> */}
                                 <div>
-                                    <h3 className="font-semibold text-gray-900 mb-2">Additional Information</h3>
-                                    <p className="text-gray-600 leading-relaxed">{mediaPackage.notes}</p>
+                                    <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+                                    <p className="text-gray-600 leading-relaxed">{mediaPackage.description}</p>
                                 </div>
                             </>
                         )}
@@ -281,15 +287,15 @@ export default function PackageDetails() {
                                 <p className="text-sm text-gray-500 mb-2">Package Price</p>
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-3xl font-bold text-primary">
-                                        {formatCurrency(finalCost)}
+                                        {formatCurrency(displayPrice)}
                                     </span>
-                                    {mediaPackage.discount && (
+                                    {hasDiscount && (
                                         <span className="text-md text-gray-400 line-through">
-                                            {formatCurrency(mediaPackage.cost)}
+                                            {formatCurrency(originalPrice)}
                                         </span>
                                     )}
                                 </div>
-                                {mediaPackage.discount && (
+                                {hasDiscount && (
                                     <div className="flex items-center gap-2 mt-2">
                                         <Badge className="bg-green-100 text-green-700">
                                             Save {mediaPackage.discount}%
@@ -324,10 +330,12 @@ export default function PackageDetails() {
                                         Available
                                     </Badge>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-gray-600">Provider</span>
-                                    <span className="font-medium text-gray-900">{mediaPackage.channel}</span>
-                                </div>
+                                {mediaPackage.mediaPartnerName && (
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-gray-600">Provider</span>
+                                        <span className="font-medium text-gray-900">{mediaPackage.mediaPartnerName}</span>
+                                    </div>
+                                )}
                             </div>
                         </Card>
 
