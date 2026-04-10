@@ -6,9 +6,9 @@ import {
   FileText,
   CreditCard,
   ClipboardCheck,
-  Package,
   FileCheck,
   BarChart3,
+  // LineChart,
 } from "lucide-react";
 
 export const agencyNavigationItems: NavigationItem[] = [
@@ -32,7 +32,7 @@ export const agencyNavigationItems: NavigationItem[] = [
       { title: "Create Plan", url: "/agency/media-planning/create" },
       { title: "My Plans", url: "/agency/media-planning/plans" },
       { title: "View Schedules", url: "/agency/media-planning/schedules" },
-      { title: "Analytics", url: "/agency/buying/analytics" },
+      { title: "Media Analytics", url: "/agency/media-analysis" },
     ],
   },
   {

@@ -504,6 +504,16 @@ export default function FMRateCardForm({ metadata, setMetadata }: RadioRateCardF
                                           </Select>
                                         </div>
 
+                                        {/* <div>
+                                          <label className="text-xs text-gray-700 mb-1 block">Programme Name</label>
+                                          <Input
+                                            type="text"
+                                            value={timeDetail.ProgrammeName || ''}
+                                            onChange={(e) => updateTimeDetail(rateIndex, segmentIndex, timeDetailIndex, 'ProgrammeName', e.target.value)}
+                                            placeholder="Optional programme name"
+                                            className="input-field text-sm"
+                                        </div> */}
+
                                         <div className="w-full">
                                           <label className="text-xs text-gray-700 mb-1 block">
                                             {rate.adType === 'ANNOUNCEMENTS' ? 'Time' : 'Time Intervals'}

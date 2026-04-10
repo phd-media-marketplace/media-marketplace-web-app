@@ -6,7 +6,6 @@ import {
   CreditCard,
   BarChart3,
   Megaphone,
-  Package,
   FileCheck,
 } from "lucide-react";
 
@@ -21,17 +20,17 @@ export const clientNavigationItems: NavigationItem[] = [
     icon: ShoppingCart,
     items: [
       { title: "Browse Media", url: "/client/marketplace" },
-      { title: "Packages", url: "/client/packages" },
-      { title: "My Orders", url: "/client/marketplace/orders" },
+      // { title: "Packages", url: "/client/packages" },
+      // { title: "My Orders", url: "/client/marketplace/orders" },
     ],
   },{
-    title: "Media Plans",
+    title: "Media Planning",
     icon: FileText,
     items: [
       { title: "Media Analysis", url: "/client/media-planning/media-analysis" },
       { title: "Planner", url: "/client/media-planning/create" },
       { title: "My Plans", url: "/client/media-planning/plans" },
-      { title: "Schedules", url: "/client/media-planning/schedules" }
+      // { title: "Schedules", url: "/client/media-planning/schedules" }
     ],
 
   },

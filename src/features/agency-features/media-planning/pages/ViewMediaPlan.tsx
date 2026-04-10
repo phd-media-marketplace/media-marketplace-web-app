@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Edit, Send, Play, Pause, CheckCircle } from 'lucide-react';
 import { dummyMediaPlans } from '../dummy-data';
 import type { MediaPlan } from '../types';
+import { useAuthStore } from '@/features/auth/store/auth-store';
 
 // Helper functions for status badges (same as MediaPlansList)
 const getStatusColor = (status: MediaPlan['status']) => {
@@ -53,6 +54,7 @@ export default function ViewMediaPlan() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [currentStatus, setCurrentStatus] = useState<MediaPlan['status'] | null>(null);
+  const { user } = useAuthStore();
 
   // Find the media plan by ID
   const mediaPlan = useMemo(() => {
@@ -96,7 +98,11 @@ export default function ViewMediaPlan() {
   // Handle actions
   const handleEdit = () => {
     // TODO: Navigate to edit page or enable edit mode
-    navigate(`/agency/media-planning/plans/${id}/edit`);
+    if (user?.tenantType === 'AGENCY') {
+      navigate(`/agency/media-planning/plans/${id}/edit`);
+    } else {
+      navigate(`/client/media-planning/plans/${id}/edit`);
+    }
   };
 
   const handleSendToApproval = () => {

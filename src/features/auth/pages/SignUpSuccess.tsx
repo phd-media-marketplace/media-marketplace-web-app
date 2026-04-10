@@ -102,7 +102,7 @@ export default function SignUpSuccess() {
             transition={{ duration: 0.6, delay: 1 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Link to="/login" className="flex-1 sm:flex-none">
+            <Link to="/" className="flex-1 sm:flex-none">
               <Button
                 size="lg"
                 className="w-full bg-linear-to-r from-primary to-secondary hover:shadow-lg transition-all duration-300 hover:scale-105 text-white px-8"

@@ -1,5 +1,17 @@
 import type { MediaType, TenantType } from "@/types/api";
 
+export interface User {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    tenantId: string;
+    tenantName: string;
+    tenantType: TenantType;
+    mediaType?: MediaType;
+    roles: string[];
+    permissions: string[];
+}
 
 export interface LogInFormData {
     email: string;

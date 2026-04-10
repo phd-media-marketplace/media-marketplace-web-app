@@ -10,6 +10,7 @@ import ViewWorkOrder from "@/features/agency-features/work-orders/pages/ViewWork
 import CampaignsList from "@/features/agency-features/campaigns/pages/CampaignsList";
 import ViewCampaign from "@/features/agency-features/campaigns/pages/ViewCampaign";
 import ViewCampaignCharts from "@/features/agency-features/campaigns/pages/ViewCampaignCharts";
+import MediaAnalysisPage from "@/features/agency-features/media-analysis/pages/MediaAnalysisPage";
 import MediaPartnerDashboard from "@/features/media-partner-features/dashboard/pages/MediaPartnerDashboard";
 import { RateCardsList, CreateRateCard, ViewRateCard, EditRateCard } from "@/features/media-partner-features/rate-cards";
 import { PackagesList, CreatePackage, ViewPackage, EditPackage } from "@/features/media-partner-features/packages";
@@ -111,6 +112,10 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       path: "/agency/campaigns/:id/charts",
       element: <ViewCampaignCharts />,
     },
+    {
+      path: "/agency/media-analysis",
+      element: <MediaAnalysisPage />,
+    },
     // Agency-specific routes will be added here
   ],
   CLIENT: [
@@ -126,6 +131,10 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       path: "/client/marketplace/:id",
       element: <PackageDetails />,
       roles: ["TENANT_ADMIN"]
+    },
+    {
+      path: "/client/media-planning/media-analysis",
+      element: <MediaAnalysisPage />,
     },
     {
       path: "/client/media-planning/create",
