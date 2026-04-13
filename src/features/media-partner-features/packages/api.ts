@@ -1,7 +1,9 @@
 import { apiClient } from "@/services/https";
+import type { AxiosProgressEvent } from "axios";
 import type { Package, CreatePackageRequest, UpdatePackageRequest, PackageListResponse } from "./types";
 
 const BASE_URL = "/media-partner/packages";
+const UPLOAD_URL = import.meta.env.VITE_PACKAGE_UPLOAD_URL || `${BASE_URL}/upload`;
 
 /**
  * List all packages for a media partner
@@ -53,4 +55,75 @@ export async function deletePackage(id: string): Promise<void> {
 export async function togglePackageStatus(id: string, isActive: boolean): Promise<Package> {
   const response = await apiClient.patch<Package>(`${BASE_URL}/${id}/status`, { isActive });
   return response.data;
+}
+
+export interface UploadPackageImageOptions {
+  signal?: AbortSignal;
+  onProgress?: (progress: number) => void;
+}
+
+export interface UploadPackageImageResponse {
+  url?: string;
+  id?: string;
+  fileName?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  raw?: any;
+}
+
+function extractFileUrl(responseData: unknown): string | undefined {
+  if (!responseData || typeof responseData !== "object") {
+    return undefined;
+  }
+
+  const payload = responseData as Record<string, unknown>;
+  const directUrl = payload.url;
+  if (typeof directUrl === "string") {
+    return directUrl;
+  }
+
+  const data = payload.data;
+  if (data && typeof data === "object") {
+    const nested = data as Record<string, unknown>;
+    if (typeof nested.url === "string") return nested.url;
+    if (typeof nested.fileUrl === "string") return nested.fileUrl;
+    if (typeof nested.secure_url === "string") return nested.secure_url;
+  }
+
+  if (typeof payload.fileUrl === "string") return payload.fileUrl;
+  if (typeof payload.secure_url === "string") return payload.secure_url;
+  return undefined;
+}
+
+export async function uploadPackageImage(
+  file: File,
+  options?: UploadPackageImageOptions
+): Promise<UploadPackageImageResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await apiClient.post(UPLOAD_URL, formData, {
+    signal: options?.signal,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    onUploadProgress: (event: AxiosProgressEvent) => {
+      if (!options?.onProgress) return;
+      if (!event.total) {
+        options.onProgress(0);
+        return;
+      }
+      const progress = Math.round((event.loaded * 100) / event.total);
+      options.onProgress(progress);
+    },
+  });
+
+  const responseBody = response.data;
+  const raw = responseBody as Record<string, unknown>;
+
+  return {
+    url: extractFileUrl(responseBody),
+    id: typeof raw?.id === "string" ? raw.id : undefined,
+    fileName: typeof raw?.fileName === "string" ? raw.fileName : file.name,
+    raw,
+  };
 }

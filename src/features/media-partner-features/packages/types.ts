@@ -7,6 +7,7 @@ export interface PackageItem {
   adType: string;
   segmentId: string;
   segmentClass?: string; // eg: "M1", "PREMIUM", etc. if applicable
+  programmeName?: string; // Optional: Name of the programme or slot, if applicable
   quantity: number;
   unitRate: number;
   totalPrice: number;

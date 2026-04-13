@@ -1,17 +1,17 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, Plus } from "lucide-react";
 import type { CreatePackageRequest } from "../types";
 import { useAuthStore } from "@/features/auth/store/auth-store";
 import { toast } from "sonner";
 import { dummyRateCards } from "../../rate-cards/dummy-data";
 import type { RadioMetadata, TVMetadata } from "../../rate-cards/types";
+import PackageBasicInfo from "../components/PackageBasicInfo";
+import PackageItem from "../components/PackageItem";
+import PricingSummary from "../components/PricingSummary";
 
 // Helper function to get available ad types for a media type
 function getAdTypesForMediaType(mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL'): string[] {
@@ -74,7 +74,7 @@ export default function CreatePackage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { register, watch, setValue, handleSubmit, formState: { errors } } = useForm<CreatePackageRequest>({
+  const { control, register, setValue, handleSubmit, formState: { errors } } = useForm<CreatePackageRequest>({
     defaultValues: {
       mediaPartnerId: user?.tenantId || '',
       packageName: '',
@@ -92,9 +92,9 @@ export default function CreatePackage() {
     }
   });
 
-  const items = watch('items') || [];
-  const discount = watch('discount') || 0;
-  const mediaType = watch('mediaType');
+  const items = useWatch({ control, name: 'items' }) || [];
+  const discount = useWatch({ control, name: 'discount' }) || 0;
+  const mediaType = useWatch({ control, name: 'mediaType' });
 
   // Get available ad types for current media type
   const availableAdTypes = useMemo(() => getAdTypesForMediaType(mediaType), [mediaType]);
@@ -203,291 +203,58 @@ export default function CreatePackage() {
 
       {/* Form */}
       <form onSubmit={onSubmit} className="space-y-6">
-        {/* Basic Information */}
-        <Card className="border border-violet-100">
-          <CardHeader>
-            <CardTitle className="text-primary text-lg font-bold">Package Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-primary font-medium mb-1">
-                  Package Name <span className="text-red-500">*</span>
-                </label>
-                <Input
-                  {...register('packageName', { required: 'Package name is required' })}
-                  placeholder="e.g., Prime Time Bundle"
-                  className={errors.packageName ? 'border-red-500' : ''}
-                />
-                {errors.packageName && (
-                  <p className="text-xs text-red-500 mt-1">{errors.packageName.message}</p>
-                )}
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <PackageBasicInfo control={control} register={register} setValue={setValue} errors={errors} />
 
-              <div>
-                <label className="block text-sm text-primary font-medium mb-1">
-                  Media Type <span className="text-red-500">*</span>
-                </label>
-                <Select value={watch('mediaType')} onValueChange={(value) => setValue('mediaType', value as 'FM' | 'TV')}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="FM">📻 FM Radio</SelectItem>
-                    <SelectItem value="TV">📺 TV</SelectItem>
-                    <SelectItem value="OOH">🏙️ Out-of-Home</SelectItem>
-                    <SelectItem value="DIGITAL">💻 Digital</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm text-primary font-medium mb-1">Description</label>
-              <Textarea
-                {...register('description')}
-                placeholder="Describe your package..."
-                rows={3}
-                className="resize-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-primary font-medium mb-1">
-                  Estimated Reach <span className="text-red-500">*</span>
-                </label>
-                <Input
-                  type="number"
-                  {...register('reach', { required: 'Reach is required', min: 0, valueAsNumber: true })}
-                  placeholder="e.g., 1000000"
-                  className={errors.reach ? 'border-red-500' : ''}
-                />
-                {errors.reach && (
-                  <p className="text-xs text-red-500 mt-1">{errors.reach.message}</p>
-                )}
-                <p className="text-xs text-gray-500 mt-1">Number of people this package can reach</p>
-              </div>
-
-              <div>
-                <label className="block text-sm text-primary font-medium mb-1">Location</label>
-                <Input
-                  {...register('location')}
-                  placeholder="e.g., Greater Accra, Ghana"
-                />
-                <p className="text-xs text-gray-500 mt-1">Geographic coverage area</p>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm text-primary font-medium mb-1">
-                Target Demographics
-              </label>
-              <Input
-                placeholder="e.g., Adults 25-45, Urban Youth (comma separated)"
-                onChange={(e) => {
-                  const demographics = e.target.value.split(',').map(d => d.trim()).filter(d => d);
-                  setValue('demographics', demographics);
-                }}
-              />
-              <p className="text-xs text-gray-500 mt-1">Enter demographics separated by commas</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm text-primary font-medium mb-1">
-                  Package Duration <span className="text-red-500">*</span>
-                </label>
-                <Input
-                  type="number"
-                  {...register('packageDurationValue', { required: true, min: 1, valueAsNumber: true })}
-                  placeholder="1"
-                  min="1"
-                  className={errors.packageDurationValue ? 'border-red-500' : ''}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-primary font-medium mb-1">
-                  Duration Unit <span className="text-red-500">*</span>
-                </label>
-                <Select 
-                  value={watch('packageDurationUnit')} 
-                  onValueChange={(value) => setValue('packageDurationUnit', value)}
+            {/* Package Items */}
+            <Card className="border border-violet-100">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-primary text-lg font-bold">Package Items</CardTitle>
+                <Button 
+                  type="button" 
+                  onClick={addItem}
+                  size="sm"
+                  variant="outline"
+                  className="border-secondary hover:bg-secondary"
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DAYS">Days</SelectItem>
-                    <SelectItem value="WEEKS">Weeks</SelectItem>
-                    <SelectItem value="MONTHS">Months</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Item
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {items.length === 0 ? (
+                  <p className="text-center py-8 text-gray-500">
+                    No items added yet. Click "Add Item" to get started.
+                  </p>
+                ) : (
+                  items.map((item, index) => (
+                    <PackageItem
+                      key={index}
+                      item={item}
+                      index={index}
+                      availableAdTypes={availableAdTypes}
+                      segments={getSegmentsForAdType(mediaType, item.adType)}
+                      onAdTypeChange={handleAdTypeChange}
+                      onSegmentClassChange={handleSegmentClassChange}
+                      onUpdate={updateItem}
+                      onRemove={removeItem}
+                    />
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </div>
 
-              <div>
-                <label className="block text-sm text-primary font-medium mb-1">Discount (%)</label>
-                <Input
-                  type="number"
-                  {...register('discount', { min: 0, max: 100, valueAsNumber: true })}
-                  placeholder="0"
-                  min="0"
-                  max="100"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Pricing Summary */}
+          <div className="lg:col-span-1">
+            <PricingSummary totalPrice={totalPrice} discount={discount} finalPrice={finalPrice} />
+          </div>
 
-        {/* Package Items */}
-        <Card className="border border-violet-100">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-primary text-lg font-bold">Package Items</CardTitle>
-            <Button 
-              type="button" 
-              onClick={addItem}
-              size="sm"
-              variant="outline"
-              className="border-secondary hover:bg-secondary"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Item
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {items.length === 0 ? (
-              <p className="text-center py-8 text-gray-500">
-                No items added yet. Click "Add Item" to get started.
-              </p>
-            ) : (
-              items.map((item, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-gray-900">Item {index + 1}</h4>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeItem(index)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                      <label className="text-xs text-gray-700 mb-1 block">
-                        Ad Type <span className="text-red-500">*</span>
-                      </label>
-                      <Select 
-                        value={item.adType} 
-                        onValueChange={(value) => handleAdTypeChange(index, value)}
-                      >
-                        <SelectTrigger className="text-sm">
-                          <SelectValue placeholder="Select ad type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableAdTypes.length === 0 ? (
-                            <SelectItem value="none" disabled>No ad types available</SelectItem>
-                          ) : (
-                            availableAdTypes.map(adType => (
-                              <SelectItem key={adType} value={adType}>
-                                {adType.replace(/_/g, ' ')}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <label className="text-xs text-gray-700 mb-1 block">
-                        Segment Class <span className="text-red-500">*</span>
-                      </label>
-                      <Select 
-                        value={item.segmentClass || ''} 
-                        onValueChange={(value) => handleSegmentClassChange(index, value)}
-                        disabled={!item.adType}
-                      >
-                        <SelectTrigger className="text-sm">
-                          <SelectValue placeholder="Select segment" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {!item.adType ? (
-                            <SelectItem value="none" disabled>Select ad type first</SelectItem>
-                          ) : (
-                            getSegmentsForAdType(mediaType, item.adType).map(segment => (
-                              <SelectItem key={segment.class} value={segment.class}>
-                                {segment.class} - {segment.className}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <label className="text-xs text-gray-700 mb-1 block">Quantity</label>
-                      <Input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value) || 0)}
-                        min="1"
-                        className="text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs text-gray-700 mb-1 block">Unit Rate (GH₵)</label>
-                      <Input
-                        type="number"
-                        value={item.unitRate}
-                        disabled
-                        className="text-sm bg-gray-50 cursor-not-allowed"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Auto-populated from rate card</p>
-                    </div>
-
-                    <div>
-                      <label className="text-xs text-gray-700 mb-1 block">Total</label>
-                      <div className="h-9 px-3 py-2 bg-gradient-to-r from-purple-50 to-blue-50 rounded-md border border-violet-200 font-semibold text-sm text-primary">
-                        GH₵ {(item.quantity * item.unitRate).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Price Summary */}
-        <Card className="border border-violet-100 bg-gradient-to-r from-purple-50 to-blue-50">
-          <CardHeader>
-            <CardTitle className="text-primary text-lg font-bold">Price Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">Subtotal:</span>
-              <span className="font-semibold text-gray-900">GH₵ {totalPrice.toLocaleString()}</span>
-            </div>
-            {discount > 0 && (
-              <div className="flex justify-between items-center text-green-700">
-                <span>Discount ({discount}%):</span>
-                <span className="font-semibold">- GH₵ {((totalPrice * discount) / 100).toLocaleString()}</span>
-              </div>
-            )}
-            <div className="flex justify-between items-center pt-2 border-t border-gray-300">
-              <span className="text-lg font-bold text-gray-900">Final Price:</span>
-              <span className="text-2xl font-bold text-primary">GH₵ {finalPrice.toLocaleString()}</span>
-            </div>
-          </CardContent>
-        </Card>
+        </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end gap-3 pt-6 border-t">
+        <div className="flex justify-end gap-3 pt-6 border-t border-primary/20">
           <Button 
             type="button" 
             variant="outline"

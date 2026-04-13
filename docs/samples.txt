@@ -382,3 +382,39 @@ export interface MetricsArray {
                                             />
                                           )}
                                         </div>
+
+
+<div>
+  <FileUpload
+    label="Program Flyers / Images"
+    helperText="Upload package creatives. Uploaded URLs are stored in metadata.packageImages"
+    accept="image/*,.pdf"
+    multiple
+    maxFiles={6}
+    maxFileSizeMB={8}
+    onUpload={(file, options) => uploadPackageImage(file, options)}
+    onTasksChange={handleUploadTasks}
+    onValidationError={(message) => toast.error(message)}
+  />
+  {uploadedFiles.length > 0 && (
+    <p className="mt-2 text-xs text-green-700">
+      {uploadedFiles.length} uploaded file URL(s) ready for submit
+    </p>
+  )}
+</div>
+
+const uploadedFiles = (metadata.packageImages as string[] | undefined) || [];
+
+	const handleUploadTasks = (tasks: UploadTask[]) => {
+		const urls = tasks
+			.filter((task) => task.status === "success" && task.result?.url)
+			.map((task) => task.result?.url)
+			.filter((url): url is string => Boolean(url));
+
+		if (urls.length === 0 && uploadedFiles.length === 0) return;
+
+		formSetValue("metadata", {
+			...metadata,
+			packageImages: urls,
+		});
+	};
