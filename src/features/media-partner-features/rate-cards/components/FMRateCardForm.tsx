@@ -223,6 +223,7 @@ export default function FMRateCardForm({ metadata, setMetadata }: RadioRateCardF
   const addTimeDetail = (rateIndex: number, segmentIndex: number) => {
     const newRates = [...metadata.adTypeRates];
     const newTimeDetail: TimeDetails = {
+      programName: '',
       daysOfWeek: 'MONDAY - FRIDAY',
       timeInterval: [],
     };
@@ -246,12 +247,12 @@ export default function FMRateCardForm({ metadata, setMetadata }: RadioRateCardF
   /**
    * Updates a time detail field
    */
-  const updateTimeDetail = (
+  const updateTimeDetail = <T extends keyof TimeDetails>(
     rateIndex: number,
     segmentIndex: number,
     timeDetailIndex: number,
-    field: keyof TimeDetails,
-    value: DaysOfWeekRange | TimeInterval[] | string[]
+    field: T,
+    value: TimeDetails[T]
   ) => {
     const newRates = [...metadata.adTypeRates];
     newRates[rateIndex].RadioSegment[segmentIndex].timeDetails[timeDetailIndex] = {
@@ -479,12 +480,22 @@ export default function FMRateCardForm({ metadata, setMetadata }: RadioRateCardF
                                     {segment.timeDetails.map((timeDetail, timeDetailIndex) => (
                                       <div 
                                         key={timeDetailIndex} 
-                                        className={`bg-white border border-gray-200 rounded-md p-3 ${
-                                          rate.adType === 'ANNOUNCEMENTS'
-                                            ? 'space-y-3'
-                                            : 'space-y-2 md:space-y-0 md:grid md:grid-cols-[1fr_1fr_auto] md:gap-2 md:items-end'
-                                        }`}
+                                        className={`bg-white border border-gray-200 rounded-md p-3 space-y-2 md:space-y-0 md:grid ${rate.adType === 'ANNOUNCEMENTS' ? 'md:grid-cols-[1fr_1fr_auto]' : 'md:grid-cols-[1fr_1fr_1fr_auto]'} md:gap-2 md:items-end'}`}
                                       >
+                                        {rate.adType !== 'ANNOUNCEMENTS' && (
+
+                                          <div className="full">
+                                            <label className="text-xs text-gray-700 mb-1 block">Programme Name</label>
+                                            <Input
+                                              type="text"
+                                              value={timeDetail.programName || ''}
+                                              onChange={(e) => updateTimeDetail(rateIndex, segmentIndex, timeDetailIndex, 'programName', e.target.value)}
+                                              placeholder="Optional programme name"
+                                              className="input-field text-sm"
+                                            />
+                                          </div>
+                                        )}
+
                                         <div className="w-full">
                                           <label className="text-xs text-gray-700 mb-1 block">Days</label>
                                           <Select
@@ -504,83 +515,22 @@ export default function FMRateCardForm({ metadata, setMetadata }: RadioRateCardF
                                           </Select>
                                         </div>
 
-                                        {/* <div>
-                                          <label className="text-xs text-gray-700 mb-1 block">Programme Name</label>
-                                          <Input
-                                            type="text"
-                                            value={timeDetail.ProgrammeName || ''}
-                                            onChange={(e) => updateTimeDetail(rateIndex, segmentIndex, timeDetailIndex, 'ProgrammeName', e.target.value)}
-                                            placeholder="Optional programme name"
-                                            className="input-field text-sm"
-                                        </div> */}
-
                                         <div className="w-full">
-                                          <label className="text-xs text-gray-700 mb-1 block">
-                                            {rate.adType === 'ANNOUNCEMENTS' ? 'Time' : 'Time Intervals'}
-                                          </label>
-                                          {rate.adType === 'ANNOUNCEMENTS' ? (
-                                            <div className="space-y-2">
-                                              {/* Display selected times as chips */}
-                                              {timeDetail.timeInterval.length > 0 && (
-                                                <div className="flex flex-wrap gap-1">
-                                                  {(timeDetail.timeInterval as string[]).map((time, timeIdx) => (
-                                                    <div
-                                                      key={timeIdx}
-                                                      className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded text-xs"
-                                                    >
-                                                      <span>{time}</span>
-                                                      <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                          const newTimes = (timeDetail.timeInterval as string[]).filter((_, idx) => idx !== timeIdx);
-                                                          updateTimeDetail(rateIndex, segmentIndex, timeDetailIndex, 'timeInterval', newTimes);
-                                                        }}
-                                                        className="hover:text-red-600"
-                                                      >
-                                                        ×
-                                                      </button>
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              )}
-                                              
-                                              {/* Add new time input */}
-                                              <div className="flex gap-2">
-                                                <Input
-                                                  type="time"
-                                                  onChange={(e) => {
-                                                    if (e.target.value && !(timeDetail.timeInterval as string[]).includes(e.target.value)) {
-                                                      updateTimeDetail(
-                                                        rateIndex, 
-                                                        segmentIndex, 
-                                                        timeDetailIndex, 
-                                                        'timeInterval', 
-                                                        [...timeDetail.timeInterval, e.target.value]
-                                                      );
-                                                      e.target.value = ''; // Reset input
-                                                    }
-                                                  }}
-                                                  className="input-field text-sm"
-                                                  placeholder="Select time"
-                                                />
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <TimeIntervalCombobox
-                                              selectedIntervals={timeDetail.timeInterval as TimeInterval[]}
-                                              onIntervalsChange={(intervals) => updateTimeIntervals(rateIndex, segmentIndex, timeDetailIndex, intervals)}
-                                              timeIntervalOptions= {TIME_INTERVAL_OPTIONS}
-                                            />
-                                          )}
+                                          <label className="text-xs text-gray-700 mb-1 block">Time Intervals</label>
+                                          <TimeIntervalCombobox
+                                            selectedIntervals={timeDetail.timeInterval as TimeInterval[]}
+                                            onIntervalsChange={(intervals) => updateTimeIntervals(rateIndex, segmentIndex, timeDetailIndex, intervals)}
+                                            timeIntervalOptions= {TIME_INTERVAL_OPTIONS}
+                                          />
                                         </div>
 
-                                        <div className={rate.adType === 'ANNOUNCEMENTS' ? 'flex justify-end' : 'flex items-end justify-end md:justify-start'}>
+                                        <div className={rate.adType === 'ANNOUNCEMENTS' ? 'flex justify-end items-center lg:mt-3' : 'flex items-end justify-end md:justify-start'}>
                                           <Button
                                             type="button"
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => removeTimeDetail(rateIndex, segmentIndex, timeDetailIndex)}
-                                            className="px-2 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                                            className="px-2 text-center text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
                                           >
                                             <Trash2 className="w-4 h-4" />
                                           </Button>

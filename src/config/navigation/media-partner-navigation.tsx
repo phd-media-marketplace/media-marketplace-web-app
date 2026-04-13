@@ -1,7 +1,6 @@
 import type { NavigationItem } from "@/types/index";
 import {
   LayoutDashboard,
-  FileText,
   DollarSign,
   BarChart3,
   CreditCard,
@@ -34,15 +33,6 @@ export const mediaPartnerNavigationItems: NavigationItem[] = [
   {    title: "Work Orders",
     url: "/media-partner/work-orders",
     icon: FileCheck,
-  },
-  {    title: "Orders",
-    icon: FileText,
-    items: [
-      { title: "All Orders", url: "/media-partner/work-orders" },
-      // { title: "Pending", url: "/media-partner/orders/pending" },
-      // { title: "Active", url: "/media-partner/orders/active" },
-      // { title: "Completed", url: "/media-partner/orders/completed" },
-    ],
   },
   {
     title: "Billing",

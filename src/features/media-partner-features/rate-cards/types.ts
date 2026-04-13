@@ -5,12 +5,13 @@ export type RadioSegmentClass = 'A1' | 'B' | 'C' | 'P2' | 'A' | 'P' | 'P1' | 'OT
 export type RadioSegmentAnnouncementClass = 'COMMERCIAL/PRODUCTS' | 'POLICE_EXTRACT' | 'FUNERAL' | 'SOCIAL' | 'PROMOTIONS' | 'OTHER';
 export type DayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
 export type DaysOfWeekRange = 'MONDAY - FRIDAY' | 'SATURDAY - SUNDAY';
-export type TimeInterval = '19:00 - 00:00' | '00:00 - 05:00' | '10:00 - 12:00' | '12:00 - 14:00' | '05:00 - 10:00' | '14:00 - 19:00' | '05:00 - 20:00' | '20:00 - 00:00' | '00:00 - 05:00';
+export type TimeInterval = '00:00 - 01:00' | '01:00 - 02:00' | '02:00 - 03:00' | '03:00 - 04:00' | '04:00 - 05:00' | '05:00 - 06:00' | '06:00 - 07:00' | '07:00 - 08:00' | '08:00 - 09:00' | '09:00 - 10:00' | '10:00 - 11:00' | '11:00 - 12:00' | '12:00 - 13:00' | '13:00 - 14:00' | '14:00 - 15:00' | '15:00 - 16:00' | '16:00 - 17:00' | '17:00 - 18:00' | '18:00 - 19:00' | '19:00 - 20:00' | '20:00 - 21:00' | '21:00 - 22:00' | '22:00 - 23:00' | '23:00 - 00:00'
 export type DurationInSec = '10_SECS' | '15_SECS' | '20_SECS' | '25_SECS' | '30_SECS' | '35_SECS' | '40_SECS' | '45_SECS' | '50_SECS' | '55_SECS' | '60_SECS';
 export type DurationInMin = '10_MINS' | '15_MINS' | '30_MINS' | '45_MINS' | '60_MINS';
 export type RadioAdType = 'ANNOUNCEMENTS' | 'INTERVIEWS' | 'LIVE_PRESENTER_MENTIONS' | 'JINGLES' | 'NEWS_COVERAGE';
 
 export interface TimeDetails {
+  programName?: string;
   daysOfWeek: DaysOfWeekRange,
   timeInterval: TimeInterval[] | string[],
 }

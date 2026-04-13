@@ -77,7 +77,7 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-primary">Media Marketplace</h2>
-            <p className="text-xs text-accent">{branding.workspaceName}</p>
+            <p className="text-xs text-accent">{user?.tenantName} Hub</p>
           </div>
         </div>
       </SidebarHeader>

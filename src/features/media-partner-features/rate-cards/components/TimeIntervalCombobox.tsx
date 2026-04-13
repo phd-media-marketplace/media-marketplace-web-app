@@ -26,7 +26,7 @@ export default function TimeIntervalCombobox({ selectedIntervals, onIntervalsCha
       value={selectedIntervals}
       onValueChange={onIntervalsChange}
     >
-      <ComboboxChips ref={anchorRef} className="w-full input-field">
+      <ComboboxChips ref={anchorRef} className="w-full input-field focus-within:ring-secondary">
         {selectedIntervals.map((interval) => {
           const option = timeIntervalOptions.find(opt => opt.value === interval);
           return (

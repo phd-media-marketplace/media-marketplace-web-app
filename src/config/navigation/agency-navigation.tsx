@@ -20,19 +20,16 @@ export const agencyNavigationItems: NavigationItem[] = [
   {
     title: "Marketplace",
     icon: ShoppingCart,
-    items: [
-      { title: "Browse Media", url: "/agency/marketplace" },
-      { title: "Packages", url: "/agency/packages" },
-    ],
+    url: "/agency/marketplace",
   },
   {
     title: "Planning",
     icon: FileText,
     items: [
-      { title: "Create Plan", url: "/agency/media-planning/create" },
+      { title: "Media Analysis", url: "/agency/media-planning/media-analysis" },
+      { title: "Media Planner", url: "/agency/media-planning/create" },
       { title: "My Plans", url: "/agency/media-planning/plans" },
-      { title: "View Schedules", url: "/agency/media-planning/schedules" },
-      { title: "Media Analytics", url: "/agency/media-analysis" },
+
     ],
   },
   {

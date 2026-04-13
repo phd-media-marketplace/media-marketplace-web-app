@@ -2,6 +2,7 @@ import { apiClient } from "@/services/https";
 import type { 
   CreateRateCardRequest, 
   RateCard, 
+  RateCardListResponse,
   BulkUploadRequest, 
   BulkUploadResponse
 } from "./types";
@@ -40,10 +41,60 @@ export const listRateCards = async (params?: {
   page?: number;
   limit?: number;
   isActive?: boolean;
-}): Promise<RateCard[]> => {
+}): Promise<RateCardListResponse> => {
   try {
     const response = await apiClient.get('/rate-cards', { params });
-    return response.data;
+    const responseBody = response.data as RateCard[] | RateCardListResponse | { data?: RateCard[] | RateCardListResponse };
+
+    if (Array.isArray(responseBody)) {
+      return {
+        rateCards: responseBody,
+        total: responseBody.length,
+        page: params?.page ?? 1,
+        limit: params?.limit ?? responseBody.length,
+      };
+    }
+
+    if (responseBody && typeof responseBody === 'object' && 'rateCards' in responseBody && Array.isArray(responseBody.rateCards)) {
+      return {
+        rateCards: responseBody.rateCards,
+        total: typeof responseBody.total === 'number' ? responseBody.total : responseBody.rateCards.length,
+        page: typeof responseBody.page === 'number' ? responseBody.page : (params?.page ?? 1),
+        limit: typeof responseBody.limit === 'number' ? responseBody.limit : (params?.limit ?? responseBody.rateCards.length),
+      };
+    }
+
+    if (
+      responseBody &&
+      typeof responseBody === 'object' &&
+      'data' in responseBody &&
+      responseBody.data &&
+      typeof responseBody.data === 'object'
+    ) {
+      if (Array.isArray(responseBody.data)) {
+        return {
+          rateCards: responseBody.data,
+          total: responseBody.data.length,
+          page: params?.page ?? 1,
+          limit: params?.limit ?? responseBody.data.length,
+        };
+      }
+      if ('rateCards' in responseBody.data && Array.isArray(responseBody.data.rateCards)) {
+        return {
+          rateCards: responseBody.data.rateCards,
+          total: typeof responseBody.data.total === 'number' ? responseBody.data.total : responseBody.data.rateCards.length,
+          page: typeof responseBody.data.page === 'number' ? responseBody.data.page : (params?.page ?? 1),
+          limit: typeof responseBody.data.limit === 'number' ? responseBody.data.limit : (params?.limit ?? responseBody.data.rateCards.length),
+        };
+      }
+    }
+
+    return {
+      rateCards: [],
+      total: 0,
+      page: params?.page ?? 1,
+      limit: params?.limit ?? 0,
+    };
   } catch (error) {
     console.error('List rate cards error:', error);
     throw error;

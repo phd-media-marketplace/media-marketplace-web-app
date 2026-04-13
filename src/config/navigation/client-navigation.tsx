@@ -17,18 +17,14 @@ export const clientNavigationItems: NavigationItem[] = [
   },
   {
     title: "Marketplace",
+    url: "/client/marketplace",
     icon: ShoppingCart,
-    items: [
-      { title: "Browse Media", url: "/client/marketplace" },
-      // { title: "Packages", url: "/client/packages" },
-      // { title: "My Orders", url: "/client/marketplace/orders" },
-    ],
   },{
     title: "Media Planning",
     icon: FileText,
     items: [
       { title: "Media Analysis", url: "/client/media-planning/media-analysis" },
-      { title: "Planner", url: "/client/media-planning/create" },
+      { title: "Media Planner", url: "/client/media-planning/create" },
       { title: "My Plans", url: "/client/media-planning/plans" },
       // { title: "Schedules", url: "/client/media-planning/schedules" }
     ],

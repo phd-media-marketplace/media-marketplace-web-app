@@ -29,3 +29,11 @@ export const formatLabel = (label: string): string => {
     const withSpaces = label.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
     return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
 };
+
+// Helper function to format ad types (e.g., "PRIME_TIME" to "Prime Time")
+export const formatAdType = (adType: string): string => {
+    return adType
+        .split('_')
+        .map(word => word.charAt(0) + word.slice(1).toLowerCase())
+        .join(' ');
+};

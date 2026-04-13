@@ -1,4 +1,6 @@
 
+import type { ReactNode } from "react";
+import { Building2, Calendar, CircleCheck, Hash, Layers, Radio, Tv } from "lucide-react";
 import type { 
     DayOfWeek,
     DurationInSec,
@@ -52,3 +54,95 @@ export const TIME_INTERVAL_OPTIONS = [
   { value: '05:00 - 20:00', label: '05:00 - 20:00' },
   { value: '20:00 - 00:00', label: '20:00 - 00:00' },
 ] as const;
+
+export interface RateCardSummaryItem {
+  label: string;
+  value: string | number;
+  icon: React.ElementType;
+  cardClass: string;
+  iconClass: string;
+  valueClass: string;
+}
+
+export interface RateCardMetadataItem {
+  key: string;
+  label: string;
+  icon?: React.ElementType;
+  value: ReactNode;
+  valueClass: string;
+}
+
+export const buildRateCardSummaryItems = (params: {
+  mediaPartnerName: string;
+  mediaType: 'FM' | 'TV';
+  adTypeCount: number;
+  segmentCount: number;
+}): RateCardSummaryItem[] => ([
+  {
+    label: 'Media Partner',
+    value: params.mediaPartnerName,
+    icon: Building2,
+    cardClass: 'border-sky-200/70 bg-linear-to-br from-sky-50 to-white hover:border-sky-300',
+    iconClass: 'bg-sky-100 text-sky-700',
+    valueClass: 'text-sky-900',
+  },
+  {
+    label: 'Media Type',
+    value: params.mediaType === 'FM' ? 'Radio' : 'TV',
+    icon: params.mediaType === 'FM' ? Radio : Tv,
+    cardClass: 'border-indigo-200/70 bg-linear-to-br from-indigo-50 to-white hover:border-indigo-300',
+    iconClass: 'bg-indigo-100 text-indigo-700',
+    valueClass: 'text-indigo-900',
+  },
+  {
+    label: 'Ad Types',
+    value: params.adTypeCount,
+    icon: Layers,
+    cardClass: 'border-emerald-200/70 bg-linear-to-br from-emerald-50 to-white hover:border-emerald-300',
+    iconClass: 'bg-emerald-100 text-emerald-700',
+    valueClass: 'text-emerald-900',
+  },
+  {
+    label: 'Segments',
+    value: params.segmentCount,
+    icon: Hash,
+    cardClass: 'border-amber-200/70 bg-linear-to-br from-amber-50 to-white hover:border-amber-300',
+    iconClass: 'bg-amber-100 text-amber-700',
+    valueClass: 'text-amber-900',
+  },
+]);
+
+export const buildRateCardMetadataItems = (params: {
+  rateCardId: string;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+}): RateCardMetadataItem[] => ([
+  {
+    key: 'id',
+    label: 'Rate Card ID',
+    value: params.rateCardId,
+    valueClass: 'font-mono text-gray-600',
+  },
+  {
+    key: 'createdAt',
+    label: 'Created At',
+    icon: Calendar,
+    value: new Date(params.createdAt).toLocaleString(),
+    valueClass: 'text-gray-600',
+  },
+  {
+    key: 'updatedAt',
+    label: 'Last Updated',
+    icon: Calendar,
+    value: new Date(params.updatedAt).toLocaleString(),
+    valueClass: 'text-gray-600',
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    icon: CircleCheck,
+    value: params.isActive ? 'Active' : 'Inactive',
+    valueClass: params.isActive ? 'text-green-700 font-medium' : 'text-red-700 font-medium',
+  },
+]);

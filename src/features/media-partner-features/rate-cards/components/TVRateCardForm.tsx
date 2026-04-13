@@ -221,6 +221,7 @@ export default function TVRateCardForm({ metadata, setMetadata }: TVRateCardForm
   const addTimeDetail = (rateIndex: number, segmentIndex: number) => {
     const newRates = [...metadata.adTypeRates];
     const newTimeDetail: TimeDetails = {
+      programName: '',
       daysOfWeek: 'MONDAY - FRIDAY',
       timeInterval: [],
     };
@@ -238,12 +239,12 @@ export default function TVRateCardForm({ metadata, setMetadata }: TVRateCardForm
     setMetadata({ ...metadata, adTypeRates: newRates });
   };
 
-  const updateTimeDetail = (
+  const updateTimeDetail = <T extends keyof TimeDetails>(
     rateIndex: number,
     segmentIndex: number,
     timeDetailIndex: number,
-    field: keyof TimeDetails,
-    value: DaysOfWeekRange | TVTimeInterval[] | string[]
+    field: T,
+    value: TimeDetails[T]
   ) => {
     const newRates = [...metadata.adTypeRates];
     newRates[rateIndex].TVSegment[segmentIndex].timeDetails[timeDetailIndex] = {
@@ -490,7 +491,17 @@ export default function TVRateCardForm({ metadata, setMetadata }: TVRateCardForm
                                 </div>
                                   <div className="space-y-3">
                                     {segment.timeDetails.map((timeDetail, timeDetailIndex) => (
-                                      <div key={timeDetailIndex} className="bg-white border border-gray-200 rounded-md p-3 space-y-2 md:space-y-0 md:grid md:grid-cols-[1fr_1fr_auto] md:gap-2 md:items-end">
+                                      <div key={timeDetailIndex} className="bg-white border border-gray-200 rounded-md p-3 space-y-2 md:space-y-0 md:grid md:grid-cols-[1fr_1fr_1fr_auto] md:gap-2 md:items-end">
+                                        <div className="full">
+                                          <label className="text-xs text-gray-700 mb-1 block">Programme Name</label>
+                                          <Input
+                                            type="text"
+                                            value={timeDetail.programName || ''}
+                                            onChange={(e) => updateTimeDetail(rateIndex, segmentIndex, timeDetailIndex, 'programName', e.target.value)}
+                                            placeholder="Optional programme name"
+                                            className="input-field text-sm"
+                                          />
+                                        </div>
                                         <div className="w-full">
                                           <label className="text-xs text-gray-700 mb-1 block">Days</label>
                                           <Select

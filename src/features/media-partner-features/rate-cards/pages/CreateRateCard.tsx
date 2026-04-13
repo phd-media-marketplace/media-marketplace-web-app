@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,29 +14,9 @@ import TVRateCardForm from "../components/TVRateCardForm";
 import OOHRateCardForm from "../components/OOHRateCardForm";
 import { useAuthStore } from "@/features/auth/store/auth-store";
 import { getFormErrorMessage } from "@/utils/error-handler";
+import { sanitizePayload } from "@/utils/Sanitizer";
 
-/**
- * Helper function to remove undefined/null values from object
- * Backends often reject undefined fields
- */
-const sanitizePayload = (obj: any): any => {
-  if (Array.isArray(obj)) {
-    return obj.map(item => sanitizePayload(item));
-  } else if (obj !== null && typeof obj === 'object') {
-    return Object.entries(obj).reduce((acc, [key, value]) => {
-      // Only include defined, non-null values
-      if (value !== undefined && value !== null) {
-        // Skip empty strings for optional fields only
-        if (value === '' && key !== 'mediaPartnerId' && key !== 'mediaType') {
-          return acc;
-        }
-        acc[key] = sanitizePayload(value);
-      }
-      return acc;
-    }, {} as any);
-  }
-  return obj;
-};
+
 
 /**
  * CreateRateCard Component
@@ -48,7 +28,7 @@ export default function CreateRateCard() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const { watch, setValue, handleSubmit } = useForm<CreateRateCardRequest>({
+  const { control, setValue, handleSubmit } = useForm<CreateRateCardRequest>({
     defaultValues: {
       mediaPartnerId: user?.mediaPartner?.id || '',
       mediaType: 'FM',
@@ -60,8 +40,14 @@ export default function CreateRateCard() {
     }
   });
 
-  const mediaType = watch('mediaType');
-  const metadata = watch('metadata');
+  const mediaType = useWatch({
+    control,
+    name: 'mediaType',
+  });
+  const metadata = useWatch({
+    control,
+    name: 'metadata',
+  });
 
   /**
    * Mutation for creating a new rate card

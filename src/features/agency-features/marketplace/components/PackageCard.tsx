@@ -112,7 +112,7 @@ export default function PackageCard({ mediaPackage }: PackageCardProps) {
                     className="w-full bg-primary hover:opacity-90 transition-opacity text-white font-medium"
                     size="sm"
                 >
-                    View Details
+                    Buy Now
                 </Button>
             </div>
         </div>
