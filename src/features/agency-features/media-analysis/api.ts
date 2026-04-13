@@ -6,7 +6,6 @@ import type {
 	MediaAnalysisResult,
 	MediaStation,
 	StationMetric,
-	DailyTrendSeries,
 	StationAnalysisDetail,
 	PeakProgram,
 	ProgramAnalysisResult,

@@ -6,9 +6,7 @@ import type {
 	AnalysisSegmentClass,
 	DateRangeFilter,
 	MediaAnalysisResult,
-	StationAnalysisDetail,
 	ProgramAnalysisResult,
-	MediaStation,
 } from "./types";
 import { compareStations, getStationAnalysisDetail, getProgramAnalysis, getTopStationAnalytics, getMediaStations } from "./api";
 

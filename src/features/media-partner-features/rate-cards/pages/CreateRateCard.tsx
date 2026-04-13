@@ -50,7 +50,7 @@ export default function CreateRateCard() {
 
   const { watch, setValue, handleSubmit } = useForm<CreateRateCardRequest>({
     defaultValues: {
-      mediaPartnerId: user?.tenantId || '',
+      mediaPartnerId: user?.mediaPartner?.id || '',
       mediaType: 'FM',
       isActive: true,
       metadata: {
@@ -85,8 +85,8 @@ export default function CreateRateCard() {
    * Uses react-hook-form to manage form data
    */
   const onSubmit = handleSubmit((data) => {
-    if (!user?.tenantId) {
-      toast.error('Media partner ID not found. Please log in again.');
+    if (!user?.mediaPartner?.id) {
+      toast.error('Media partner ID not found. Please log in again or Check with your administrator.');
       return;
     }
 
@@ -114,7 +114,7 @@ export default function CreateRateCard() {
 
     const rateCardData: CreateRateCardRequest = {
       ...data,
-      mediaPartnerId: user.tenantId,
+      mediaPartnerId: user.mediaPartner.id,
     };
 
     // Ensure metadata.mediaType matches top-level mediaType

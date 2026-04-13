@@ -43,7 +43,7 @@ export function StationAnalysisTab({ stations, isLoading = false }: StationAnaly
 				{stations.map((station) => (
 					<Card key={station.stationId} className="overflow-hidden hover:shadow-lg transition-shadow">
 						{/* Card Header */}
-						<div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
+						<div className="bg-linear-to-r from-blue-600 to-blue-700 p-6 text-white">
 							<div className="flex items-start justify-between">
 								<div>
 									<h2 className="text-xl font-bold">{station.stationName}</h2>

@@ -171,7 +171,7 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
 						fill="#8884d8"
 						dataKey="value"
 					>
-						{data.map((entry, index) => (
+						{data.map((_, index) => (
 							<Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
 						))}
 					</Pie>

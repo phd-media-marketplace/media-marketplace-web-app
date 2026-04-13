@@ -8,13 +8,12 @@ import type {
 // Note: Some types are imported from docs for backward compatibility
 import type {
     IntervalType, 
-    InterviewDuration, 
     ProductPlacementDuration, 
     FMSegmentType, 
     TvSegmentType, 
     SpotAdvertType,
     AnnouncementType,
-} from "../../../docs/types";
+} from "../../../../docs/types";
 
 // Constants
 

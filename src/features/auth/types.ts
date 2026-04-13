@@ -2,15 +2,24 @@ import type { MediaType, TenantType } from "@/types/api";
 
 export interface User {
     id: string;
+    userID: string;
     email: string;
     firstName: string;
     lastName: string;
     tenantId: string;
     tenantName: string;
-    tenantType: TenantType;
-    mediaType?: MediaType;
+    tenantType: "MEDIA_PARTNER" | "AGENCY" | "CLIENT";
+    mediaType: "TV" | "RADIO" | "TV_RADIO" | "OOH" | "DIGITAL";
     roles: string[];
     permissions: string[];
+    mediaPartner: {
+        id: string;
+        name: string;
+        type: string | null;
+        code: string | null;
+        isActive: boolean;
+        isShared: false
+    }
 }
 
 export interface LogInFormData {

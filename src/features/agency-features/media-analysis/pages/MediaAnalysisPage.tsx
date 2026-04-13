@@ -15,7 +15,6 @@ import {
 	useComparisonData,
 	useProgramAnalysis,
 	useAvailableStations,
-	useDetailedStationAnalysis,
 } from "../hooks";
 
 type TabType = "stations" | "comparison" | "programs";
@@ -30,7 +29,7 @@ type TabType = "stations" | "comparison" | "programs";
 export default function MediaAnalysisPage() {
 	const navigate = useNavigate();
 	const [activeTab, setActiveTab] = useState<TabType>("stations");
-	const [selectedStationForPrograms, setSelectedStationForPrograms] = useState<string>("");
+	const selectedStationForPrograms = "";
 
 	// Hooks
 	const {
@@ -41,7 +40,6 @@ export default function MediaAnalysisPage() {
 		updateBudget,
 		updateDateRange,
 		toggleStationSelection,
-		setSelectedStations,
 		resetFilters,
 	} = useMediaAnalysisFilters();
 
@@ -50,13 +48,8 @@ export default function MediaAnalysisPage() {
 	const availableStations = useAvailableStations(filters.mediaType);
 	const programAnalysisData = useProgramAnalysis(selectedStationForPrograms);
 
-	const handleStationSelect = (stationId: string) => {
-		setSelectedStationForPrograms(stationId);
-		setActiveTab("programs");
-	};
-
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+		<div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
 			{/* Header */}
 			<div className="bg-white border-b border-slate-200 sticky top-0 z-40">
 				<div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -181,7 +174,7 @@ export default function MediaAnalysisPage() {
 				</div>
 
 				{/* Footer Tips */}
-				<Card className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
+				<Card className="mt-12 p-6 bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200">
 					<h3 className="font-semibold text-gray-900 mb-2">Tips for Better Results</h3>
 					<ul className="text-sm text-gray-700 space-y-1">
 						<li>• Use the <strong>Station Analysis</strong> tab to understand individual station performance</li>
