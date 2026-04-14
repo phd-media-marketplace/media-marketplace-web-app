@@ -11,7 +11,18 @@ import CampaignsList from "@/features/agency-features/campaigns/pages/CampaignsL
 import ViewCampaign from "@/features/agency-features/campaigns/pages/ViewCampaign";
 import ViewCampaignCharts from "@/features/agency-features/campaigns/pages/ViewCampaignCharts";
 import MediaAnalysisPage from "@/features/agency-features/media-analysis/pages/MediaAnalysisPage";
+import ReportingPage from "@/features/agency-features/reporting/pages/ReportingPage";
+import BillingPage from "@/features/agency-features/billing/pages/BillingPage";
+import TeamSettingsPage from "@/features/agency-features/settings/pages/TeamSettingsPage";
+import PreferencesSettingsPage from "@/features/agency-features/settings/pages/PreferencesSettingsPage";
+import ProfileSettingsPage from "@/features/agency-features/settings/pages/ProfileSettingsPage";
+import PaymentSettingsPage from "@/features/agency-features/settings/pages/PaymentSettingsPage";
 import MediaPartnerDashboard from "@/features/media-partner-features/dashboard/pages/MediaPartnerDashboard";
+import MediaPartnerBillingPage from "@/features/media-partner-features/billing/pages/MediaPartnerBillingPage";
+import MediaPartnerReportingPage from "@/features/media-partner-features/reporting/pages/MediaPartnerReportingPage";
+import MediaPartnerProfileSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerProfileSettingsPage";
+import MediaPartnerTeamsSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerTeamsSettingsPage";
+import MediaPartnerTimeFramesSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerTimeFramesSettingsPage";
 import { RateCardsList, CreateRateCard, ViewRateCard, EditRateCard } from "@/features/media-partner-features/rate-cards";
 import { PackagesList, CreatePackage, ViewPackage, EditPackage } from "@/features/media-partner-features/packages";
 import { MediaPartnerWorkOrdersList, MediaPartnerViewWorkOrder } from "@/features/media-partner-features/work-orders";
@@ -116,6 +127,30 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       path: "/agency/media-analysis",
       element: <MediaAnalysisPage />,
     },
+    {
+      path: "/agency/reporting",
+      element: <ReportingPage />,
+    },
+    {
+      path: "/agency/billing",
+      element: <BillingPage />,
+    },
+    {
+      path: "/agency/settings/profile",
+      element: <ProfileSettingsPage />,
+    },
+    {
+      path: "/agency/settings/teams",
+      element: <TeamSettingsPage />,
+    },
+    {
+      path: "/agency/settings/preferences",
+      element: <PreferencesSettingsPage />,
+    },
+    {
+      path: "/agency/settings/payment",
+      element: <PaymentSettingsPage />,
+    },
     // Agency-specific routes will be added here
   ],
   CLIENT: [
@@ -172,6 +207,30 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       path: "/client/campaigns/:id/charts",
       element: <ViewCampaignCharts />,
     },
+    {
+      path: "/client/reporting",
+      element: <ReportingPage />,
+    },
+    {
+      path: "/client/billing",
+      element: <BillingPage />,
+    },
+    {
+      path: "/client/settings/profile",
+      element: <ProfileSettingsPage />,
+    },
+    {
+      path: "/client/settings/teams",
+      element: <TeamSettingsPage />,
+    },
+    {
+      path: "/client/settings/preferences",
+      element: <PreferencesSettingsPage />,
+    },
+    {
+      path: "/client/settings/payment",
+      element: <PaymentSettingsPage />,
+    },
     // Client-specific routes will be added here
   ],
   MEDIA_PARTNER: [
@@ -218,6 +277,26 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
     {
       path: "/media-partner/work-orders/:id",
       element: <MediaPartnerViewWorkOrder />,
+    },
+    {
+      path: "/media-partner/billing",
+      element: <MediaPartnerBillingPage />,
+    },
+    {
+      path: "/media-partner/reporting",
+      element: <MediaPartnerReportingPage />,
+    },
+    {
+      path: "/media-partner/settings/profile",
+      element: <MediaPartnerProfileSettingsPage />,
+    },
+    {
+      path: "/media-partner/settings/teams",
+      element: <MediaPartnerTeamsSettingsPage />,
+    },
+    {
+      path: "/media-partner/settings/time-frames",
+      element: <MediaPartnerTimeFramesSettingsPage />,
     },
     // Media Partner-specific routes will be added here
   ],

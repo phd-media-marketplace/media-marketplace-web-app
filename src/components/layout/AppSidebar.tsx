@@ -2,6 +2,9 @@ import {
   Users,
   ChevronDown,
   Settings,
+  User,
+  CreditCard,
+  Clock3,
   BarChart3,
   LogOut,
   Sun,
@@ -51,6 +54,7 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
   
   // Get tenant prefix for settings routes
   const tenantPrefix = user?.tenantType ? getTenantPrefix(user.tenantType) : '';
+  const isMediaPartner = user?.tenantType === "MEDIA_PARTNER";
   
   const isActive = (url: string) => location.pathname === url;
   const isSubItemActive = (items?: { url?: string }[]) => {
@@ -141,29 +145,55 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
+                <SidebarMenuButton
                   asChild
-                  isActive={isActive(`${tenantPrefix}/settings/team`)}
-                  className={isActive(`${tenantPrefix}/settings/team`) ? 'bg-primary/50 font-medium' : ''}
+                  isActive={isActive(`${tenantPrefix}/settings/profile`)}
+                  className={isActive(`${tenantPrefix}/settings/profile`) ? 'bg-primary/50 font-medium' : ''}
                 >
-                  <Link to={`${tenantPrefix}/settings/team`}>
-                    <Users className="w-4 h-4" />
-                    <span>Team</span>
+                  <Link to={`${tenantPrefix}/settings/profile`}>
+                    <User className="w-4 h-4" />
+                    <span>Profile</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   asChild
-                  isActive={isActive(`${tenantPrefix}/settings/preferences`)}
-                  className={isActive(`${tenantPrefix}/settings/preferences`) ? 'bg-primary/50 font-medium' : ''}
+                  isActive={isActive(`${tenantPrefix}/settings/teams`)}
+                  className={isActive(`${tenantPrefix}/settings/teams`) ? 'bg-primary/50 font-medium' : ''}
                 >
-                  <Link to={`${tenantPrefix}/settings/preferences`}>
-                    <Settings className="w-4 h-4" />
-                    <span>Preferences</span>
+                  <Link to={`${tenantPrefix}/settings/teams`}>
+                    <Users className="w-4 h-4" />
+                    <span>Teams</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  asChild
+                  isActive={isActive(isMediaPartner ? `${tenantPrefix}/settings/time-frames` : `${tenantPrefix}/settings/preferences`)}
+                  className={isActive(isMediaPartner ? `${tenantPrefix}/settings/time-frames` : `${tenantPrefix}/settings/preferences`) ? 'bg-primary/50 font-medium' : ''}
+                >
+                  <Link to={isMediaPartner ? `${tenantPrefix}/settings/time-frames` : `${tenantPrefix}/settings/preferences`}>
+                    {isMediaPartner ? <Clock3 className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
+                    <span>{isMediaPartner ? "Time Frames" : "Preferences"}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {!isMediaPartner && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive(`${tenantPrefix}/settings/payment`)}
+                    className={isActive(`${tenantPrefix}/settings/payment`) ? 'bg-primary/50 font-medium' : ''}
+                  >
+                    <Link to={`${tenantPrefix}/settings/payment`}>
+                      <CreditCard className="w-4 h-4" />
+                      <span>Payment</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
