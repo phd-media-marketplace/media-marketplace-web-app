@@ -28,8 +28,8 @@ export default function FileUploadDialog({ isOpen, onOpenChange, onUpload, onTas
 
 					<FileUpload
 						label="Program Flyers / Images"
-						helperText="Accepted: images and PDF, max 6 files, 8MB each"
-						accept="image/*,.pdf"
+						helperText="Accepted: images, videos, and PDF, max 6 files, 8MB each"
+						accept="image/*,video/*,.pdf"
 						multiple
 						maxFiles={6}
 						maxFileSizeMB={8}
