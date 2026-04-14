@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Upload, X, RotateCcw, Loader2, FileText, Image as ImageIcon } from "lucide-react";
+import { Upload, X, RotateCcw, Loader2, FileText, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -55,6 +55,9 @@ function getFileIcon(file: File) {
   if (file.type.startsWith("image/")) {
     return <ImageIcon className="h-4 w-4 text-primary" />;
   }
+  if (file.type.startsWith("video/")) {
+    return <VideoIcon className="h-4 w-4 text-primary" />;
+  }
   return <FileText className="h-4 w-4 text-primary" />;
 }
 
@@ -97,22 +100,22 @@ export default function FileUpload({
   const [tasks, setTasks] = useState<UploadTask[]>([]);
   const [dragging, setDragging] = useState(false);
   const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({});
-
+  // Sync tasks with parent component
   useEffect(() => {
     onTasksChange?.(tasks);
   }, [tasks, onTasksChange]);
-
+  // Keep refs updated for cleanup
   useEffect(() => {
     previewUrlsRef.current = previewUrls;
   }, [previewUrls]);
-
+  // Cleanup on unmount: abort ongoing uploads and revoke preview URLs
   useEffect(() => {
     const controllers = abortControllersRef.current;
     return () => {
       Object.values(controllers).forEach((controller) => controller.abort());
     };
   }, []);
-
+  // Cleanup preview URLs on unmount or when they change
   useEffect(() => {
     return () => {
       Object.values(previewUrlsRef.current).forEach((url) => URL.revokeObjectURL(url));
@@ -190,6 +193,9 @@ export default function FileUpload({
       if (file.type.startsWith("image/")) {
         nextPreviewUrls[id] = URL.createObjectURL(file);
       }
+      // if (file.type.startsWith("video/")) {
+      //   nextPreviewUrls[id] = URL.createObjectURL(file);
+      // }
     });
 
     if (nextTasks.length === 0) return;

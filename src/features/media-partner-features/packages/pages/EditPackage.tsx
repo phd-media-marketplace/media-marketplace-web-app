@@ -12,6 +12,7 @@ import type { RadioMetadata, TVMetadata } from "../../rate-cards/types";
 import PackageBasicInfo from "../components/PackageBasicInfo";
 import PackageItem from "../components/PackageItem";
 import PricingSummary from "../components/PricingSummary";
+import NoDataCard from "@/components/universal/NoDataCard";
 
 // Helper function to get available ad types for a media type
 function getAdTypesForMediaType(mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL'): string[] {
@@ -231,15 +232,12 @@ export default function EditPackage() {
 
   if (!existingPackage) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 gap-4">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900">Package Not Found</h3>
-          <p className="text-sm text-gray-500 mt-1">The package you're trying to edit doesn't exist.</p>
-        </div>
-        <Button onClick={() => navigate('/media-partner/packages')}>
-          Back to Packages
-        </Button>
-      </div>
+      <NoDataCard
+        title="Package Not Found"
+        message = "The package you're trying to edit doesn't exist."
+        btnText = "Back to Packages"
+        redirectFunc = {() => navigate('/media-partner/packages')}
+      />
     );
   }
 
