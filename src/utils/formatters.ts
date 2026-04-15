@@ -37,3 +37,15 @@ export const formatAdType = (adType: string): string => {
         .map(word => word.charAt(0) + word.slice(1).toLowerCase())
         .join(' ');
 };
+
+export const getMediaTypeIcon = (type: string) => {
+    switch (type) {
+      case 'FM': return '📻';
+      case 'TV': return '📺';
+      case 'OOH': return '🏙️';
+      case 'DIGITAL': return '💻';
+      default: return '📦';
+    }
+  };
+
+

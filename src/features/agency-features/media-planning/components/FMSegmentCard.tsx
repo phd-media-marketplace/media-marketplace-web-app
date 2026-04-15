@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
 import type { DayOfWeek } from "../types";
-import { dummyRateCards } from "@/features/media-partner-features/rate-cards/dummy-data";
+import { useQuery } from "@tanstack/react-query";
+import { listRateCards } from "@/features/media-partner-features/rate-cards/api";
 import type { RadioMetadata, RadioRate, RadioSegment, TimeDetails } from "@/features/media-partner-features/rate-cards/types";
 import { useMemo, useEffect } from "react";
 
@@ -35,24 +36,34 @@ export default function FMSegmentCard({
     const segmentClass = watch(`channels.${channelIndex}.segments.${segmentIndex}.segmentClass`);
     const selectedDays = watch(`channels.${channelIndex}.segments.${segmentIndex}.days`) || [];
 
+    // Fetch FM rate cards from API
+    const { data: rateCardsData } = useQuery({
+        queryKey: ['rateCards', 'FM'],
+        queryFn: () => listRateCards({ mediaType: 'FM' }),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+    });
+
+    const rateCards = rateCardsData?.rateCards || [];
+
     // Get available ad types for the selected channel
     const availableAdTypes = useMemo(() => {
         if (!channelName) return [];
 
-        const rateCard = dummyRateCards.find(card => 
+        const rateCard = rateCards.find(card => 
             card.mediaPartnerName === channelName && card.mediaType === 'FM'
         );
         if (!rateCard || !rateCard.metadata) return [];
 
         const metadata = rateCard.metadata as RadioMetadata;
         return metadata.adTypeRates.map((atr: RadioRate) => atr.adType);
-    }, [channelName]);
+    }, [rateCards, channelName]);
 
     // Get available segment classes for the selected ad type
     const availableSegments = useMemo(() => {
         if (!channelName || !adType) return [];
 
-        const rateCard = dummyRateCards.find(card => 
+        const rateCard = rateCards.find(card => 
             card.mediaPartnerName === channelName && card.mediaType === 'FM'
         );
         if (!rateCard || !rateCard.metadata) return [];
@@ -67,13 +78,13 @@ export default function FMSegmentCard({
             unitRate: seg.UnitRate,
             timeDetails: seg.timeDetails
         }));
-    }, [channelName, adType]);
+    }, [rateCards, channelName, adType]);
 
     // Auto-populate segment details when segment class is selected
     useEffect(() => {
         if (!channelName || !adType || !segmentClass) return;
 
-        const rateCard = dummyRateCards.find(card => 
+        const rateCard = rateCards.find(card => 
             card.mediaPartnerName === channelName && card.mediaType === 'FM'
         );
         if (!rateCard || !rateCard.metadata) return;
@@ -99,7 +110,7 @@ export default function FMSegmentCard({
             const timeIntervals = segment.timeDetails.flatMap((td: TimeDetails) => td.timeInterval || []).join(', ');
             setValue(`channels.${channelIndex}.segments.${segmentIndex}.timeSlot`, timeIntervals);
         }
-    }, [channelName, adType, segmentClass, channelIndex, segmentIndex, setValue]);
+    }, [rateCards, channelName, adType, segmentClass, channelIndex, segmentIndex, setValue]);
 
     const toggleDay = (day: DayOfWeek) => {
         const currentDays = selectedDays || [];

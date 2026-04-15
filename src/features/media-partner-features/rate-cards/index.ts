@@ -3,6 +3,5 @@ export { default as RateCardsList } from './pages/RateCardsList';
 export { default as CreateRateCard } from './pages/CreateRateCard';
 export { default as ViewRateCard } from './pages/ViewRateCard';
 export { default as EditRateCard } from './pages/EditRateCard';
-export * from '../../../../docs/types';
+export * from './types';
 export * from './api';
-export * from './dummy-data';

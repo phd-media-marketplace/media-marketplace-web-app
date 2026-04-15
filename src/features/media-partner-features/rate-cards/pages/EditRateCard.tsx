@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import type { CreateRateCardRequest, RadioMetadata, TVMetadata } from "../types";
 import { getRateCard, updateRateCard } from "../api";
 import { toast } from "sonner";
@@ -12,6 +12,11 @@ import FMRateCardForm from "../components/FMRateCardForm";
 import TVRateCardForm from "../components/TVRateCardForm";
 import { getFormErrorMessage } from "@/utils/error-handler";
 import { sanitizePayload } from "@/utils/Sanitizer";
+import Header from "@/components/universal/Header";
+import InvalidID from "@/components/universal/InvalidID";
+import Loader from "@/components/universal/Loader";
+import LoadingError from "@/components/universal/LoadingError";
+import NoDataCard from "@/components/universal/NoDataCard";
 
 export default function EditRateCard() {
   const { id } = useParams<{ id: string }>();
@@ -27,7 +32,7 @@ export default function EditRateCard() {
 
   const existingRateCard = rateCardQuery.data;
 
-  const { watch, setValue, handleSubmit } = useForm<CreateRateCardRequest>({
+  const { control, setValue, handleSubmit } = useForm<CreateRateCardRequest>({
     defaultValues: existingRateCard || {
       mediaPartnerId: '',
       mediaType: 'FM',
@@ -39,8 +44,8 @@ export default function EditRateCard() {
     }
   });
 
-  const mediaType = watch('mediaType');
-  const metadata = watch('metadata');
+  const mediaType = useWatch({ control, name: 'mediaType' });
+  const metadata = useWatch({ control, name: 'metadata' });
 
   useEffect(() => {
     if (existingRateCard) {
@@ -82,75 +87,54 @@ export default function EditRateCard() {
 
   if (!id) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">Invalid Rate Card</h2>
-        <p className="text-gray-500">A valid rate card ID is required.</p>
-        <Button onClick={() => navigate('/media-partner/rate-cards')}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Rate Cards
-        </Button>
-      </div>
+      <InvalidID
+        title="Invalid Rate Card"
+        message="A valid rate card ID is required to edit."
+        redirectPath="/media-partner/rate-cards"
+      />
     );
   }
 
   if (rateCardQuery.isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">Loading Rate Card...</h2>
-        <p className="text-gray-500">Fetching existing rate card details.</p>
-      </div>
+      <Loader
+        title="Loading Rate Card..."
+        message="Fetching existing rate card details."
+      />
     );
   }
 
   if (rateCardQuery.isError) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">Unable to load rate card</h2>
-        <p className="text-gray-500">{getFormErrorMessage(rateCardQuery.error)}</p>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => rateCardQuery.refetch()}>
-            Retry
-          </Button>
-          <Button onClick={() => navigate('/media-partner/rate-cards')}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Rate Cards
-          </Button>
-        </div>
-      </div>
+      <LoadingError
+        title="Unable to load rate card"
+        message={getFormErrorMessage(rateCardQuery.error)}
+        OnReturn={() => navigate('/media-partner/rate-cards')}
+        onRetry={() => rateCardQuery.refetch()}
+        returnBtnText="Back to Rate Cards"
+      />
     );
   }
 
   if (!existingRateCard) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">Rate Card Not Found</h2>
-        <p className="text-gray-500">The requested rate card could not be found.</p>
-        <Button onClick={() => navigate('/media-partner/rate-cards')}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Rate Cards
-        </Button>
-      </div>
+      <NoDataCard
+        title="Rate Card Not Found"
+        message="The requested rate card could not be found."
+        redirectFunc={() => navigate('/media-partner/rate-cards')}
+        btnText="Back to Rate Cards"
+      />
     );
   }
 
   return (
     <div className="space-y-6 pb-10">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-primary tracking-tight">Edit Rate Card</h2>
-          <p className="text-sm text-gray-500 mt-1">Update your existing rate card</p>
-        </div>
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={() => navigate('/media-partner/rate-cards')}
-          className="border-secondary hover:bg-secondary"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-      </div>
+      <Header
+        title="Edit Rate Card"
+        description="Update your existing rate card"
+        returnTofunc={() => navigate('/media-partner/rate-cards')}
+       />
 
       {/* Form */}
       <form onSubmit={onSubmit} className="space-y-6">

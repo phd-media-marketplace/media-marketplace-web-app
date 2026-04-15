@@ -15,7 +15,7 @@ import type {
     TvSegmentType, 
     SpotAdvertType,
     AnnouncementType,
-} from "../../../../docs/types";
+} from "../../../../docs/archive/types";
 
 // Constants
 

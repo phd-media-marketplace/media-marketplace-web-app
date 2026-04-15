@@ -25,7 +25,7 @@ export type SpotAdvertType = "DURATION_BASED" | "CRAWLERS" | "SQUEEZE_BACK" | "L
 export type TvSegmentType = 'SPOT_ADVERTS' | 'DOCUMENTARY' | 'ANNOUNCEMENTS' | 'NEWS_COVERAGE' | 'EXECUTIVE_INTERVIEW' | 'PREACHING' | 'AIRTIME_SALE' | 'MEDIA';
 
 // Import and re-export RadioMetadata and TVMetadata from the new types file
-import type { RadioMetadata, TVMetadata } from "../src/features/media-partner-features/rate-cards/types";
+import type { RadioMetadata, TVMetadata } from "../../src/features/media-partner-features/rate-cards/types";
 export type { RadioMetadata, TVMetadata };
 
 // Main Rate Card Types - Updated to use RadioMetadata and TVMetadata from types copy

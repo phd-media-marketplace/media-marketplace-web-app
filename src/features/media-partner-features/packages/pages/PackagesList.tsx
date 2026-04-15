@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Pencil, Trash2, Eye, Radio, Tv, Calendar, Package as PackageIcon, DollarSign, Percent } from "lucide-react";
+import { Plus, Radio, Tv, Package as PackageIcon, Percent } from "lucide-react";
+import ListCard, { type StatItem } from "@/features/media-partner-features/Common-Components/ListCard";
 import { dummyPackages } from "../dummy-data";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { formatDate } from "@/utils/formatters";
+import NoDataCard from "@/components/universal/NoDataCard";
+import Header from "@/components/universal/Header";
 
 export default function PackagesList() {
   const [selectedMediaType, setSelectedMediaType] = useState<'FM' | 'TV' | 'ALL'>('ALL');
@@ -24,33 +25,32 @@ export default function PackagesList() {
     }
   };
 
-  const getMediaIcon = (mediaType: string) => {
-    switch (mediaType) {
-      case 'FM':
-        return <Radio className="w-5 h-5" />;
-      case 'TV':
-        return <Tv className="w-5 h-5" />;
-      default:
-        return <PackageIcon className="w-5 h-5" />;
+  // Helper to create media type icon component
+  const createMediaTypeIconComponent = (mediaType: string) => {
+    function MediaTypeIcon({ className }: { className?: string }) {
+      switch (mediaType) {
+        case 'FM':
+          return <Radio className={className} />;
+        case 'TV':
+          return <Tv className={className} />;
+        default:
+          return <PackageIcon className={className} />;
+      }
     }
+    return MediaTypeIcon;
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-primary tracking-tight">Packages</h2>
-          <p className="text-sm text-gray-500 mt-1">Create and manage advertising packages for your clients</p>
-        </div>
-        <Button 
-          className="bg-primary text-white hover:bg-transparent hover:border hover:border-primary hover:text-primary" 
-          onClick={() => navigate('/media-partner/packages/create')}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Create Package
-        </Button>
-      </div>
+      <Header
+        title="Packages"
+        description="Create and manage advertising packages for your clients"
+        backbtnVisible={false}
+        ctaFunc={() => navigate('/media-partner/packages/create')}
+        ctabtnText="Create Package"
+        ctaIcon={Plus}
+      />
 
       {/* Filters */}
       <div className="flex gap-2">
@@ -69,7 +69,7 @@ export default function PackagesList() {
           className={selectedMediaType === 'FM' ? 'bg-primary text-white' : 'border-secondary hover:bg-secondary'}
         >
           <Radio className="w-4 h-4 mr-2" />
-          FM Radio
+          Radio
         </Button>
         <Button
           variant={selectedMediaType === 'TV' ? 'default' : 'outline'}
@@ -85,152 +85,66 @@ export default function PackagesList() {
       {/* Packages Grid */}
       {filteredPackages.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPackages.map((pkg) => (
-            <Card key={pkg.id} className="hover:shadow-lg transition-shadow duration-200 border border-gray-200">
-              <CardHeader className="pb-3 bg-gradient-to-r from-purple-50 to-blue-50">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                      {getMediaIcon(pkg.mediaType)}
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold text-gray-900">
-                        {pkg.packageName}
-                      </CardTitle>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {pkg.mediaType} Package
-                      </p>
-                    </div>
-                  </div>
-                  <Badge 
-                    variant={pkg.isActive ? 'default' : 'secondary'} 
-                    className={`shrink-0 px-2 py-1 text-xs ${
-                      pkg.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {pkg.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="pt-4 space-y-4">
-                {/* Description */}
-                {pkg.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2">{pkg.description}</p>
-                )}
+          {filteredPackages.map((pkg) => {
+            const hasValidityRange =
+              typeof pkg.validFrom === "string" && typeof pkg.validTo === "string";
 
-                {/* Statistics */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <div className="flex items-center gap-2 text-blue-700 mb-1">
-                      <PackageIcon className="w-4 h-4" />
-                      <span className="text-xs font-medium">Items</span>
-                    </div>
-                    <p className="text-2xl font-bold text-blue-900">{pkg.items.length}</p>
-                  </div>
-                  
-                  {pkg.discount && pkg.discount > 0 && (
-                    <div className="bg-green-50 p-3 rounded-lg">
-                      <div className="flex items-center gap-2 text-green-700 mb-1">
-                        <Percent className="w-4 h-4" />
-                        <span className="text-xs font-medium">Discount</span>
-                      </div>
-                      <p className="text-2xl font-bold text-green-900">{pkg.discount}%</p>
-                    </div>
-                  )}
-                </div>
+            // Build stats array
+            const stats: StatItem[] = [
+              {
+                icon: PackageIcon,
+                label: "Items",
+                value: pkg.items.length,
+                bgColor: "bg-blue-100",
+                textColor: "text-blue-700",
+              },
+            ];
 
-                {/* Pricing */}
-                <div className="bg-purple-50 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 text-purple-700 mb-2">
-                    <DollarSign className="w-4 h-4" />
-                    <span className="text-xs font-medium">Package Price</span>
-                  </div>
-                  <div className="space-y-1">
-                    {pkg.discount && pkg.discount > 0 && (
-                      <p className="text-sm text-gray-500 line-through">
-                        GH₵ {pkg.totalPrice.toLocaleString()}
-                      </p>
-                    )}
-                    <p className="text-2xl font-bold text-purple-900">
-                      GH₵ {pkg.finalPrice.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
+            // Add discount stat if applicable
+            if (pkg.discount && pkg.discount > 0) {
+              stats.push({
+                icon: Percent,
+                label: "Discount",
+                value: `${pkg.discount}%`,
+                bgColor: "bg-green-100",
+                textColor: "text-green-700",
+              });
+            }
 
-                {/* Validity */}
-                {pkg.validFrom && pkg.validTo && (
-                  <div className="flex items-center gap-2 text-xs text-gray-500 pt-2 border-t">
-                    <Calendar className="w-3 h-3" />
-                    <span>
-                      Valid: {new Date(pkg.validFrom).toLocaleDateString()} - {new Date(pkg.validTo).toLocaleDateString()}
-                    </span>
-                  </div>
-                )}
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 pt-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => navigate(`/media-partner/packages/${pkg.id}`)}
-                  >
-                    <Eye className="w-4 h-4 mr-1" />
-                    View
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => navigate(`/media-partner/packages/${pkg.id}/edit`)}
-                  >
-                    <Pencil className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(pkg.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+            return (
+              <ListCard
+                key={pkg.id}
+                id={pkg.id}
+                title={pkg.packageName}
+                subtitle={`${pkg.mediaType} Package`}
+                description={pkg.description}
+                isActive={pkg.isActive}
+                mediaIcon={createMediaTypeIconComponent(pkg.mediaType)}
+                stats={stats}
+                totalPrice={pkg.totalPrice}
+                finalPrice={pkg.finalPrice}
+                discount={pkg.discount}
+                updatedAt={
+                  hasValidityRange
+                    ? `Valid: ${formatDate(pkg.validFrom!)} - To ${formatDate(pkg.validTo!)}`
+                    : "Validity period not set"
+                }
+                onView={() => navigate(`/media-partner/packages/${pkg.id}`)}
+                onEdit={() => navigate(`/media-partner/packages/${pkg.id}/edit`)}
+                onDelete={() => handleDelete(pkg.id)}
+                showPricingSection={true}
+              />
+            );
+          })}
         </div>
       ) : (
-        <Card className="border-dashed border-primary/50 text-center">
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <motion.div
-              className="flex items-center justify-center mb-1"
-              animate={{
-                y: [0, -10, 0],
-                rotate: [0, 5, -5, 0],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              <div className="p-4 bg-gradient-to-br from-primary/50 to-secondary/50 rounded-full mb-4">
-                <PackageIcon className="w-8 h-8 text-primary/90" />
-              </div>
-            </motion.div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No packages found</h3>
-            <p className="text-sm text-gray-500 mb-4">Create your first package to get started</p>
-            <Button 
-              className="bg-primary text-white hover:bg-transparent hover:border hover:border-primary hover:text-primary"
-              onClick={() => navigate('/media-partner/packages/create')}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Package
-            </Button>
-          </CardContent>
-        </Card>
+          <NoDataCard
+            title="No Packages Found"
+            message="You haven't created any packages yet or for the selected Media Type. Start by creating a new package to manage your media offerings."
+            btnText="Create Package"
+            redirectFunc={() => navigate('/media-partner/packages/create')}
+            className="w-full lg:h-155 flex items-center justify-center"
+          />
       )}
     </div>
   );

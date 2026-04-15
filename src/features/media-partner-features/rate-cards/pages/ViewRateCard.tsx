@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Pencil, Radio, Tv } from "lucide-react";
 import { getRateCard } from "../api";
 import type { RadioMetadata, TVMetadata } from "../types";
 import { getFormErrorMessage } from "@/utils/error-handler";
@@ -13,6 +11,8 @@ import LoadingError from "@/components/universal/LoadingError";
 import RadioRateCardView from "../components/RadioRateCardView";
 import TVRateCardView from "../components/TVRateCardView";
 import { buildRateCardMetadataItems, buildRateCardSummaryItems } from "../constant";
+import Header from "@/components/universal/Header";
+import { Edit } from "lucide-react";
 
 export default function ViewRateCard() {
   const { id } = useParams<{ id: string }>();
@@ -70,10 +70,6 @@ export default function ViewRateCard() {
     );
   }
 
-  const getMediaIcon = () => {
-    return rateCard.mediaType === 'FM' ? <Radio className="w-6 h-6" /> : <Tv className="w-6 h-6" />;
-  };
-
   const adTypeCount =
     rateCard.mediaType === 'FM' && rateCard.metadata.mediaType === 'FM'
       ? rateCard.metadata.adTypeRates.length
@@ -106,43 +102,17 @@ export default function ViewRateCard() {
   return (
     <div className="space-y-6 pb-10">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                {getMediaIcon()}
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold text-primary tracking-tight">
-                  {rateCard.mediaType === 'FM' ? 'Radio' : 'TV'} Rate Card
-                </h2>
-                <p className="text-sm text-gray-500 mt-1">{rateCard.mediaPartnerName}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          
-          <Button 
-            size="sm" 
-            variant="outline"
-            onClick={() => navigate('/media-partner/rate-cards')}
-            className="border-secondary hover:bg-secondary transition-all duration-200 hover:-translate-y-0.5"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <Button 
-            onClick={() => navigate(`/media-partner/rate-cards/${id}/edit`)}
-            className="bg-primary text-white hover:bg-transparent hover:text-primary border border-primary transition-all duration-200 hover:-translate-y-0.5"
-          >
-            <Pencil className="w-4 h-4 mr-2" />
-            Edit
-          </Button>
-        </div>
-      </div>
-
+      <Header
+        mediaType={rateCard.mediaType}
+        title={`${rateCard.mediaType === 'FM' ? 'Radio' : 'TV'} Rate Card`}
+        description="Detailed view of the selected rate card"
+        backbtnVisible={true}
+        returnTofunc={() => navigate('/media-partner/rate-cards')}
+        ctaFunc={()=> navigate(`/media-partner/rate-cards/${id}/edit`)}
+        ctabtnText="Edit Rate Card"
+        ctaIcon={Edit}
+      />
+      
       {/* Card Details */}
       <div className="relative overflow-hidden space-y-5 rounded-2xl border border-primary/15 bg-linear-to-br from-white via-primary/5 to-secondary/10 p-6 shadow-sm">
         <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/10 blur-2xl" />

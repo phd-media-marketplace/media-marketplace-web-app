@@ -57,18 +57,22 @@ export async function togglePackageStatus(id: string, isActive: boolean): Promis
   return response.data;
 }
 
-export interface UploadPackageImageOptions {
+export interface UploadAssetOptions {
   signal?: AbortSignal;
   onProgress?: (progress: number) => void;
+  assetType?: string;
 }
 
-export interface UploadPackageImageResponse {
+export interface UploadAssetResponse {
   url?: string;
   id?: string;
   fileName?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   raw?: any;
 }
+
+export type UploadPackageImageOptions = UploadAssetOptions;
+export type UploadPackageImageResponse = UploadAssetResponse;
 
 function extractFileUrl(responseData: unknown): string | undefined {
   if (!responseData || typeof responseData !== "object") {
@@ -94,14 +98,18 @@ function extractFileUrl(responseData: unknown): string | undefined {
   return undefined;
 }
 
-export async function uploadPackageImage(
+export async function uploadAsset(
+  uploadUrl: string,
   file: File,
-  options?: UploadPackageImageOptions
-): Promise<UploadPackageImageResponse> {
+  options?: UploadAssetOptions
+): Promise<UploadAssetResponse> {
   const formData = new FormData();
   formData.append("file", file);
+  if (options?.assetType) {
+    formData.append("assetType", options.assetType);
+  }
 
-  const response = await apiClient.post(UPLOAD_URL, formData, {
+  const response = await apiClient.post(uploadUrl, formData, {
     signal: options?.signal,
     headers: {
       "Content-Type": "multipart/form-data",
@@ -126,4 +134,11 @@ export async function uploadPackageImage(
     fileName: typeof raw?.fileName === "string" ? raw.fileName : file.name,
     raw,
   };
+}
+
+export async function uploadPackageImage(
+  file: File,
+  options?: UploadAssetOptions
+): Promise<UploadAssetResponse> {
+  return uploadAsset(UPLOAD_URL, file, options);
 }

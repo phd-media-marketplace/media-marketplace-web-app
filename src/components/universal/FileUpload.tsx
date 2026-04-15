@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Upload, X, RotateCcw, Loader2, FileText, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
+import { Upload, X, RotateCcw, Loader2, FileText, Image as ImageIcon, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -51,16 +51,23 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+// Fall back to a simple file icon when we do not have a preview thumbnail.
 function getFileIcon(file: File) {
   if (file.type.startsWith("image/")) {
     return <ImageIcon className="h-4 w-4 text-primary" />;
   }
   if (file.type.startsWith("video/")) {
-    return <VideoIcon className="h-4 w-4 text-primary" />;
+    return <Video className="h-4 w-4 text-primary" />;
   }
   return <FileText className="h-4 w-4 text-primary" />;
 }
 
+// Keep the video check separate so thumbnail rendering stays readable.
+function isVideoFile(file: File) {
+  return file.type.startsWith("video/");
+}
+
+// Support both MIME rules and file extensions in the same comma-separated allow list.
 function isAccepted(file: File, accept?: string): boolean {
   if (!accept) return true;
 
@@ -122,10 +129,12 @@ export default function FileUpload({
     };
   }, []);
 
+  // Update a specific task by ID with new properties
   const updateTask = (taskId: string, updates: Partial<UploadTask>) => {
     setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, ...updates } : task)));
   };
 
+  // Start the upload process for a specific task
   const startUpload = async (taskId: string) => {
     const target = tasks.find((task) => task.id === taskId);
     if (!target || target.status === "uploading") return;
@@ -190,12 +199,10 @@ export default function FileUpload({
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
       nextTasks.push({ id, file, status: "queued", progress: 0 });
 
-      if (file.type.startsWith("image/")) {
+      // Use a local object URL so image and video files can show a thumbnail immediately.
+      if (file.type.startsWith("image/") || isVideoFile(file)) {
         nextPreviewUrls[id] = URL.createObjectURL(file);
       }
-      // if (file.type.startsWith("video/")) {
-      //   nextPreviewUrls[id] = URL.createObjectURL(file);
-      // }
     });
 
     if (nextTasks.length === 0) return;
@@ -314,11 +321,21 @@ export default function FileUpload({
                   <div className="flex min-w-0 items-start gap-3">
                     <div className="mt-0.5">
                       {previewUrl ? (
-                        <img
-                          src={previewUrl}
-                          alt={task.file.name}
-                          className="h-10 w-10 rounded-md object-cover"
-                        />
+                        isVideoFile(task.file) ? (
+                          <video
+                            src={previewUrl}
+                            className="h-10 w-10 rounded-md object-cover"
+                            muted
+                            playsInline
+                            preload="metadata"
+                          />
+                        ) : (
+                          <img
+                            src={previewUrl}
+                            alt={task.file.name}
+                            className="h-10 w-10 rounded-md object-cover"
+                          />
+                        )
                       ) : (
                         <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10">
                           {getFileIcon(task.file)}

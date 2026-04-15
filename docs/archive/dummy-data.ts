@@ -1,5 +1,5 @@
-import type { RateCard } from '../../../../docs/types';
-import type { RadioMetadata, TVMetadata } from './types';
+import type { RateCard } from './types';
+import type { RadioMetadata, TVMetadata } from '../../src/features/media-partner-features/rate-cards/types';
 
 /**
  * Dummy Rate Cards Data  

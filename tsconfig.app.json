@@ -29,5 +29,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "docs/types.ts"]
+  "include": ["src", "docs/archive/types.ts", "docs/archive/dummy-data.ts"]
 }

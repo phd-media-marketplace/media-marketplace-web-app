@@ -3,15 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, Plus } from "lucide-react";
+import { Save, Plus } from "lucide-react";
 import type { CreatePackageRequest } from "../types";
 import { useAuthStore } from "@/features/auth/store/auth-store";
 import { toast } from "sonner";
-import { dummyRateCards } from "../../rate-cards/dummy-data";
+import { dummyRateCards } from "../../../../../docs/archive/dummy-data";
 import type { RadioMetadata, TVMetadata } from "../../rate-cards/types";
 import PackageBasicInfo from "../components/PackageBasicInfo";
 import PackageItem from "../components/PackageItem";
 import PricingSummary from "../components/PricingSummary";
+import Header from "@/components/universal/Header";
 
 // Helper function to get available ad types for a media type
 function getAdTypesForMediaType(mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL'): string[] {
@@ -185,21 +186,12 @@ export default function CreatePackage() {
   return (
     <div className="space-y-6 pb-10">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-primary tracking-tight">Create Package</h2>
-          <p className="text-sm text-gray-500 mt-1">Bundle rate cards into attractive packages</p>
-        </div>
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={() => navigate('/media-partner/packages')}
-          className="border-secondary hover:bg-secondary"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-      </div>
+      <Header
+        mediaType={mediaType}
+        title="Create Package"
+        description="Bundle rate cards into attractive packages"
+        returnTofunc={() => navigate('/media-partner/packages')}
+      />
 
       {/* Form */}
       <form onSubmit={onSubmit} className="space-y-6">
@@ -248,7 +240,7 @@ export default function CreatePackage() {
 
           {/* Pricing Summary */}
           <div className="lg:col-span-1">
-            <PricingSummary totalPrice={totalPrice} discount={discount} finalPrice={finalPrice} />
+            <PricingSummary totalPrice={totalPrice} discount={discount} finalPrice={finalPrice} IsPreviewView={false} />
           </div>
 
         </div>

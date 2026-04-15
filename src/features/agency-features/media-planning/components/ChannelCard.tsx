@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Controller, useFieldArray } from "react-hook-form";
 import type { Control, UseFormWatch, FieldValues, UseFormSetValue } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, X, Radio, Tv, Monitor, Building2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import SegmentCard from "./SegmentCard";
-import {dummyRateCards} from "@/features/media-partner-features/rate-cards/dummy-data";
+import { listRateCards } from "@/features/media-partner-features/rate-cards/api";
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 
 const mediaTypes: Array<'FM' | 'TV' | 'OOH' | 'DIGITAL'> = ['FM', 'TV', 'OOH', 'DIGITAL'];
@@ -42,6 +42,18 @@ export default function ChannelCard({
         name: `channels.${channelIndex}.segments` as const
     });
 
+    const channelMediaType = watch(`channels.${channelIndex}.mediaType`) as 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+    
+    // Fetch rate cards from API
+    const { data: rateCardsData } = useQuery({
+        queryKey: ['rateCards', channelMediaType],
+        queryFn: () => listRateCards(channelMediaType && ['FM', 'TV'].includes(channelMediaType) ? { mediaType: channelMediaType as 'FM' | 'TV' } : undefined),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+    });
+
+    const Icon = mediaIcons[channelMediaType];
+
     const addSegment = () => {
         appendSegment({
             segmentType: '',
@@ -55,9 +67,6 @@ export default function ChannelCard({
         });
     };
 
-    const channelMediaType = watch(`channels.${channelIndex}.mediaType`) as 'FM' | 'TV' | 'OOH' | 'DIGITAL';
-    const Icon = mediaIcons[channelMediaType];
-
     // Clear channel name when media type changes
     useEffect(() => {
         if (previousMediaTypeRef.current !== null && previousMediaTypeRef.current !== channelMediaType) {
@@ -66,20 +75,29 @@ export default function ChannelCard({
         previousMediaTypeRef.current = channelMediaType;
     }, [channelMediaType, channelIndex, setValue]);
 
-    // Filter rate cards by selected media type first
-    const channelsByMediaType = channelMediaType 
-        ? dummyRateCards
-            .filter(card => card.mediaType.trim() === channelMediaType.trim())
-            .map(card => card.mediaPartnerName)
-        : dummyRateCards.map(card => card.mediaPartnerName);
-    
-    const uniqueChannels = Array.from(new Set(channelsByMediaType)); // Get unique channel names
-    // Then filter by search query
-    const filteredChannels = searchQuery
-        ? uniqueChannels.filter(name => 
-            name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        : uniqueChannels;
+    // Filter channels by media type and search query
+    const filteredChannels = useMemo(() => {
+        const rateCards = rateCardsData?.rateCards || [];
+        const channels = rateCards
+            .filter(card => {
+                // For FM and TV, use the actual mediaType from API
+                if (['FM', 'TV'].includes(channelMediaType)) {
+                    return card.mediaType.trim() === channelMediaType.trim();
+                }
+                // For OOH and DIGITAL, include all for now (API doesn't support these yet)
+                return true;
+            })
+            .map(card => card.mediaPartnerName);
+        
+        const uniqueChannels = Array.from(new Set(channels));
+        
+        // Filter by search query
+        return searchQuery
+            ? uniqueChannels.filter(name => 
+                name.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+            : uniqueChannels;
+    }, [rateCardsData, channelMediaType, searchQuery]);
 
     return (
         <Card className="p-6 space-y-2 border border-primary/20 rounded-lg shadow-md bg-gray-50">

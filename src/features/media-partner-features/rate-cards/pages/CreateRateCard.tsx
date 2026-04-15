@@ -5,7 +5,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { createRateCard } from "../api";
 import type { CreateRateCardRequest, RadioMetadata, TVMetadata, OOHMetadata, DIGITALMetadata, RadioRate, TVRate } from "../types";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import OOHRateCardForm from "../components/OOHRateCardForm";
 import { useAuthStore } from "@/features/auth/store/auth-store";
 import { getFormErrorMessage } from "@/utils/error-handler";
 import { sanitizePayload } from "@/utils/Sanitizer";
+import Header from "@/components/universal/Header";
 
 
 
@@ -138,20 +139,11 @@ export default function CreateRateCard() {
   return (
     <div className="space-y-6 pb-10">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-primary tracking-tight">Create Rate Card</h2>
-          <p className="text-sm text-gray-500 mt-1">Add a new rate card for your media offerings</p>
-        </div>
-        <Button 
-          size="sm" 
-          onClick={() => navigate('/media-partner/rate-cards')}
-          className="border border-secondary bg-transparent hover:bg-secondary transition-colors transform-border duration-5"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-      </div>
+      <Header
+        title="Create Rate Card"
+        mediaType={mediaType}
+        returnTofunc={() => navigate('/media-partner/rate-cards')}
+      />
 
       {/* Form for creating rate card */}
       <form onSubmit={onSubmit} className="space-y-6">

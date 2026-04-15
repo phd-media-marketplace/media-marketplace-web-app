@@ -48,3 +48,29 @@ export const getDayColor = (day: string) => {
     return colors[day] || 'bg-gray-100 text-gray-700';
 };
 
+export const getStatusColors = (status: string) => {
+    const colors: Record<string, { bg: string; text: string; hover: string }> = {
+        'Active': { bg: 'bg-green-100', text: 'text-green-800', hover: 'hover:bg-green-100' },
+        'Inactive': { bg: 'bg-red-100', text: 'text-red-800', hover: 'hover:bg-red-100' },
+        'Pending': { bg: 'bg-yellow-100', text: 'text-yellow-800', hover: 'hover:bg-yellow-100' },
+        'Completed': { bg: 'bg-blue-100', text: 'text-blue-800', hover: 'hover:bg-blue-100' },
+    };
+    return colors[status] || { bg: 'bg-gray-100', text: 'text-gray-700', hover: 'hover:bg-gray-100' };
+};
+
+export const getAdTypeColors = (adType: string) => {
+    const colors: Record<string, { bg: string; text: string; hover: string }> = {
+    'ANNOUNCEMENTS': { bg: 'bg-violet-100', text: 'text-violet-800', hover: 'hover:bg-violet-100' },
+    'INTERVIEWS': { bg: 'bg-indigo-100', text: 'text-indigo-800', hover: 'hover:bg-indigo-100' },
+    'LIVE_PRESENTER_MENTIONS': { bg: 'bg-cyan-100', text: 'text-cyan-800', hover: 'hover:bg-cyan-100' },
+    'JINGLES': { bg: 'bg-fuchsia-100', text: 'text-fuchsia-800', hover: 'hover:bg-fuchsia-100' },
+    'NEWS_COVERAGE': { bg: 'bg-blue-100', text: 'text-blue-800', hover: 'hover:bg-blue-100' },
+    'SPOT_ADVERTS': { bg: 'bg-emerald-100', text: 'text-emerald-800', hover: 'hover:bg-emerald-100' },
+    'DOCUMENTARY': { bg: 'bg-slate-100', text: 'text-slate-800', hover: 'hover:bg-slate-100' },
+    'EXECUTIVE_INTERVIEW': { bg: 'bg-teal-100', text: 'text-teal-800', hover: 'hover:bg-teal-100' },
+    'PREACHING': { bg: 'bg-amber-100', text: 'text-amber-800', hover: 'hover:bg-amber-100' },
+    'AIRTIME_SALE': { bg: 'bg-lime-100', text: 'text-lime-800', hover: 'hover:bg-lime-100' },
+    'MEDIA': { bg: 'bg-rose-100', text: 'text-rose-800', hover: 'hover:bg-rose-100' }
+    };
+    return colors[adType] || { bg: 'bg-gray-100', text: 'text-gray-700', hover: 'hover:bg-gray-100' };
+};

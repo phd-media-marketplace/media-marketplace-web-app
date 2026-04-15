@@ -2,9 +2,8 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Pencil, Trash2, Eye, Radio, Tv, Calendar, Layers, DollarSign } from "lucide-react";
+import { Plus, Radio, Tv, Layers} from "lucide-react";
+import ListCard, { type StatItem } from "@/features/media-partner-features/Common-Components/ListCard";
 import { deleteRateCard, listRateCards } from "../api";
 import type { RadioMetadata, TVMetadata, RadioAdType, TVAdType, RateCard } from "../types";
 import { toast } from "sonner";
@@ -12,6 +11,8 @@ import { getFormErrorMessage } from "@/utils/error-handler";
 import NoDataCard from "@/components/universal/NoDataCard";
 import Loader from "@/components/universal/Loader";
 import LoadingError from "@/components/universal/LoadingError";
+import {formatDate} from "@/utils/formatters";
+import Header from "@/components/universal/Header";
 
 interface AdTypeCard {
   id: string;
@@ -134,15 +135,19 @@ export default function RateCardsList() {
     }
   };
 
-  const getMediaIcon = (mediaType: string) => {
-    switch (mediaType) {
-      case 'FM':
-        return <Radio className="w-5 h-5" />;
-      case 'TV':
-        return <Tv className="w-5 h-5" />;
-      default:
-        return <Layers className="w-5 h-5" />;
+  // Helper to create media type icon component
+  const createMediaTypeIconComponent = (mediaType: string) => {
+    function MediaTypeIcon({ className }: { className?: string }) {
+      switch (mediaType) {
+        case 'FM':
+          return <Radio className={className} />;
+        case 'TV':
+          return <Tv className={className} />;
+        default:
+          return <Layers className={className} />;
+      }
     }
+    return MediaTypeIcon;
   };
 
   const formatAdType = (adType: string): string => {
@@ -155,7 +160,16 @@ export default function RateCardsList() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <Header
+        title="Rate Cards"
+        description="Manage your media rates grouped by ad types"
+        backbtnVisible={false}
+        ctaFunc={() => navigate('/media-partner/rate-cards/create')}
+        ctabtnText="Create Rate Card"
+        ctaIcon={Plus}
+      />
+
+      {/* <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-primary tracking-tight">Rate Cards</h2>
           <p className="text-sm text-gray-500 mt-1">Manage your media rates grouped by ad types</p>
@@ -166,8 +180,8 @@ export default function RateCardsList() {
         >
           <Plus className="w-4 h-4 mr-2" />
           Create Rate Card
-        </Button>
-      </div>
+        </Button> */}
+      {/* </div> */}
 
       {/* Filters */}
       <div className="flex gap-2">
@@ -217,115 +231,41 @@ export default function RateCardsList() {
 
       ) : filteredCards.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCards.map((rCard) => (
-            <Card key={rCard.id} className="hover:shadow-lg transition-shadow duration-200 border border-gray-200">
-              <CardHeader className="pb-3 bg-linear-to-r from-primary/5 to-secondary/5">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                      {getMediaIcon(rCard.mediaType)}
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold text-gray-900">
-                        {formatAdType(rCard.adType)}
-                      </CardTitle>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {rCard.mediaType} - {rCard.mediaPartnerName}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge 
-                    variant={rCard.isActive ? 'default' : 'secondary'} 
-                    className={`shrink-0 px-2 py-1 text-xs ${
-                      rCard.isActive ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
-                    }`}
-                  >
-                    {rCard.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                {/* Statistics */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-blue-100 p-3 rounded-lg">
-                    <div className="flex items-center gap-2 text-blue-700 mb-1">
-                      <Layers className="w-4 h-4" />
-                      <span className="text-xs font-medium">Segments</span>
-                    </div>
-                    <p className="text-2xl font-bold text-blue-900">{rCard.segments}</p>
-                  </div>
-                  
-                  <div className="bg-green-100 p-3 rounded-lg">
-                    <div className="flex items-center gap-2 text-green-700 mb-1">
-                      <Layers className="w-4 h-4" />
-                      <span className="text-xs font-medium">Time Slots</span>
-                    </div>
-                    <p className="text-2xl font-bold text-green-900">{rCard.totalRates}</p>
-                  </div>
-                </div>
+          {filteredCards.map((rCard) => {
+            // Build stats array
+            const stats: StatItem[] = [
+              {
+                icon: Layers,
+                label: "Segments",
+                value: rCard.segments,
+                bgColor: "bg-blue-50",
+                textColor: "text-blue-700",
+              },
+              {
+                icon: Layers,
+                label: "Time Slots",
+                value: rCard.totalRates,
+                bgColor: "bg-green-50",
+                textColor: "text-green-700",
+              },
+            ];
 
-                {/* Rate Range */}
-                <div className="bg-purple-100 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 text-purple-700 mb-2">
-                    <DollarSign className="w-4 h-4" />
-                    <span className="text-xs font-medium">Rate Range</span>
-                  </div>
-                  {rCard.totalRates > 0 ? (
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-lg font-bold text-primary/90">
-                        GH₵ {rCard.minRate.toLocaleString()}
-                      </span>
-                      <span className="text-gray-500">-</span>
-                      <span className="text-lg font-bold text-primary/90">
-                        GH₵ {rCard.maxRate.toLocaleString()}
-                      </span>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-500">No rates configured</p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">{rCard.totalRates} rate{rCard.totalRates !== 1 ? 's' : ''} configured</p>
-                </div>
-
-                {/* Timestamps */}
-                <div className="flex items-center gap-2 text-xs text-gray-500 pt-2 border-t border-primary/20">
-                  <Calendar className="w-3 h-3" />
-                  <span>Updated {new Date(rCard.updatedAt).toLocaleDateString()}</span>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 pt-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1 hover:bg-secondary text-primary border-secondary"
-                    onClick={() => navigate(`/media-partner/rate-cards/${rCard.rateCardId}`)}
-                  >
-                    <Eye className="w-4 h-4 mr-1" />
-                    View
-                  </Button>
-                  <Button 
-                    variant="default" 
-                    size="sm" 
-                    className="flex-1 text-white bg-primary hover:bg-primary/90"
-                    onClick={() => navigate(`/media-partner/rate-cards/${rCard.rateCardId}/edit`)}
-                  >
-                    <Pencil className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(rCard.rateCardId)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                    disabled={deleteMutation.isPending && deleteMutation.variables === rCard.rateCardId}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+            return (
+              <ListCard
+                key={rCard.id}
+                id={rCard.id}
+                title={formatAdType(rCard.adType)}
+                subtitle={`${rCard.mediaType} - ${rCard.mediaPartnerName}`}
+                isActive={rCard.isActive}
+                mediaIcon={createMediaTypeIconComponent(rCard.mediaType)}
+                stats={stats}
+                updatedAt={`Last Updated: ${formatDate(rCard.updatedAt)}`}
+                onView={() => navigate(`/media-partner/rate-cards/${rCard.rateCardId}`)}
+                onEdit={() => navigate(`/media-partner/rate-cards/${rCard.rateCardId}/edit`)}
+                onDelete={() => handleDelete(rCard.rateCardId)}
+              />
+            );
+          })}
         </div>
       ) : (
         <NoDataCard

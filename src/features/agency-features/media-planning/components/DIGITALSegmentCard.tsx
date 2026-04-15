@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
 import type { DayOfWeek } from "../types";
-import { dummyRateCards } from "@/features/media-partner-features/rate-cards";
+import { useQuery } from "@tanstack/react-query";
+import { listRateCards } from "@/features/media-partner-features/rate-cards/api";
 
 interface DIGITALSegmentCardProps {
     channelIndex: number;
@@ -26,9 +27,19 @@ export default function DIGITALSegmentCard({
 }: DIGITALSegmentCardProps) {
     const channelName = watch(`channels.${channelIndex}.channelName`);
     
+    // Fetch DIGITAL rate cards from API (fallback to empty array for now if API doesn't support DIGITAL)
+    const { data: rateCardsData } = useQuery({
+        queryKey: ['rateCards', 'DIGITAL'],
+        queryFn: () => listRateCards(),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+    });
+
+    const rateCards = rateCardsData?.rateCards || [];
+
     // Check if the selected channel has a DIGITAL rate card
     const hasRateCard = channelName ? 
-        dummyRateCards.some(card => card.mediaPartnerName === channelName && card.mediaType === 'DIGITAL') 
+        rateCards.some(card => card.mediaPartnerName === channelName && card.mediaType === 'DIGITAL') 
         : false;
 
     // Get available days - DIGITAL campaigns are typically available all days

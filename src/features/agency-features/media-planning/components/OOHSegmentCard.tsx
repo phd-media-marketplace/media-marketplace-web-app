@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
 import type { DayOfWeek } from "../types";
-import { dummyRateCards } from "@/features/media-partner-features/rate-cards";
+import { useQuery } from "@tanstack/react-query";
+import { listRateCards } from "@/features/media-partner-features/rate-cards/api";
 import type { OOHMetadata } from "@/features/media-partner-features/rate-cards/types";
 import { useMemo, useEffect } from "react";
 
@@ -31,15 +32,23 @@ export default function OOHSegmentCard({
     const channelName = watch(`channels.${channelIndex}.channelName`);
     const selectedPlacement = watch(`channels.${channelIndex}.segments.${segmentIndex}.programName`);
 
+    // Fetch OOH rate cards from API (fallback to empty array for now if API doesn't support OOH)
+    const { data: rateCardsData } = useQuery({
+        queryKey: ['rateCards', 'OOH'],
+        queryFn: () => listRateCards(),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+    });
+
     // Get the selected rate card and extract placement options
     const placements = useMemo(() => {
-        if (!channelName) return [];
+        if (!channelName || !rateCardsData?.rateCards) return [];
 
-        const rateCards = dummyRateCards.filter(
+        const filteredRateCards = rateCardsData.rateCards.filter(
             card => card.mediaPartnerName === channelName && card.mediaType === 'OOH'
         );
         
-        return rateCards.map(card => {
+        return filteredRateCards.map(card => {
             const metadata = card.metadata as OOHMetadata;
             return {
                 name: metadata.name || 'Unnamed Placement',
@@ -51,7 +60,7 @@ export default function OOHSegmentCard({
                 notes: metadata.notes,
             };
         });
-    }, [channelName]);
+    }, [rateCardsData, channelName]);
 
     // Get available days - OOH placements are typically available all days
     const availableDays: DayOfWeek[] = useMemo(() => {
