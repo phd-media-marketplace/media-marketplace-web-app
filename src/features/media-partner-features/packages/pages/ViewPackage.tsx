@@ -133,7 +133,7 @@ export default function ViewPackage() {
                                 {item.adType.replace(/_/g, ' ')}
                               </Badge>
                             </div>
-                            <div className="grid grid-cols-[auto_1fr_1fr_1fr_1fr] gap-3 text-sm">
+                            <div className="grid grid-cols-3 md:grid-cols-[auto_1fr_1fr_1fr_1fr] lg:grid-cols-[auto_1fr_1fr_1fr_1fr] gap-3 text-sm">
                               <div>
                                 <label className="text-xs text-gray-500 pr-4">Segment</label>
                                 <p className="font-semibold text-gray-900">{item.segmentClass}</p>

@@ -62,7 +62,7 @@ export default function ListCard({
   return (
     <Card
       key={id}
-      className={`bg-gray-50 shadow-sm hover:shadow-xl transition-shadow duration-200 border border-gray-100 ${className}`}
+      className={`bg-gray-50 lg:py-4 shadow-sm hover:shadow-xl transition-shadow duration-200 border border-gray-100 ${className}`}
     >
       {/* Header */}
       <CardHeader className="pb-3 bg-linear-to-r from-primary/5 to-secondary/5">
@@ -94,7 +94,7 @@ export default function ListCard({
       </CardHeader>
 
       {/* Content */}
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 lg:px-4">
         {/* Description */}
         {description && (
           <p className="text-sm text-gray-600 line-clamp-1">{description}</p>

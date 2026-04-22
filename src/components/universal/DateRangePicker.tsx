@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "lucide-react";
+import { Calendar, ChevronDown, TimerReset } from "lucide-react";
 
 interface DateRange {
 	startDate: string;
@@ -167,40 +167,40 @@ export function DateRangePicker({
 			<Button
 				variant="outline"
 				onClick={() => setIsOpen(!isOpen)}
-				className="w-full justify-between bg-white hover:bg-slate-50"
+				className={`w-full justify-between bg-white border-gray-300 hover:bg-slate-50 ${isOpen ? 'border-secondary' : ''} text-primary`}
 			>
 				<span className="flex items-center gap-2">
-					<Calendar className="w-4 h-4" />
+					<Calendar className="w-4 h-4 text-gray-400" />
 					{formatDisplayDate(startDate)} - {formatDisplayDate(endDate)}
 				</span>
-				<span className="text-xs text-gray-500">▼</span>
+				<span className="text-xs text-gray-500"><ChevronDown className="w-4 h-4" /></span>
 			</Button>
 
 			{isOpen && (
-				<Card className="absolute top-12 right-0 z-50 w-96 p-0 shadow-xl border border-slate-200">
+				<Card className="absolute top-12 right-0 z-50 min-w-95 w-full bg-white p-0 shadow-xl border border-slate-200">
 					<div className="grid grid-cols-3 h-72">
 						{/* Presets Section */}
-						<div className="col-span-1 bg-slate-50 border-r border-slate-200 overflow-y-auto p-3 space-y-1">
-							<div className="text-xs font-semibold text-gray-600 px-2 py-1">Recently used</div>
+						<div className="col-span-1 bg-slate-50 border-r border-slate-200 overflow-y-auto p-1 space-y-1">
+							<div className="text-xs font-bold text-primary px-1 py-1">Recently used</div>
 							<button
 								onClick={() => handlePresetClick(getThisMonth())}
-								className="w-full text-left px-3 py-2 text-sm hover:bg-slate-200 rounded transition-colors"
+								className="w-full text-left px-1 py-2 text-sm hover:bg-slate-200 rounded transition-colors"
 							>
 								This month
 							</button>
 							<button
 								onClick={() => handlePresetClick(getLastMonth())}
-								className="w-full text-left px-3 py-2 text-sm hover:bg-slate-200 rounded transition-colors"
+								className="w-full text-left px-1 py-2 text-sm hover:bg-slate-200 rounded transition-colors"
 							>
 								Last month
 							</button>
 
-							<div className="text-xs font-semibold text-gray-600 px-2 py-2 pt-3">Maximum</div>
+							<div className="text-xs font-bold text-primary px-1 py-2 pt-3">Maximum</div>
 							{PRESET_RANGES.slice(2).map((preset) => (
 								<button
 									key={preset.label}
 									onClick={() => handlePresetClick(preset.getDates())}
-									className="w-full text-left px-3 py-2 text-sm hover:bg-slate-200 rounded transition-colors"
+									className="w-full text-left px-1 py-2 text-sm hover:bg-slate-200 rounded transition-colors"
 								>
 									{preset.label}
 								</button>
@@ -216,7 +216,7 @@ export function DateRangePicker({
 									value={startDate}
 									onChange={(e) => setStartDate(e.target.value)}
 									max={endDate}
-									className="w-full bg-white"
+									className="w-full input-field"
 								/>
 							</div>
 
@@ -228,7 +228,7 @@ export function DateRangePicker({
 									onChange={(e) => setEndDate(e.target.value)}
 									min={startDate}
 									max={today}
-									className="w-full bg-white"
+									className="w-full input-field"
 								/>
 							</div>
 
@@ -241,15 +241,16 @@ export function DateRangePicker({
 									variant="outline"
 									size="sm"
 									onClick={handleReset}
-									className="flex-1"
+									className="flex-1 border-secondary text-primary hover:bg-secondary/10"
 								>
-									<RotateCcw className="w-3 h-3 mr-1" />
+									{/* <RotateCcw className="w-3 h-3 mr-1" /> */}
+									<TimerReset className="w-3 h-3 mr-1" />
 									Reset
 								</Button>
 								<Button
 									size="sm"
 									onClick={handleApply}
-									className="flex-1 bg-blue-600 hover:bg-blue-700"
+									className="flex-1 bg-primary text-white hover:bg-primary/80"
 								>
 									Update
 								</Button>
@@ -262,11 +263,11 @@ export function DateRangePicker({
 	);
 }
 
-function RotateCcw(props: React.SVGProps<SVGSVGElement>) {
-	return (
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
-			<path d="M3 7v6h6M21 17v-6h-6" />
-			<path d="M16.83 13.83a5 5 0 0 0-5.66-5.66M2.1 10.11a8 8 0 0 1 10.82-2.14" />
-		</svg>
-	);
-}
+// function RotateCcw(props: React.SVGProps<SVGSVGElement>) {
+// 	return (
+// 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
+// 			<path d="M3 7v6h6M21 17v-6h-6" />
+// 			<path d="M16.83 13.83a5 5 0 0 0-5.66-5.66M2.1 10.11a8 8 0 0 1 10.82-2.14" />
+// 		</svg>
+// 	);
+// }

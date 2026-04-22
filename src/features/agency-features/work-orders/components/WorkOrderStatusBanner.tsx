@@ -19,11 +19,12 @@ export function WorkOrderStatusBanner({
   approvedBy,
   rejectionReason,
 }: WorkOrderStatusBannerProps) {
-  const backgroundStyles = {
+  const backgroundStyles: { [key in WorkOrderStatus]: string } = {
     APPROVED: 'border-green-300 bg-green-50',
     REJECTED: 'border-red-300 bg-red-50',
     PENDING: 'border-yellow-300 bg-yellow-50',
     REVISED: 'border-blue-300 bg-blue-50',
+    PAUSED: 'border-gray-300 bg-gray-50',
   };
 
   return (

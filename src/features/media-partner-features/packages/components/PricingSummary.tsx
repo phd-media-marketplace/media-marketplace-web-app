@@ -19,7 +19,7 @@ export default function PricingSummary({ totalPrice, discount, finalPrice, IsPre
                 Price Summary
             </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-2 lg:px-4">
             <div className="flex justify-between items-center">
                 <span className="text-gray-700">Subtotal:</span>
                 <span className="font-semibold text-gray-900">GH₵ {totalPrice.toLocaleString()}</span>

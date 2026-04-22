@@ -31,7 +31,7 @@ export default function AssetPreviewCard({
   const thumbnailAssets = assets.slice(0, 4);
 
   return (
-    <Card className={`overflow-hidden border border-secondary bg-linear-to-br from-secondary/5 via-white to-blue-50 shadow-sm ${className}`}>
+    <Card className={`overflow-hidden border border-secondary bg-linear-to-br lg:py-4 from-secondary/5 via-white to-blue-50 shadow-sm ${className}`}>
         <CardHeader className="border-b border-secondary/30 pb-2">
           <div className="space-y-2">
             <div className="flex items-start justify-between gap-3">
@@ -44,7 +44,7 @@ export default function AssetPreviewCard({
             </div>
         </CardHeader>
 
-      <CardContent className="space-y-4 pt-5">
+      <CardContent className="space-y-4 pt-5 lg:px-4">
         {assetCount > 0 && primaryAsset ? (
           <>
             <div className="relative overflow-hidden rounded-2xl border border-secondary/20 bg-white shadow-sm">

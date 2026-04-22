@@ -62,6 +62,12 @@ export default function TVRateCardView({ metadata }: { metadata: TVMetadata }) {
                     <div className="space-y-2">
                       {segment.timeDetails.map((timeDetail, tdIndex) => (
                         <div key={tdIndex} className="bg-gray-50 p-3 rounded-md flex flex-wrap gap-4">
+                          {timeDetail.programName && (
+                            <div>
+                              <span className="text-xs font-medium text-gray-900">Programme Name</span>
+                              <span className="ml-2 text-sm text-gray-600">{timeDetail.programName}</span>
+                            </div>
+                          )}
                           <div>
                             <span className="text-xs font-medium text-gray-900">Days:</span>
                             <span className="ml-2 text-sm text-gray-600">{timeDetail.daysOfWeek}</span>

@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
 import type { WorkOrder } from "@/features/agency-features/work-orders/types";
+import RejectionConfirmationDialogBox from "@/components/universal/RejectionConfirmationDialogBox";
+import ApprovalConfirmationDialogBox from "@/components/universal/ApprovalConfirmationDialogBox";
 
 interface MediaPartnerWorkOrderActionsProps {
   workOrder: WorkOrder;
@@ -63,65 +63,39 @@ export function MediaPartnerWorkOrderActions({
       </Button>
 
       {/* Approve Confirmation Dialog */}
-      <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
-        <DialogContent className="bg-white">
-          <DialogHeader>
-            <DialogTitle>Approve Work Order</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to approve work order <strong>{workOrder.workOrderNumber}</strong>?
-              This action will notify the {workOrder.header.clientType === 'AGENCY' ? 'agency' : 'client'}.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowApproveDialog(false)}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-green-600 hover:bg-green-700 text-white"
-              onClick={handleApprove}
-            >
-              Confirm Approval
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ApprovalConfirmationDialogBox
+        open={showApproveDialog}
+        onOpenChange={setShowApproveDialog}
+        title="Approve Work Order"
+        description={
+          <>
+            Are you sure you want to approve work order <strong>{workOrder.workOrderNumber}</strong>? This action will notify the {workOrder.header.clientType === "AGENCY" ? "agency" : "client"}.
+          </>
+        }
+        confirmText="Confirm Approval"
+        cancelText="Cancel"
+        onConfirm={handleApprove}
+      />
 
       {/* Reject Confirmation Dialog */}
-      <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <DialogContent className="bg-white">
-          <DialogHeader>
-            <DialogTitle>Reject Work Order</DialogTitle>
-            <DialogDescription>
-              Please provide a reason for rejecting work order <strong>{workOrder.workOrderNumber}</strong>.
-              The {workOrder.header.clientType === 'AGENCY' ? 'agency' : 'client'} will be notified.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
-              Rejection Reason *
-            </label>
-            <Textarea
-              placeholder="Enter the reason for rejection..."
-              value={rejectionReason}
-              onChange={(e) => setRejectionReason(e.target.value)}
-              rows={4}
-              className="resize-none"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowRejectDialog(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleReject}
-              disabled={!rejectionReason.trim()}
-            >
-              Confirm Rejection
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <RejectionConfirmationDialogBox
+        open={showRejectDialog}
+        onOpenChange={setShowRejectDialog}
+        title="Reject Work Order"
+        description={
+          <>Please provide a reason for rejecting work order <strong>{workOrder.workOrderNumber}</strong>. The {workOrder.header.clientType === 'AGENCY' ? 'agency' : 'client'} will be notified.</>
+        }
+        content={{
+          contentLabel: "Rejection Reason",
+          contentPlaceholder: "Enter the reason for rejection...",
+          contentValue: rejectionReason,
+          setContentValue: setRejectionReason
+        }}
+        confirmText="Confirm Rejection"
+        cancelText="Cancel"
+        onConfirm={handleReject}
+        confirmVariant="destructive"
+      />
     </div>
   );
 }

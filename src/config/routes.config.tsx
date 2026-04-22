@@ -19,6 +19,8 @@ import ProfileSettingsPage from "@/features/agency-features/settings/pages/Profi
 import PaymentSettingsPage from "@/features/agency-features/settings/pages/PaymentSettingsPage";
 import MediaPartnerDashboard from "@/features/media-partner-features/dashboard/pages/MediaPartnerDashboard";
 import MediaPartnerBillingPage from "@/features/media-partner-features/billing/pages/MediaPartnerBillingPage";
+import ViewInvoicePage from "@/features/media-partner-features/billing/pages/ViewInvoicePage";
+import EditInvoicePage from "@/features/media-partner-features/billing/pages/EditInvoicePage";
 import MediaPartnerReportingPage from "@/features/media-partner-features/reporting/pages/MediaPartnerReportingPage";
 import MediaPartnerProfileSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerProfileSettingsPage";
 import MediaPartnerTeamsSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerTeamsSettingsPage";
@@ -281,6 +283,14 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
     {
       path: "/media-partner/billing",
       element: <MediaPartnerBillingPage />,
+    },
+    {
+      path: "/media-partner/billing/:id",
+      element: <ViewInvoicePage />,
+    },
+    {
+      path: "/media-partner/billing/:id/edit",
+      element: <EditInvoicePage />,
     },
     {
       path: "/media-partner/reporting",

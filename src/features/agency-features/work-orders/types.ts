@@ -9,7 +9,8 @@ export type WorkOrderStatus =
   | 'PENDING'      // Sent to media partner, awaiting review
   | 'APPROVED'     // Media partner approved the work order
   | 'REJECTED'     // Media partner rejected the work order
-  | 'REVISED';     // Work order has been revised after rejection
+  | 'REVISED'    // Work order has been revised after rejection
+  | 'PAUSED';      // Work order is temporarily paused (optional status for future use)
 
 /**
  * Media Plan Approval Status
@@ -136,3 +137,12 @@ export interface WorkOrderFilters {
   campaignName?: string;
   mediaType?: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
 }
+
+// export interface taxes {
+//   Discount
+//   Commission : 15%
+
+//   Getfund:2.5%
+//   NHIS :2.5%
+//   Vat: 12.5%15.00%
+// }

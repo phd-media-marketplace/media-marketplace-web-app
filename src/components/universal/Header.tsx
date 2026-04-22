@@ -14,6 +14,8 @@ export interface HeaderProps {
   ctaFunc?: () => void;
   ctaIcon?: ElementType<{ className?: string }>;
   backbtnVisible?: boolean;
+  backIcon?: ElementType<{ className?: string }>;
+  backbtnText?: string;
   ctabtnText?: string;
 }
 
@@ -27,7 +29,9 @@ export default function Header({
   ctaFunc,
   ctaIcon: CtaIcon,
   ctabtnText,
-  backbtnVisible = true
+  backbtnVisible = true,
+  backIcon: BackIcon = ArrowLeft,
+  backbtnText = "Back",
 }: HeaderProps) {
   const iconContent = HeaderIcon
     ? <HeaderIcon className="w-6 h-6" />
@@ -39,7 +43,7 @@ export default function Header({
     <div className="flex items-center justify-between gap-4">
       <div className="flex items-center gap-3">
         {iconContent && (
-          <div className="p-2 bg-primary/10 rounded-lg">
+          <div className="hidden lg:block p-2 bg-primary/10 rounded-lg">
             {iconContent}
           </div>
         )}
@@ -67,19 +71,19 @@ export default function Header({
             size="sm"
             variant="outline"
             onClick={returnTofunc}
-            className="border-secondary hover:bg-secondary"
+            className="custom-secondary-outline-btn"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back
+            <BackIcon className="w-4 h-4" />
+           <span className="hidden lg:inline-block">{backbtnText}</span>
           </Button>
         )}
         {ctaFunc && (
           <Button
             onClick={ctaFunc}
-            className="bg-primary border text-white hover:bg-white hover:text-primary border-primary"
+            className="text-center bg-primary border text-white hover:bg-white hover:text-primary border-primary"
           >
-            {CtaIcon && <CtaIcon className="w-4 h-4 mr-2" />}
-            {ctabtnText}
+            {CtaIcon && <CtaIcon className="w-4 h-4 lg:mr-2" />}
+            <span className="hidden lg:inline-block">{ctabtnText}</span>
           </Button>
         )}
       </div>

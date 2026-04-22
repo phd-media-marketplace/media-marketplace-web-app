@@ -6,6 +6,7 @@ import type { WorkOrder } from "../types";
 import { WorkOrderStatusBadge } from "./WorkOrderStatusBadge";
 import { MediaTypeBadge } from "./MediaTypeBadge";
 import { formatCurrency } from "@/utils/formatters";
+import { useAuthStore } from "@/features/auth/store/auth-store";
 
 interface WorkOrdersTableProps {
   workOrders: WorkOrder[];
@@ -16,6 +17,8 @@ interface WorkOrdersTableProps {
  * Displays work orders in a sortable table with action buttons
  */
 export function WorkOrdersTable({ workOrders }: WorkOrdersTableProps) {
+  const user = useAuthStore((state) => state.user);
+  
   const navigate = useNavigate();
 
   if (workOrders.length === 0) {
@@ -86,7 +89,7 @@ export function WorkOrdersTable({ workOrders }: WorkOrdersTableProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate(`/agency/work-orders/${workOrder.id}`)}
+                  onClick={() => navigate(`/${user?.tenantType.toLowerCase()}/work-orders/${workOrder.id}`)}
                 >
                   <Eye className="w-4 h-4" />
                 </Button>

@@ -5,6 +5,7 @@ import { Eye, BarChart3 } from "lucide-react";
 import type { CampaignListItem } from "../types";
 import { CampaignStatusBadge } from "./CampaignStatusBadge";
 import { formatCurrency } from "@/utils/formatters";
+import {useAuthStore} from "@/features/auth/store/auth-store";
 
 interface CampaignsTableProps {
   campaigns: CampaignListItem[];
@@ -16,6 +17,7 @@ interface CampaignsTableProps {
  */
 export function CampaignsTable({ campaigns }: CampaignsTableProps) {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   const formatNumber = (num: number): string => {
     if (num >= 1000000) {
@@ -95,7 +97,7 @@ export function CampaignsTable({ campaigns }: CampaignsTableProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate(`/agency/campaigns/${campaign.id}`)}
+                  onClick={() => navigate(`/${user?.tenantType.toLowerCase()}/campaigns/${campaign.id}`)}
                 >
                   <Eye className="w-4 h-4" />
                 </Button>

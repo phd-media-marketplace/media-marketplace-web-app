@@ -22,62 +22,64 @@ export function WorkOrderInfoCard({
 }: WorkOrderInfoCardProps) {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Order Information</CardTitle>
+      <CardHeader className="border-b border-violet-100 [.border-b]:pb-1 ">
+        <CardTitle className="text-primary text-lg font-bold">Order Information</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
           {/* Left Column */}
           <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">Media Partner</label>
-              <div className="text-lg font-semibold">{mediaPartnerName}</div>
-              <div className="text-sm text-gray-600">{channelName}</div>
+            <div className="rounded-md bg-violet-50/30 p-4 h-25 ">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-violet-700/80">Media Partner</label>
+              <div>
+                <p className="mt-1 break-all text-lg font-semibold text-violet-950">{mediaPartnerName}</p>
+                <p className="text-sm font-mono text-gray-600">{channelName}</p>
+              </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500">
+            <div className="rounded bg-indigo-50/30 p-4 h-25">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-800/80">
                 {header.clientType === 'AGENCY' ? 'Agency' : 'Client'}
               </label>
-              <div className="text-lg font-semibold">
+              <div className="mt-1 text-lg font-semibold text-indigo-950">
                 {header.clientType === 'AGENCY' ? header.agencyName : header.clientName}
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500">Brand</label>
-              <div className="text-lg font-semibold">{header.brandName}</div>
+            <div className="rounded bg-green-50/30 p-4 h-25">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-green-800/80">Brand</label>
+              <div className="mt-1 text-lg font-semibold text-green-950">{header.brandName}</div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500">Campaign</label>
-              <div className="text-lg font-semibold">{header.campaignName}</div>
+            <div className="rounded bg-blue-50/30 p-4 h-25">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-800/80">Campaign</label>
+              <div className="mt-1 text-lg font-semibold text-blue-950">{header.campaignName}</div>
               <div className="text-sm text-gray-600">Objective: {header.campaignObjective}</div>
             </div>
           </div>
 
           {/* Right Column */}
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">PO Number</label>
-              <div className="text-lg font-semibold">{header.poNumber}</div>
+          <div className="space-y-4 ">
+            <div className="rounded bg-cyan-50/30 p-4 h-25">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-cyan-800/80">PO Number</label>
+              <div className="mt-1 text-lg font-semibold text-cyan-950">{header.poNumber}</div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500">MPO Number</label>
-              <div className="text-lg font-semibold">{header.mpoNumber}</div>
+            <div className="rounded bg-amber-50/30 p-4 h-25">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-800/80">MPO Number</label>
+              <div className="mt-1 text-lg font-semibold text-amber-950">{header.mpoNumber}</div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500">Campaign Period</label>
-              <div className="text-lg font-semibold">
+            <div className="rounded bg-lime-50/30 p-4 h-25">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-lime-800/80">Campaign Period</label>
+              <div className="mt-1 text-lg font-semibold text-lime-950">
                 {new Date(header.startDate).toLocaleDateString()} - {new Date(header.endDate).toLocaleDateString()}
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500">Prepared By</label>
-              <div className="text-lg font-semibold">{preparedBy}</div>
+            <div className="rounded bg-gray-50/30 p-4 h-25">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-800/80">Prepared By</label>
+              <div className="mt-1 text-lg font-semibold text-gray-950">{preparedBy}</div>
               <div className="text-sm text-gray-600">{preparedByTitle}</div>
             </div>
           </div>

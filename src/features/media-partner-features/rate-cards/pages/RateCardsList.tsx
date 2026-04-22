@@ -23,7 +23,8 @@ interface AdTypeCard {
   segments: number;
   minRate: number;
   maxRate: number;
-  totalRates: number;
+  // totalRates: number;
+  timeSlots: number;
   isActive: boolean;
   updatedAt: string;
 }
@@ -81,7 +82,8 @@ export default function RateCardsList() {
             segments: adTypeRate.RadioSegment.length,
             minRate: rates.length > 0 ? Math.min(...rates) : 0,
             maxRate: rates.length > 0 ? Math.max(...rates) : 0,
-            totalRates: rates.length,
+            // totalRates: rates.length,
+            timeSlots: adTypeRate.RadioSegment.reduce((acc, segment) => acc + (segment.timeDetails?.length ?? 0), 0),
             isActive: rateCard.isActive || false,
             updatedAt: rateCard.updatedAt,
           });
@@ -108,7 +110,8 @@ export default function RateCardsList() {
             segments: adTypeRate.TVSegment.length,
             minRate: rates.length > 0 ? Math.min(...rates) : 0,
             maxRate: rates.length > 0 ? Math.max(...rates) : 0,
-            totalRates: rates.length,
+            // totalRates: rates.length,
+            timeSlots: adTypeRate.TVSegment.reduce((acc, segment) => acc + (segment.timeDetails?.length ?? 0), 0),
             isActive: rateCard.isActive || false,
             updatedAt: rateCard.updatedAt,
           });
@@ -168,20 +171,6 @@ export default function RateCardsList() {
         ctabtnText="Create Rate Card"
         ctaIcon={Plus}
       />
-
-      {/* <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-primary tracking-tight">Rate Cards</h2>
-          <p className="text-sm text-gray-500 mt-1">Manage your media rates grouped by ad types</p>
-        </div>
-        <Button 
-          className="bg-primary text-white hover:bg-transparent hover:border hover:border-primary hover:text-primary" 
-          onClick={() => navigate('/media-partner/rate-cards/create')}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Create Rate Card
-        </Button> */}
-      {/* </div> */}
 
       {/* Filters */}
       <div className="flex gap-2">
@@ -244,7 +233,7 @@ export default function RateCardsList() {
               {
                 icon: Layers,
                 label: "Time Slots",
-                value: rCard.totalRates,
+                value: rCard.timeSlots,
                 bgColor: "bg-green-50",
                 textColor: "text-green-700",
               },

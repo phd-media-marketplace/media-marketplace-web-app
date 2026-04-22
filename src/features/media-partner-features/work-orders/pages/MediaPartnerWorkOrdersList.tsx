@@ -1,12 +1,17 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Download, FileText } from "lucide-react";
-import { MediaPartnerWorkOrdersFilters } from "../components";
-import { WorkOrderStatusBadge, MediaTypeBadge, WorkOrdersSummaryCards } from "@/features/agency-features/work-orders/components";
+import {
+  FileText,
+  Clock3,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import { MediaPartnerWorkOrdersFilters, MediaPartnerWorkOrdersTable } from "../components";
 import { dummyWorkOrders } from "@/features/agency-features/work-orders/dummy-data";
 import type { WorkOrderStatus } from "@/features/agency-features/work-orders/types";
+import SummaryCards from "@/components/universal/SummaryCards";
+import type { SummaryCardsProps } from "@/components/universal/SummaryCards";
+import Header from "@/components/universal/Header";
 
 /**
  * MediaPartnerWorkOrdersList Component
@@ -23,23 +28,43 @@ export default function MediaPartnerWorkOrdersList() {
   const [endDate, setEndDate] = useState("");
   const [brandSearch, setBrandSearch] = useState("");
 
-  // Summary statistics
-  const summaryStats = useMemo(() => {
-    const pending = dummyWorkOrders.filter(wo => wo.status === 'PENDING').length;
-    const approved = dummyWorkOrders.filter(wo => wo.status === 'APPROVED').length;
-    const rejected = dummyWorkOrders.filter(wo => wo.status === 'REJECTED').length;
-    const total = dummyWorkOrders.length;
+  const statusTabs: Array<{ label: string; value: WorkOrderStatus | "ALL"; countKey: "all" | "approved" | "revised" | "pending" | "rejected"| "paused" }> = [
+    { label: "All tasks", value: "ALL", countKey: "all" },
+    { label: "Completed", value: "APPROVED", countKey: "approved" },
+    { label: "In Progress", value: "REVISED", countKey: "revised" },
+    { label: "Pending Approval", value: "PENDING", countKey: "pending" },
+    { label: "Rejected", value: "REJECTED", countKey: "rejected" },
+    { label: "Paused", value: "PAUSED", countKey: "paused" },
 
-    return { totalCount: total, pendingCount: pending, approvedCount: approved, rejectedCount: rejected };
-  }, []);
+  ];
+
+  const formatStatusLabel = (status: WorkOrderStatus) => {
+    const labels: Record<WorkOrderStatus, string> = {
+      PENDING: "Pending",
+      APPROVED: "Completed",
+      REJECTED: "Rejected",
+      REVISED: "In Progress",
+      PAUSED: "Paused",
+    };
+
+    return labels[status];
+  };
+
+  const getStatusPillClasses = (status: WorkOrderStatus) => {
+    const styles: Record<WorkOrderStatus, string> = {
+      APPROVED: "bg-emerald-50 text-emerald-700",
+      PENDING: "bg-amber-50 text-amber-700",
+      REVISED: "bg-sky-50 text-sky-700",
+      REJECTED: "bg-rose-50 text-rose-700",
+      PAUSED: "bg-gray-50 text-gray-700",
+    };
+
+    return styles[status];
+  };
 
   // Filter work orders
-  const filteredWorkOrders = useMemo(() => {
-    return dummyWorkOrders.filter((workOrder) => {
-      // Status filter
-      if (statusFilter !== "ALL" && workOrder.status !== statusFilter) {
-        return false;
-      }
+  const { filteredWorkOrders, tabCounts } = useMemo(() => {
+    const baseFiltered = dummyWorkOrders.filter((workOrder) => {
 
       // Media type filter
       if (mediaTypeFilter !== "ALL" && workOrder.mediaType !== mediaTypeFilter) {
@@ -89,33 +114,86 @@ export default function MediaPartnerWorkOrdersList() {
 
       return true;
     });
+
+    const statusFiltered =
+      statusFilter === "ALL"
+        ? baseFiltered
+        : baseFiltered.filter((workOrder) => workOrder.status === statusFilter);
+
+    return {
+      filteredWorkOrders: statusFiltered,
+      tabCounts: {
+        all: baseFiltered.length,
+        approved: baseFiltered.filter((workOrder) => workOrder.status === "APPROVED").length,
+        revised: baseFiltered.filter((workOrder) => workOrder.status === "REVISED").length,
+        pending: baseFiltered.filter((workOrder) => workOrder.status === "PENDING").length,
+        rejected: baseFiltered.filter((workOrder) => workOrder.status === "REJECTED").length,
+      },
+    };
   }, [searchQuery, statusFilter, mediaTypeFilter, startDate, endDate, brandSearch]);
 
-  const handleViewWorkOrder = (id: string) => {
+  // Summary statistics (based on the currently filtered list)
+  const summaryStats = useMemo(() => {
+    const pending = filteredWorkOrders.filter((wo) => wo.status === "PENDING").length;
+    const approved = filteredWorkOrders.filter((wo) => wo.status === "APPROVED").length;
+    const rejected = filteredWorkOrders.filter((wo) => wo.status === "REJECTED").length;
+    const paused = filteredWorkOrders.filter((wo) => wo.status === "PAUSED").length;
+    const total = filteredWorkOrders.length;
+
+    return { totalCount: total, pendingCount: pending, approvedCount: approved, rejectedCount: rejected, pausedCount: paused };
+  }, [filteredWorkOrders]);
+
+  const workOrdersSummaryCardsData = useMemo<SummaryCardsProps[]>(() => {
+    return [
+      {
+        title: "Total Work Orders",
+        value: summaryStats.totalCount,
+        icon: FileText,
+        footerText: "Matching current filters",
+        bgColor: "from-indigo-500 to-blue-700",
+      },
+      {
+        title: "Pending",
+        value: summaryStats.pendingCount,
+        icon: Clock3,
+        footerText: `${summaryStats.totalCount ? Math.round((summaryStats.pendingCount / summaryStats.totalCount) * 100) : 0}% of filtered`,
+        bgColor: "from-amber-500 to-orange-700",
+      },
+      {
+        title: "Approved",
+        value: summaryStats.approvedCount,
+        icon: CheckCircle2,
+        footerText: `${summaryStats.totalCount ? Math.round((summaryStats.approvedCount / summaryStats.totalCount) * 100) : 0}% of filtered`,
+        bgColor: "from-emerald-500 to-green-700",
+      },
+      {
+        title: "Rejected/Paused",
+        value: summaryStats.rejectedCount + summaryStats.pausedCount,
+        icon: XCircle,
+        footerText: `${summaryStats.totalCount ? Math.round(((summaryStats.rejectedCount + summaryStats.pausedCount) / summaryStats.totalCount) * 100) : 0}% of filtered`,
+        bgColor: "from-rose-500 to-red-700",
+      },
+    ];
+  }, [summaryStats]);
+
+  const handleViewWorkOrder = (id: string) => {          
     navigate(`/media-partner/work-orders/${id}`);
+  };
+
+  const handleSendWorkOrder = (id: string) => {
+    console.log("Send work order", id);
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-primary tracking-tight">Work Orders</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage work orders received from agencies and clients
-          </p>
-        </div>
-      </div>
-
-      {/* Summary Cards */}
-      <WorkOrdersSummaryCards
-        totalCount={summaryStats.totalCount}
-        pendingCount={summaryStats.pendingCount}
-        approvedCount={summaryStats.approvedCount}
-        rejectedCount={summaryStats.rejectedCount}
+      <Header
+        title="Work Orders"
+        description="Manage work orders received from agencies and clients"
+        backbtnVisible={false}
       />
 
-      {/* Filters - Always visible */}
+      {/* Filters */}
       <MediaPartnerWorkOrdersFilters
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -130,85 +208,49 @@ export default function MediaPartnerWorkOrdersList() {
         brandSearch={brandSearch}
         onBrandSearchChange={setBrandSearch}
       />
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {workOrdersSummaryCardsData.map((card, index) => (
+          <SummaryCards key={index} {...card} />
+        ))}
+      </div>
 
       {/* Work Orders Table */}
-      <div className="bg-white rounded-lg border">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>WO Number</TableHead>
-                <TableHead>Client/Agency</TableHead>
-                <TableHead>Brand</TableHead>
-                <TableHead>Campaign</TableHead>
-                <TableHead>Media Type</TableHead>
-                <TableHead>Period</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredWorkOrders.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-gray-500">
-                    <FileText className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                    <p>No work orders found matching your filters</p>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredWorkOrders.map((workOrder) => (
-                  <TableRow key={workOrder.id} className="hover:bg-gray-50">
-                    <TableCell className="font-medium">
-                      {workOrder.workOrderNumber}
-                    </TableCell>
-                    <TableCell>
-                      {workOrder.header.clientType === 'AGENCY' 
-                        ? workOrder.header.agencyName 
-                        : workOrder.header.clientName}
-                    </TableCell>
-                    <TableCell>{workOrder.header.brandName}</TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {workOrder.header.campaignName}
-                    </TableCell>
-                    <TableCell>
-                      <MediaTypeBadge mediaType={workOrder.mediaType} />
-                    </TableCell>
-                    <TableCell className="text-sm text-gray-600">
-                      {new Date(workOrder.header.startDate).toLocaleDateString()} - {new Date(workOrder.header.endDate).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="font-semibold">
-                      GHS {workOrder.totalAmount.toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <WorkOrderStatusBadge status={workOrder.status} />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewWorkOrder(workOrder.id)}
-                        >
-                          <Eye className="w-4 h-4 mr-1" />
-                          View
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {/* Download handler */}}
-                        >
-                          <Download className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+      <MediaPartnerWorkOrdersTable
+        workOrders={filteredWorkOrders}
+        onViewWorkOrder={handleViewWorkOrder}
+        onSendWorkOrder={handleSendWorkOrder}
+        formatStatusLabel={formatStatusLabel}
+        getStatusPillClasses={getStatusPillClasses}
+        headerSlot={
+          <div className="border-b border-slate-200 px-3 sm:px-6">
+            <div className="flex items-center gap-4 overflow-x-auto">
+              {statusTabs.map((tab) => {
+                const isActive = statusFilter === tab.value;
+                return (
+                  <button
+                    key={tab.value}
+                    type="button"
+                    onClick={() => setStatusFilter(tab.value)}
+                    className={`relative flex items-center gap-2 border-b-2 px-2 py-4 text-sm font-medium whitespace-nowrap transition-colors ${
+                      isActive
+                        ? "border-primary text-slate-900"
+                        : "border-transparent text-slate-500 hover:text-slate-700"
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    {tab.value === "PENDING" && tabCounts.pending > 0 ? (
+                      <span className="inline-flex min-w-5 items-center justify-center rounded-md bg-indigo-100 px-1.5 py-0.5 text-xs font-semibold text-indigo-700">
+                        {tabCounts.pending}
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        }
+      />
     </div>
   );
 }

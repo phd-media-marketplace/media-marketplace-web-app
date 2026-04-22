@@ -48,8 +48,8 @@ export function MainLayout() {
         navigationItems={tenantConfig.navigation}
         branding={tenantConfig.branding}
       />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-none bg-background px-4">
+      <SidebarInset className="bg-gray-50/10">
+        <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between gap-2 border-none bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/80">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="h-6" />
           <div className="w-full flex items-center justify-between">
@@ -76,8 +76,10 @@ export function MainLayout() {
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
+        <main className="flex-1 overflow-y-auto p-4">
+          <div className="mx-auto w-full max-w-6xl">
+            <Outlet />
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>

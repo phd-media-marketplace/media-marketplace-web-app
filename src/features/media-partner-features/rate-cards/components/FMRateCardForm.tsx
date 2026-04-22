@@ -392,7 +392,7 @@ export default function FMRateCardForm({ metadata, setMetadata }: RadioRateCardF
                                   </div>
                                   <div>
                                     <label className="text-sm text-gray-700 mb-1 block">
-                                      {rate.adType === 'ANNOUNCEMENTS' ? 'Announcement Type' : 'Class Name (Optional)'}
+                                      {rate.adType === 'ANNOUNCEMENTS' ? 'Announcement Type' : 'Segment Name (Optional)'}
                                     </label>
                                     {rate.adType === 'ANNOUNCEMENTS' ? (
                                       <Select

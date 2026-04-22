@@ -1,7 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Calendar } from "lucide-react";
+import { Search, Funnel, X, Eye, EyeOff } from "lucide-react";
 import type { WorkOrderStatus } from "@/features/agency-features/work-orders/types";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { DateRangePicker } from "@/components/universal/DateRangePicker";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface MediaPartnerWorkOrdersFiltersProps {
   searchQuery: string;
@@ -37,115 +41,138 @@ export function MediaPartnerWorkOrdersFilters({
   brandSearch,
   onBrandSearchChange,
 }: MediaPartnerWorkOrdersFiltersProps) {
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(true);
+  const handleClearAll = () => {
+    onSearchChange("");
+    onStatusChange("ALL");
+    onMediaTypeChange("ALL");
+    onStartDateChange("");
+    onEndDateChange("");
+    onBrandSearchChange("");
+  };
+
+
   return (
-    <div className="bg-white rounded-lg border p-4 space-y-4">
-      {/* First Row: Search and Brand/Campaign Search */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* General Search */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
-            Search Work Orders
-          </label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search by WO number, client, agency..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-9"
-            />
+    <Card className="bg-white shadow-sm lg:bg-none lg:shadow-none p-0 lg:mb-0">
+      <CardHeader className="flex lg:hidden flex-row items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Funnel className="w-5 h-5 text-primary" />
+          <h2 className="text-lg font-semibold text-primary">Filter</h2>
+        </div>
+        <div className=" flex gap-1 ml-auto text-sm text-gray-500">
+          {/* Optional: Add a "Clear All" button here */}
+          <Button
+            className="text-primary border bg-transparent hover:bg-primary hover:text-white"
+            onClick={handleClearAll}
+          >
+            <X className="w-3 h-3 mr-1" />
+            Clear All
+          </Button>
+          <Button
+            onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+            className="text-white border bg-primary hover:bg-transparent hover:border-primary hover:text-primary"
+          >
+            {isFilterPanelOpen ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
+            {isFilterPanelOpen ? "Hide" : "Show"}
+          </Button>
+
+        </div>
+      </CardHeader>
+      {isFilterPanelOpen && (
+        <CardContent className="space-y-4">
+          {/* First Row: Search and Brand/Campaign Search */}
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-4">
+            {/* General Search */}
+            <div>
+              <label className="lg:hidden text-sm font-medium text-gray-700 mb-1 block">
+                Search Work Orders
+              </label>
+              <div className="relative ">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search by WO number, client, agency..."
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="filter-input-field"
+                />
+              </div>
+            </div>
+
+            {/* Brand/Campaign Search */}
+            <div>
+              <label className="lg:hidden text-sm font-medium text-gray-700 mb-1 block">
+                Brand or Campaign
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search by brand or campaign name..."
+                  value={brandSearch}
+                  onChange={(e) => onBrandSearchChange(e.target.value)}
+                  className="filter-input-field"
+                />
+              </div>
+            </div>
+          {/* Second Row: Status, Media Type, and Date Range */}
+            <div>
+              <label className="lg:hidden text-sm font-medium text-gray-700 mb-1 block">
+                Status
+              </label>
+              <Select value={statusFilter} onValueChange={onStatusChange}>
+                <SelectTrigger className="w-full input-field">
+                  <SelectValue placeholder="All Statuses"/>
+                </SelectTrigger>
+                <SelectContent className="bg-white border-0">
+                  <SelectItem value="ALL">All Statuses</SelectItem>
+                  <SelectItem value="PENDING">Pending</SelectItem>
+                  <SelectItem value="APPROVED">Approved</SelectItem>
+                  <SelectItem value="REJECTED">Rejected</SelectItem>
+                  <SelectItem value="REVISED">Revised</SelectItem>
+                  <SelectItem value="PAUSED">Paused</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Media Type Filter */}
+            <div>
+              <label className="lg:hidden text-sm font-medium text-gray-700 mb-1 block">
+                Media Type
+              </label>
+              <Select value={mediaTypeFilter} onValueChange={onMediaTypeChange}>
+                <SelectTrigger className="w-full input-field">
+                  <SelectValue placeholder="All Media Types" />
+                </SelectTrigger>
+                <SelectContent className="select-trigger-bg">
+                  <SelectItem value="ALL">All Media Types</SelectItem>
+                  <SelectItem value="FM">Radio</SelectItem>
+                  <SelectItem value="TV">TV</SelectItem>
+                  <SelectItem value="OOH">Out-of-Home (OOH)</SelectItem>
+                  <SelectItem value="DIGITAL">Digital</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Date Range */}
+            <div>
+              <label className="lg:hidden text-sm font-medium text-gray-700 mb-1 block">
+                Date Range
+              </label>
+              <DateRangePicker
+                defaultStart={startDate}
+                defaultEnd={endDate}
+                onDateRangeChange={({ startDate: newStartDate, endDate: newEndDate }) => {
+                  onStartDateChange(newStartDate);
+                  onEndDateChange(newEndDate);
+                }}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Brand/Campaign Search */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
-            Brand or Campaign
-          </label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search by brand or campaign name..."
-              value={brandSearch}
-              onChange={(e) => onBrandSearchChange(e.target.value)}
-              className="pl-9"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Status Filter */}
           </div>
-        </div>
-      </div>
-
-      {/* Second Row: Status, Media Type, and Date Range */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Status Filter */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
-            Status
-          </label>
-          <Select value={statusFilter} onValueChange={onStatusChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="All Statuses" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="ALL">All Statuses</SelectItem>
-              <SelectItem value="PENDING">Pending</SelectItem>
-              <SelectItem value="APPROVED">Approved</SelectItem>
-              <SelectItem value="REJECTED">Rejected</SelectItem>
-              <SelectItem value="REVISED">Revised</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Media Type Filter */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
-            Media Type
-          </label>
-          <Select value={mediaTypeFilter} onValueChange={onMediaTypeChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="All Media Types" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="ALL">All Media Types</SelectItem>
-              <SelectItem value="FM">FM Radio</SelectItem>
-              <SelectItem value="TV">TV</SelectItem>
-              <SelectItem value="OOH">Out-of-Home</SelectItem>
-              <SelectItem value="DIGITAL">Digital</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Start Date */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
-            Start Date
-          </label>
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              type="date"
-              value={startDate}
-              onChange={(e) => onStartDateChange(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </div>
-
-        {/* End Date */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
-            End Date
-          </label>
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              type="date"
-              value={endDate}
-              onChange={(e) => onEndDateChange(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+        </CardContent>
+      )}
+    </Card>
   );
 }

@@ -56,13 +56,19 @@ export default function RadioRateCardView({ metadata }: { metadata: RadioMetadat
                     <h5 className="text-sm font-semibold text-gray-700 mb-2">Time Details</h5>
                     <div className="space-y-2">
                       {segment.timeDetails.map((timeDetail, tdIndex) => (
-                        <div key={tdIndex} className="bg-gray-50 p-3 rounded-md flex flex-col gap-4">
+                        <div key={tdIndex} className="bg-gray-50 p-3 rounded-md flex flex-col lg:flex-row gap-4">
+                          {timeDetail.programName && (
+                            <div>
+                              <span className="text-xs font-medium text-gray-900">Programme Name</span>
+                              <span className="ml-2 text-sm text-gray-600">{timeDetail.programName}</span>
+                            </div>
+                          )}
                           <div>
                             <span className="text-xs font-medium text-gray-900">Days:</span>
                             <span className="ml-2 text-sm text-gray-600">{timeDetail.daysOfWeek}</span>
                           </div>
                           <div>
-                            <label className="text-xs font-medium text-gray-900">Segment Times:</label>
+                            <span className="text-xs font-medium text-gray-900">Segment Times:</span>
                             <div className="ml-2 inline-flex flex-wrap gap-1">
                               {timeDetail.timeInterval.map((interval, iIndex) => (
                                 <Badge key={iIndex} variant="outline" className="text-xs border-gray-300 text-gray-600">

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Download, Filter } from "lucide-react";
@@ -19,6 +19,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DateRangePicker } from "@/components/universal/DateRangePicker";
+import MultiSelectDropdown, { type MultiSelectOption } from "@/components/universal/MultiSelectDropdown";
 
 type ReportTab = "spend" | "performance" | "campaigns";
 type Channel = "TV" | "RADIO" | "DIGITAL" | "OOH";
@@ -81,77 +82,6 @@ function quarterFromMonth(yyyymm: string): QuarterFilter {
 
 function formatCurrency(value: number): string {
   return `GHc ${value.toLocaleString()}`;
-}
-
-function toggleSelection<T extends string>(current: T[], value: T): T[] {
-  return current.includes(value) ? current.filter((item) => item !== value) : [...current, value];
-}
-
-interface MultiSelectOption<T extends string> {
-  value: T;
-  label: string;
-}
-
-function MultiSelectDropdown<T extends string>({
-  label,
-  options,
-  selected,
-  onChange,
-}: {
-  label: string;
-  options: MultiSelectOption<T>[];
-  selected: T[];
-  onChange: (next: T[]) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (!containerRef.current) return;
-      if (!containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const selectedLabel =
-    selected.length === 0
-      ? "None selected"
-      : selected.length === options.length
-      ? "All selected"
-      : `${selected.length} selected`;
-
-  return (
-    <div ref={containerRef} className="relative">
-      <p className="mb-1 text-xs text-gray-500">{label}</p>
-      <button
-        type="button"
-        className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-white px-3 text-sm"
-        onClick={() => setOpen((prev) => !prev)}
-      >
-        <span className="truncate">{selectedLabel}</span>
-        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
-
-      {open && (
-        <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-md border border-gray-200 bg-white p-2 shadow-md">
-          {options.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 rounded px-1 py-1 text-sm text-gray-700 hover:bg-gray-50">
-              <input
-                type="checkbox"
-                checked={selected.includes(option.value)}
-                onChange={() => onChange(toggleSelection(selected, option.value))}
-              />
-              {option.label}
-            </label>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 }
 
 export default function ReportingPage() {
