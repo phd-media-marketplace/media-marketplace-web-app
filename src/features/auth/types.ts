@@ -4,6 +4,8 @@ export interface User {
     id: string;
     userID: string;
     email: string;
+    phoneNumber?: string;
+    profilePictureUrl?: string;
     firstName: string;
     lastName: string;
     tenantId: string;

@@ -4,6 +4,7 @@ import {
   DollarSign,
   BarChart3,
   CreditCard,
+  BellRing,
   Package,
   FileCheck,
 } from "lucide-react";
@@ -43,5 +44,10 @@ export const mediaPartnerNavigationItems: NavigationItem[] = [
     title: "Reporting",
     url: "/media-partner/reporting",
     icon: BarChart3,
+  },
+  {
+    title: "Notifications",
+    url: "/media-partner/notifications",
+    icon: BellRing,
   },
 ];

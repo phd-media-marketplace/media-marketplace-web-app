@@ -4,7 +4,7 @@ import {
   Settings,
   User,
   CreditCard,
-  Clock3,
+  BellRing,
   BarChart3,
   LogOut,
   Sun,
@@ -171,15 +171,29 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   asChild
-                  isActive={isActive(isMediaPartner ? `${tenantPrefix}/settings/time-frames` : `${tenantPrefix}/settings/preferences`)}
-                  className={isActive(isMediaPartner ? `${tenantPrefix}/settings/time-frames` : `${tenantPrefix}/settings/preferences`) ? 'bg-primary/50 font-medium' : ''}
+                  isActive={isActive(isMediaPartner ? `${tenantPrefix}/settings/billing-accounts` : `${tenantPrefix}/settings/preferences`)}
+                  className={isActive(isMediaPartner ? `${tenantPrefix}/settings/billing-accounts` : `${tenantPrefix}/settings/preferences`) ? 'bg-primary/50 font-medium' : ''}
                 >
-                  <Link to={isMediaPartner ? `${tenantPrefix}/settings/time-frames` : `${tenantPrefix}/settings/preferences`}>
-                    {isMediaPartner ? <Clock3 className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
-                    <span>{isMediaPartner ? "Time Frames" : "Preferences"}</span>
+                  <Link to={isMediaPartner ? `${tenantPrefix}/settings/billing-accounts` : `${tenantPrefix}/settings/preferences`}>
+                    {isMediaPartner ? <CreditCard className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
+                    <span>{isMediaPartner ? "Billing Accounts" : "Preferences"}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              {isMediaPartner && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive(`${tenantPrefix}/settings/notifications`)}
+                    className={isActive(`${tenantPrefix}/settings/notifications`) ? 'bg-primary/50 font-medium' : ''}
+                  >
+                    <Link to={`${tenantPrefix}/settings/notifications`}>
+                      <BellRing className="w-4 h-4" />
+                      <span>Notifications</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
               {!isMediaPartner && (
                 <SidebarMenuItem>
                   <SidebarMenuButton

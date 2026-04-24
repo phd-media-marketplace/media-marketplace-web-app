@@ -21,10 +21,12 @@ import MediaPartnerDashboard from "@/features/media-partner-features/dashboard/p
 import MediaPartnerBillingPage from "@/features/media-partner-features/billing/pages/MediaPartnerBillingPage";
 import ViewInvoicePage from "@/features/media-partner-features/billing/pages/ViewInvoicePage";
 import EditInvoicePage from "@/features/media-partner-features/billing/pages/EditInvoicePage";
+import MediaPartnerNotificationsPage from "@/features/media-partner-features/notification/pages/MediaPartnerNotificationsPage";
 import MediaPartnerReportingPage from "@/features/media-partner-features/reporting/pages/MediaPartnerReportingPage";
-import MediaPartnerProfileSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerProfileSettingsPage";
-import MediaPartnerTeamsSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerTeamsSettingsPage";
-import MediaPartnerTimeFramesSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerTimeFramesSettingsPage";
+import MediaPartnerProfileSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerProfileSettings";
+import MediaPartnerTeamsSettingsPage from "@/features/media-partner-features/settings/pages/MediaPartnerTeamsSettings";
+import MediaPartnerNotificationPreferencesPage from "@/features/media-partner-features/settings/pages/MediaPartnerNotificationPreferences";
+import MediaPartnerBillingSettings from "@/features/media-partner-features/settings/pages/MediaPartnerBillingSettings";
 import { RateCardsList, CreateRateCard, ViewRateCard, EditRateCard } from "@/features/media-partner-features/rate-cards";
 import { PackagesList, CreatePackage, ViewPackage, EditPackage } from "@/features/media-partner-features/packages";
 import { MediaPartnerWorkOrdersList, MediaPartnerViewWorkOrder } from "@/features/media-partner-features/work-orders";
@@ -297,6 +299,10 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       element: <MediaPartnerReportingPage />,
     },
     {
+      path: "/media-partner/notifications",
+      element: <MediaPartnerNotificationsPage />,
+    },
+    {
       path: "/media-partner/settings/profile",
       element: <MediaPartnerProfileSettingsPage />,
     },
@@ -305,8 +311,12 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       element: <MediaPartnerTeamsSettingsPage />,
     },
     {
-      path: "/media-partner/settings/time-frames",
-      element: <MediaPartnerTimeFramesSettingsPage />,
+      path: "/media-partner/settings/billing-accounts",
+      element: <MediaPartnerBillingSettings />,
+    },
+    {
+      path: "/media-partner/settings/notifications",
+      element: <MediaPartnerNotificationPreferencesPage />,
     },
     // Media Partner-specific routes will be added here
   ],

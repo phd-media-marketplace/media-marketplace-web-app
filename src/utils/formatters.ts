@@ -48,4 +48,11 @@ export const getMediaTypeIcon = (type: string) => {
     }
   };
 
+export const formatRole = (role: string): string => {
+    return role
+        .split('_')
+        .map(word => word.charAt(0) + word.slice(1).toLowerCase())
+        .join(' ');
+};
+
 
