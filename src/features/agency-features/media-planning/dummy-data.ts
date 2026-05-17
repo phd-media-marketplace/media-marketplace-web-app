@@ -16,7 +16,7 @@ export const dummyMediaPlans: MediaPlan[] = [
     expectedEndDate: '2024-06-30',
     totalBudget: 150000,
     budgetAllocated: 120000,
-    status: 'active',
+    status: 'PENDING_APPROVAL',
     channels: [
       {
         mediaType: 'FM',
@@ -58,7 +58,7 @@ export const dummyMediaPlans: MediaPlan[] = [
     expectedEndDate: '2024-07-31',
     totalBudget: 250000,
     budgetAllocated: 200000,
-    status: 'pending_approval',
+    status: 'PENDING_APPROVAL',
     channels: [
       {
         mediaType: 'TV',
@@ -109,7 +109,7 @@ export const dummyMediaPlans: MediaPlan[] = [
     expectedEndDate: '2024-12-31',
     totalBudget: 180000,
     budgetAllocated: 90000,
-    status: 'draft',
+    status: 'DRAFT',
     channels: [
       {
         mediaType: 'FM',
@@ -141,7 +141,7 @@ export const dummyMediaPlans: MediaPlan[] = [
     expectedEndDate: '2024-09-30',
     totalBudget: 300000,
     budgetAllocated: 300000,
-    status: 'approved',
+    status: 'APPROVED',
     channels: [
       {
         mediaType: 'TV',
@@ -173,6 +173,8 @@ export const dummyMediaPlans: MediaPlan[] = [
         ],
       },
     ],
+    approvedBy: 'Jane Doe',
+    approvedAt: '2024-06-20T14:00:00Z',
     createdAt: '2024-04-10T08:00:00Z',
     updatedAt: '2024-06-05T10:00:00Z',
   },
@@ -186,7 +188,7 @@ export const dummyMediaPlans: MediaPlan[] = [
     expectedEndDate: '2024-05-31',
     totalBudget: 80000,
     budgetAllocated: 80000,
-    status: 'completed',
+    status: 'COMPLETED',
     channels: [
       {
         mediaType: 'FM',
@@ -218,7 +220,7 @@ export const dummyMediaPlans: MediaPlan[] = [
     expectedEndDate: '2024-09-30',
     totalBudget: 120000,
     budgetAllocated: 60000,
-    status: 'draft',
+    status: 'DRAFT',
     channels: [
       {
         mediaType: 'TV',
@@ -251,7 +253,8 @@ export const dummyMediaPlans: MediaPlan[] = [
     expectedEndDate: '2024-10-31',
     totalBudget: 200000,
     budgetAllocated: 150000,
-    status: 'paused',
+    status: 'REJECTED',
+    rejectionReason: 'Budget exceeds limits for selected channels',
     channels: [
       {
         mediaType: 'FM',

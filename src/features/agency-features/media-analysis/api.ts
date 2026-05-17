@@ -259,6 +259,54 @@ function clamp(value: number, min: number, max: number): number {
 	return Math.max(min, Math.min(value, max));
 }
 
+function parseTimeToMinutes(t: string) {
+	// expect HH:MM
+	const [hStr, mStr] = t.split(":");
+	const h = Number(hStr || 0);
+	const m = Number(mStr || 0);
+	return h * 60 + m;
+}
+
+function computeTimeIntervalFactor(filters: MediaAnalysisFilters) {
+	// If explicit interval provided, compute factor based on midpoint hour
+	if (filters.startTime && filters.endTime) {
+		const start = parseTimeToMinutes(filters.startTime);
+		const end = parseTimeToMinutes(filters.endTime);
+		// handle wrap-around (e.g., 23:00 - 03:00)
+		const duration = ((end - start + 24 * 60) % (24 * 60)) || (24 * 60);
+		const mid = (start + duration / 2) % (24 * 60);
+		const midHour = mid / 60;
+
+		if (midHour >= 17 && midHour < 22) return 1.24; // prime
+		if (midHour >= 5 && midHour < 9) return 0.92; // morning
+		if (midHour >= 9 && midHour < 17) return 0.86; // daytime
+		if (midHour >= 22 || midHour < 1) return 0.64; // late-night
+		return 0.76; // early morning fallback
+	}
+	return 1; // default neutral factor
+}
+
+function computeDaysFromFilters(filters: MediaAnalysisFilters, defaultDays = 30) {
+	if (filters.startDate && filters.endDate) {
+		const s = new Date(filters.startDate);
+		const e = new Date(filters.endDate);
+		const diff = Math.max(1, Math.round((e.getTime() - s.getTime()) / (24 * 60 * 60 * 1000)) + 1);
+		return diff;
+	}
+	switch (filters.dateRange) {
+		case "7_days":
+			return 7;
+		case "30_days":
+			return 30;
+		case "60_days":
+			return 60;
+		case "90_days":
+			return 90;
+		default:
+			return defaultDays;
+	}
+}
+
 function getBudgetFactor(totalBudget: number, selectedCount: number): number {
 	const perStationBudget = totalBudget / Math.max(selectedCount, 1);
 	const normalized = Math.log10(perStationBudget + 1) / 6;
@@ -266,22 +314,37 @@ function getBudgetFactor(totalBudget: number, selectedCount: number): number {
 }
 
 function computeStationMetric(station: MediaStation, filters: MediaAnalysisFilters): StationMetric {
-	const timeFactor = TIME_SLOT_FACTOR[filters.timeSlot];
-	const segmentFactor = SEGMENT_CLASS_FACTOR[filters.segmentClass];
+	// prefer explicit time interval if available, otherwise fall back to time slot factor
+	// fallbacks for removed UI fields: use defaults when fields are not present
+	const filterExtras = filters as unknown as { timeSlot?: AnalysisTimeSlot; segmentClass?: AnalysisSegmentClass; budget?: number };
+	const timeSlotFallback = filterExtras.timeSlot as AnalysisTimeSlot | undefined;
+	const segFallback = filterExtras.segmentClass as AnalysisSegmentClass | undefined;
+	const budgetVal = filterExtras.budget ?? 100000;
+
+	const timeFactor = filters.startTime && filters.endTime ? computeTimeIntervalFactor(filters) : (TIME_SLOT_FACTOR[timeSlotFallback ?? 'PRIME_TIME'] ?? 1);
+	// keep segment factor but reduce weight slightly since segment UI was removed
+	const segmentFactor = (SEGMENT_CLASS_FACTOR[segFallback ?? 'M2'] ?? 1) * 0.95;
 	const mediaFactor = MEDIA_TYPE_FACTOR[station.mediaType];
-	const budgetFactor = getBudgetFactor(filters.budget, filters.selectedStationIds.length);
+	const budgetFactor = getBudgetFactor(budgetVal, filters.selectedStationIds.length);
 
 	const reach = Math.round(station.baselineReach * timeFactor * segmentFactor * mediaFactor * budgetFactor);
 	const impressions = Math.round(
 		station.baselineImpressions * timeFactor * segmentFactor * (0.9 + budgetFactor / 4)
 	);
 	const averageFrequency = Number((impressions / Math.max(reach, 1)).toFixed(2));
+
+	// Adjust ROI with time and date context: shorter campaigns or prime time increase ROI slightly
+	const days = computeDaysFromFilters(filters, 30);
+	const daysFactor = clamp(1 + (30 - days) / 200, 0.88, 1.12); // small adjustment based on campaign length
 	const roi = Number(
 		(
 			station.baselineRoi *
-			clamp(timeFactor * 0.92 + segmentFactor * 0.15 + budgetFactor * 0.15, 0.78, 1.5)
+			clamp(timeFactor * 0.85 + segmentFactor * 0.1 + budgetFactor * 0.1, 0.7, 1.6) *
+			daysFactor
 		).toFixed(2)
 	);
+
+	const grp = Number(((reach / 4000000) * 100).toFixed(2));
 
 	return {
 		stationId: station.id,
@@ -292,6 +355,7 @@ function computeStationMetric(station: MediaStation, filters: MediaAnalysisFilte
 		averageFrequency,
 		roi,
 		budgetUsed: 0,
+		grp,
 	};
 }
 
@@ -307,18 +371,21 @@ export function compareStations(filters: MediaAnalysisFilters): MediaAnalysisRes
 
 	const stationMetrics = filteredStations.map((station) => computeStationMetric(station, filters));
 
+	const filterExtras = filters as unknown as { GRP?: number };
+	const GRPVal = filterExtras.GRP ?? 100;
+
 	const totalScore = stationMetrics.reduce((sum, metric) => sum + metric.reach * metric.roi, 0) || 1;
-	const budgetDistribution = stationMetrics.map((metric) => {
-		const recommendedBudget = (filters.budget * metric.reach * metric.roi) / totalScore;
+	const GRPDistribution = stationMetrics.map((metric) => {
+		const recommendedBudget = (GRPVal * metric.reach * metric.roi) / totalScore;
 		return {
 			name: metric.stationName,
 			value: Math.round(recommendedBudget),
 		};
 	});
 
-	const budgetMap = new Map(budgetDistribution.map((slice) => [slice.name, slice.value]));
+	const GRPMap = new Map(GRPDistribution.map((slice) => [slice.name, slice.value]));
 	stationMetrics.forEach((metric) => {
-		metric.budgetUsed = budgetMap.get(metric.stationName) ?? 0;
+		metric.grp = GRPMap.get(metric.stationName) ?? 0;
 	});
 
 	const stationTrends = stationMetrics.map((metric) => {
@@ -344,20 +411,25 @@ export function compareStations(filters: MediaAnalysisFilters): MediaAnalysisRes
 	return {
 		stationMetrics,
 		stationTrends,
-		budgetDistribution,
+		GRPDistribution,
 	};
 }
 
-function generateDailyTrends(station: MediaStation, filters: MediaAnalysisFilters, days: number = 30) {
+function generateDailyTrends(station: MediaStation, filters: MediaAnalysisFilters, days?: number) {
+	const d = typeof days === 'number' ? days : computeDaysFromFilters(filters, 30);
 	const dailyPoints = [];
-	const timeFactor = TIME_SLOT_FACTOR[filters.timeSlot];
-	const segmentFactor = SEGMENT_CLASS_FACTOR[filters.segmentClass];
+	const filterExtras = filters as unknown as { timeSlot?: AnalysisTimeSlot; segmentClass?: AnalysisSegmentClass; budget?: number };
+	const timeSlotFallback = filterExtras.timeSlot as AnalysisTimeSlot | undefined;
+	const segFallback = filterExtras.segmentClass as AnalysisSegmentClass | undefined;
+	const budgetVal = filterExtras.budget ?? 100000;
+	const timeFactor = filters.startTime && filters.endTime ? computeTimeIntervalFactor(filters) : (TIME_SLOT_FACTOR[timeSlotFallback ?? 'PRIME_TIME'] ?? 1);
+	const segmentFactor = (SEGMENT_CLASS_FACTOR[segFallback ?? 'M2'] ?? 1) * 0.95;
 	const mediaFactor = MEDIA_TYPE_FACTOR[station.mediaType];
-	const budgetFactor = getBudgetFactor(filters.budget, 1);
+	const budgetFactor = getBudgetFactor(budgetVal, 1);
 
-	for (let i = 0; i < days; i++) {
+	for (let i = 0; i < d; i++) {
 		const date = new Date();
-		date.setDate(date.getDate() - (days - i - 1));
+		date.setDate(date.getDate() - (d - i - 1));
 
 		// Add some daily variance (±10-15%)
 		const variance = 0.85 + Math.random() * 0.3;

@@ -30,7 +30,7 @@ interface RadioRateCardFormProps {
 
 
 /**
- * Available ad types for FM radio
+ * Available ad types for Radio
  */
 const AD_TYPE_OPTIONS: { value: RadioAdType; label: string }[] = [
   { value: 'ANNOUNCEMENTS', label: 'Announcements' },
@@ -41,7 +41,7 @@ const AD_TYPE_OPTIONS: { value: RadioAdType; label: string }[] = [
 ];
 
 /**
- * Available segment classes for FM radio
+ * Available segment classes for Radio
  */
 const SEGMENT_CLASS_OPTIONS: { value: RadioSegmentClass; label: string }[] = [
   { value: 'A1', label: 'A1' },
@@ -98,8 +98,8 @@ const INTERVIEW_DURATIONS: { value: DurationInMin; label: string }[] = [
 ];
 
 /**
- * FM Rate Card Form Component
- * Manages the creation and editing of FM radio rate cards using the new RadioMetadata structure
+ * Radio Rate Card Form Component
+ * Manages the creation and editing of Radio rate cards using the new RadioMetadata structure
  * Each ad type can have multiple rate configurations with class-based segments and time details
  */
 export default function FMRateCardForm({ metadata, setMetadata }: RadioRateCardFormProps) {
@@ -279,7 +279,7 @@ export default function FMRateCardForm({ metadata, setMetadata }: RadioRateCardF
   return (
     <Card className="border border-primary/5 text-primary">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-primary text-md font-semibold">FM Radio Rate Configurations</CardTitle>
+        <CardTitle className="text-primary text-md font-semibold">Radio Rate Configurations</CardTitle>
         <Button 
           type="button" 
           onClick={openAddRateDialog} 

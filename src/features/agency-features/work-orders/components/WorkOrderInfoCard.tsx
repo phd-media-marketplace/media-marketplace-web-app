@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { WorkOrderHeader } from "../types";
+import type { WorkOrderHeader } from "@/types/work-order";
 
 interface WorkOrderInfoCardProps {
   header: WorkOrderHeader;
@@ -20,6 +20,8 @@ export function WorkOrderInfoCard({
   preparedBy,
   preparedByTitle,
 }: WorkOrderInfoCardProps) {
+  const clientDisplayName = header.clientName || "N/A";
+
   return (
     <Card>
       <CardHeader className="border-b border-violet-100 [.border-b]:pb-1 ">
@@ -39,10 +41,10 @@ export function WorkOrderInfoCard({
 
             <div className="rounded bg-indigo-50/30 p-4 h-25">
               <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-800/80">
-                {header.clientType === 'AGENCY' ? 'Agency' : 'Client'}
+                Client
               </label>
               <div className="mt-1 text-lg font-semibold text-indigo-950">
-                {header.clientType === 'AGENCY' ? header.agencyName : header.clientName}
+                {clientDisplayName}
               </div>
             </div>
 

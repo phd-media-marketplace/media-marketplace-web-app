@@ -418,3 +418,51 @@ const uploadedFiles = (metadata.packageImages as string[] | undefined) || [];
 			packageImages: urls,
 		});
 	};
+
+  {/* Station Selection Grid (for comparison tab) */}
+			{showStationSelection && (
+				<div className="space-y-3 pt-4 border-t border-slate-200">
+					<div className="flex justify-between items-center">
+						<label className="text-sm font-semibold text-gray-700">
+							Select Stations ({selectedCount}/{maxStations})
+						</label>
+						{selectedCount >= minStations && (
+							<span className="text-xs text-green-600 font-medium">✓ Ready to compare</span>
+						)}
+					</div>
+					{/* <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+						{availableStations.map((station) => {
+							const isSelected = filters.selectedStationIds.includes(station.id);
+							const isDisabled = !isSelected && selectedCount >= maxStations;
+
+							return (
+								<Button
+									key={station.id}
+									variant={isSelected ? "default" : "outline"}
+									size="sm"
+									onClick={() => {
+										if (isSelected && !canDeselectStation) return;
+										onStationToggle(station.id);
+									}}
+									disabled={isDisabled}
+									className={`text-xs font-medium transition-all ${
+										isSelected
+											? "bg-blue-600 hover:bg-blue-700 text-white"
+											: "hover:border-blue-400"
+									}`}
+									title={
+										isDisabled
+											? `Maximum ${maxStations} stations allowed`
+											: isSelected && !canDeselectStation
+												? `Minimum ${minStations} stations required`
+												: ""
+									}
+								>
+									{isSelected && <span className="mr-1">✓</span>}
+									{station.name}
+								</Button>
+							);
+						})}
+					</div> */}
+				</div>
+			)}

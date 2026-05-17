@@ -44,11 +44,12 @@ export default function MediaPartnerBillingPage() {
   const [createPopupOpen, setCreatePopupOpen] = useState(false);
 
   // Media partner only controls for create/generate.
-  const [recipientType, setRecipientType] = useState<InvoiceRecipientType>("AGENCY");
+  const [recipientType] = useState<InvoiceRecipientType>("AGENCY");
   const [recipientId, setRecipientId] = useState("");
   const [workOrderNumber, setWorkOrderNumber] = useState("");
   const [amount, setAmount] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [notes, setNotes] = useState("");
 
   const filteredInvoices = useMemo(() => {
     const basedFiltered = FALLBACK_INVOICES.filter((invoice) => {
@@ -223,19 +224,16 @@ export default function MediaPartnerBillingPage() {
       <InvoiceCreatePanel
         open={createPopupOpen}
         onOpenChange={setCreatePopupOpen}
-        recipientType={recipientType}
-        recipientId={recipientId}
         workOrderNumber={workOrderNumber}
-        amount={amount}
         dueDate={dueDate}
-        onRecipientTypeChange={setRecipientType}
-        onRecipientIdChange={setRecipientId}
+        notes={notes}
+        onNotesChange={setNotes}
         onWorkOrderNumberChange={setWorkOrderNumber}
         onAmountChange={setAmount}
         onDueDateChange={setDueDate}
-        onCreateInvoice={handleCreateInvoice}
-        onGenerateInvoice={handleGenerateInvoice}
-        creating={creating}
+        onGenerateInvoiceAndSaveAsDraft={handleCreateInvoice}
+        onGenerateInvoiceAndSend={handleGenerateInvoice}
+        saving={creating}
         generating={generating}
       />
 

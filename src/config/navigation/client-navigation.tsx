@@ -7,6 +7,9 @@ import {
   BarChart3,
   Megaphone,
   FileCheck,
+  User,
+  Users,
+  Settings,
 } from "lucide-react";
 
 export const clientNavigationItems: NavigationItem[] = [
@@ -47,5 +50,23 @@ export const clientNavigationItems: NavigationItem[] = [
     title: "Billing",
     url: "/client/billing",
     icon: CreditCard,
+  },
+];
+
+export const clientSettingsNavigationItems: NavigationItem[] = [
+  {
+    title: "Profile",
+    url: "/client/settings/profile",
+    icon: User,
+  },
+  {
+    title: "Teams",
+    url: "/client/settings/teams",
+    icon: Users,
+  },
+  {
+    title: "Preferences",
+    url: "/client/settings/preferences",
+    icon: Settings,
   },
 ];

@@ -284,7 +284,7 @@ export default function MediaPartnerRegistrationForm() {
                                     </SelectTrigger>
                                     <SelectContent className="bg-white border-none text-accent focus:bg-transparent">
                                         <SelectItem value="TV">TV</SelectItem>
-                                        <SelectItem value="RADIO">Radio</SelectItem>
+                                        <SelectItem value="FM">Radio</SelectItem>
                                         <SelectItem value="TV_RADIO">TV & Radio</SelectItem>
                                         <SelectItem value="OOH">Out-of-Home (OOH)</SelectItem>
                                         <SelectItem value="DIGITAL">Digital</SelectItem>

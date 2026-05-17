@@ -1,4 +1,4 @@
-import type { WorkOrder } from "./types";
+import type { WorkOrder } from "@/types/work-order";
 
 /**
  * Dummy Work Orders Data
@@ -19,7 +19,7 @@ export const dummyWorkOrders: WorkOrder[] = [
     
     header: {
       clientType: 'AGENCY',
-      agencyName: 'Ogilvy Ghana',
+      clientName: 'Ogilvy Ghana',
       brandName: 'Coca-Cola Ghana',
       poNumber: 'PO-2024-0156',
       mpoNumber: 'MPO-2024-0089',
@@ -68,7 +68,7 @@ export const dummyWorkOrders: WorkOrder[] = [
     ],
     
     subtotal: 185000,
-    tax: 0,
+    tax: { taxRate: 0, taxAmount: 0 },
     totalAmount: 185000,
     
     status: 'APPROVED',
@@ -97,7 +97,7 @@ export const dummyWorkOrders: WorkOrder[] = [
     
     header: {
       clientType: 'AGENCY',
-      agencyName: 'Ogilvy Ghana',
+      clientName: 'Ogilvy Ghana',
       brandName: 'Coca-Cola Ghana',
       poNumber: 'PO-2024-0156',
       mpoNumber: 'MPO-2024-0089',
@@ -135,7 +135,7 @@ export const dummyWorkOrders: WorkOrder[] = [
     ],
     
     subtotal: 210000,
-    tax: 0,
+    tax: { taxRate: 0, taxAmount: 0 },
     totalAmount: 210000,
     
     status: 'PENDING',
@@ -200,7 +200,7 @@ export const dummyWorkOrders: WorkOrder[] = [
     ],
     
     subtotal: 330000,
-    tax: 0,
+    tax: { taxRate: 0, taxAmount: 0 },
     totalAmount: 330000,
     
     status: 'REJECTED',
@@ -227,7 +227,7 @@ export const dummyWorkOrders: WorkOrder[] = [
     
     header: {
       clientType: 'AGENCY',
-      agencyName: 'DDB Ghana',
+      clientName: 'DDB Ghana',
       brandName: 'Vodafone Ghana',
       poNumber: 'PO-2024-0158',
       mpoNumber: 'MPO-2024-0091',
@@ -264,7 +264,7 @@ export const dummyWorkOrders: WorkOrder[] = [
     ],
     
     subtotal: 171000,
-    tax: 0,
+    tax: { taxRate: 0, taxAmount: 0 },
     totalAmount: 171000,
     
     status: 'APPROVED',
@@ -331,7 +331,7 @@ export const dummyWorkOrders: WorkOrder[] = [
     ],
     
     subtotal: 233500,
-    tax: 0,
+    tax: { taxRate: 0, taxAmount: 0 },
     totalAmount: 233500,
     
     status: 'PENDING',

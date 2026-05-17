@@ -88,7 +88,7 @@ export const buildRateCardSummaryItems = (params: {
   },
   {
     label: 'Media Type',
-    value: params.mediaType === 'FM' ? 'Radio' : 'TV',
+    value: params.mediaType === 'FM' ? 'FM' : 'TV',
     icon: params.mediaType === 'FM' ? Radio : Tv,
     cardClass: 'border-indigo-200/70 bg-linear-to-br from-indigo-50 to-white hover:border-indigo-300',
     iconClass: 'bg-indigo-100 text-indigo-700',

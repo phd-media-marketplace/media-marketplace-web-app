@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { WorkOrderSegment } from "../types";
+import type { WorkOrderSegment } from "@/types/work-order";
 import { formatCurrency } from "@/utils/formatters";
 import { DataTable } from "@/components/universal/DataTable";
 import { useMemo } from "react";
@@ -28,10 +28,7 @@ export function WorkOrderSegmentsTable({ segments }: WorkOrderSegmentsTableProps
             )}
           </div>
         ),
-        widthPx: 140,
-        minWidthPx: 140,
-        widthClassName: "w-36",
-        minWidthClassName: "min-w-36",
+        widthPx: 160,
       },
       {
         id: "segmentClass",
@@ -39,10 +36,8 @@ export function WorkOrderSegmentsTable({ segments }: WorkOrderSegmentsTableProps
         cell: (segment: WorkOrderSegment) => (
           <Badge variant="outline">{segment.segmentClass}</Badge>
         ),
-        widthPx: 80,
-        minWidthPx: 80,
-        widthClassName: "w-20",
-        minWidthClassName: "min-w-20",
+        widthPx: 90,
+        align: "center",
       },
       {
         id: "adType",
@@ -75,20 +70,14 @@ export function WorkOrderSegmentsTable({ segments }: WorkOrderSegmentsTableProps
             )}
           </div>
         ),
-        widthPx: 200,
-        minWidthPx: 200,
-        widthClassName: "w-48",
-        minWidthClassName: "min-w-48",
+        widthPx: 190,
       },
       {
         id: "timeSlot",
         header: "Time Slot",
         cell: (segment: WorkOrderSegment) => segment.timeSlot,
         widthPx: 150,
-        minWidthPx: 150,
-        widthClassName: "w-40",
-        minWidthClassName: "min-w-40",
-      },
+        },
       {
         id: "totalSpots",
         header: "Spots",
@@ -97,8 +86,6 @@ export function WorkOrderSegmentsTable({ segments }: WorkOrderSegmentsTableProps
         headerAlign: "center",
         widthPx: 80,
         minWidthPx: 80,
-        widthClassName: "w-20",
-        minWidthClassName: "min-w-20",
         cellClassName: "font-medium",
       },
       {
@@ -108,9 +95,6 @@ export function WorkOrderSegmentsTable({ segments }: WorkOrderSegmentsTableProps
         align: "right",
         headerAlign: "right",
         widthPx: 110,
-        minWidthPx: 110,
-        widthClassName: "w-28",
-        minWidthClassName: "min-w-28",
       },
       {
         id: "totalAmount",
@@ -119,9 +103,6 @@ export function WorkOrderSegmentsTable({ segments }: WorkOrderSegmentsTableProps
         align: "right",
         headerAlign: "right",
         widthPx: 120,
-        minWidthPx: 120,
-        widthClassName: "w-32",
-        minWidthClassName: "min-w-32",
         cellClassName: "font-medium",
       },
     ];

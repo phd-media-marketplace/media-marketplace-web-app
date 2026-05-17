@@ -1,9 +1,9 @@
 import { apiClient } from "@/services/https";
-import type { AxiosProgressEvent } from "axios";
+import { uploadFile } from "@/utils/uploadFile";
 import type { Package, CreatePackageRequest, UpdatePackageRequest, PackageListResponse } from "./types";
 
-const BASE_URL = "/media-partner/packages";
-const UPLOAD_URL = import.meta.env.VITE_PACKAGE_UPLOAD_URL || `${BASE_URL}/upload`;
+const BASE_URL = "/packages";
+const UPLOAD_URL = import.meta.env.VITE_PACKAGE_UPLOAD_URL || "/uploads";
 
 /**
  * List all packages for a media partner
@@ -14,8 +14,40 @@ export async function listPackages(params?: {
   page?: number;
   limit?: number;
 }): Promise<PackageListResponse> {
-  const response = await apiClient.get<PackageListResponse>(BASE_URL, { params });
-  return response.data;
+  // const response = await apiClient.get<PackageListResponse>(BASE_URL, { params });
+  // return response.data;
+  try {
+    const response = await apiClient.get<PackageListResponse>(BASE_URL, { params });
+    const responseBody = response.data as Package[] | PackageListResponse | { data?: Package[] | PackageListResponse };
+
+    if (Array.isArray(responseBody)) {
+      return {
+        packages: responseBody,
+        total: responseBody.length,
+        page: params?.page ?? 1,
+        limit: params?.limit ?? responseBody.length,
+      };
+    }
+    if (responseBody && typeof responseBody === 'object' && 'packages' in responseBody && Array.isArray(responseBody.packages)) {
+      return {
+        packages: responseBody.packages,
+        total: typeof responseBody.total === 'number' ? responseBody.total : responseBody.packages.length,
+        page: typeof responseBody.page === 'number' ? responseBody.page : (params?.page ?? 1),
+        limit: typeof responseBody.limit === 'number' ? responseBody.limit : (params?.limit ?? responseBody.packages.length),
+      };
+    }
+
+    return {
+      packages: [],
+      total: 0,
+      page: params?.page ?? 1,
+      limit: params?.limit ?? 0,
+    };
+    
+  } catch (error) {
+    console.error("Error fetching packages:", error);
+    throw error;
+  }
 }
 
 /**
@@ -85,6 +117,10 @@ function extractFileUrl(responseData: unknown): string | undefined {
     return directUrl;
   }
 
+  if (typeof payload.downloadUrl === "string") {
+    return payload.downloadUrl;
+  }
+
   const data = payload.data;
   if (data && typeof data === "object") {
     const nested = data as Record<string, unknown>;
@@ -103,36 +139,19 @@ export async function uploadAsset(
   file: File,
   options?: UploadAssetOptions
 ): Promise<UploadAssetResponse> {
-  const formData = new FormData();
-  formData.append("file", file);
-  if (options?.assetType) {
-    formData.append("assetType", options.assetType);
-  }
-
-  const response = await apiClient.post(uploadUrl, formData, {
+  const uploadResponse = await uploadFile(file, {
     signal: options?.signal,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    onUploadProgress: (event: AxiosProgressEvent) => {
-      if (!options?.onProgress) return;
-      if (!event.total) {
-        options.onProgress(0);
-        return;
-      }
-      const progress = Math.round((event.loaded * 100) / event.total);
-      options.onProgress(progress);
-    },
+    onProgress: options?.onProgress,
+    uploadPath: uploadUrl,
   });
 
-  const responseBody = response.data;
-  const raw = responseBody as Record<string, unknown>;
+  const raw = uploadResponse.raw as Record<string, unknown>;
 
   return {
-    url: extractFileUrl(responseBody),
-    id: typeof raw?.id === "string" ? raw.id : undefined,
+    url: extractFileUrl(uploadResponse.raw),
+    id: typeof raw?.id === "string" ? raw.id : uploadResponse.objectName,
     fileName: typeof raw?.fileName === "string" ? raw.fileName : file.name,
-    raw,
+    raw: uploadResponse.raw,
   };
 }
 

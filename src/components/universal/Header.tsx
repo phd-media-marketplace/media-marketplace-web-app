@@ -17,6 +17,7 @@ export interface HeaderProps {
   backIcon?: ElementType<{ className?: string }>;
   backbtnText?: string;
   ctabtnText?: string;
+  additionalElements?: React.ReactNode;
 }
 
 export default function Header({
@@ -32,6 +33,7 @@ export default function Header({
   backbtnVisible = true,
   backIcon: BackIcon = ArrowLeft,
   backbtnText = "Back",
+  additionalElements
 }: HeaderProps) {
   const iconContent = HeaderIcon
     ? <HeaderIcon className="w-6 h-6" />
@@ -62,6 +64,7 @@ export default function Header({
                 {isActive ? "Active" : "Inactive"}
               </Badge>
             )}
+            {additionalElements}
           </div>
         </div>
       </div>

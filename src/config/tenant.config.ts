@@ -1,8 +1,8 @@
 import type { NavigationItem } from "@/types/index";
 import type { TenantType } from "@/types/api";
-import { agencyNavigationItems } from "./navigation/agency-navigation";
-import { clientNavigationItems } from "./navigation/client-navigation";
-import { mediaPartnerNavigationItems } from "./navigation/media-partner-navigation";
+import { agencyNavigationItems, agencySettingsNavigationItems } from "./navigation/agency-navigation";
+import { clientNavigationItems, clientSettingsNavigationItems } from "./navigation/client-navigation";
+import { mediaPartnerNavigationItems, mediaPartnerSettingsNavigationItems } from "./navigation/media-partner-navigation";
 
 export interface TenantBranding {
   workspaceName: string;
@@ -12,12 +12,14 @@ export interface TenantBranding {
 
 export interface TenantConfig {
   navigation: NavigationItem[];
+  settingsNavigation: NavigationItem[];
   branding: TenantBranding;
 }
 
 const tenantConfigurations: Record<TenantType, TenantConfig> = {
   AGENCY: {
     navigation: agencyNavigationItems,
+    settingsNavigation: agencySettingsNavigationItems,
     branding: {
       workspaceName: "Agency Workspace",
       logoColor: "#C8F526", // Lime green
@@ -26,6 +28,7 @@ const tenantConfigurations: Record<TenantType, TenantConfig> = {
   },
   CLIENT: {
     navigation: clientNavigationItems,
+    settingsNavigation: clientSettingsNavigationItems,
     branding: {
       workspaceName: "Client Portal",
       logoColor: "#3B82F6", // Blue
@@ -34,6 +37,7 @@ const tenantConfigurations: Record<TenantType, TenantConfig> = {
   },
   MEDIA_PARTNER: {
     navigation: mediaPartnerNavigationItems,
+    settingsNavigation: mediaPartnerSettingsNavigationItems,
     branding: {
       workspaceName: "Media Partner Hub",
       logoColor: "#10B981", // Emerald green

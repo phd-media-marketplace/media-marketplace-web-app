@@ -1,8 +1,10 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SimpleLineChart, MetricCard } from "./charts";
+import { SimpleAreaChart } from "./charts";
 import type { StationAnalysisDetail } from "../types";
-// import { TrendingUp, Users, Radio, Zap } from "lucide-react";
+import { useSelectedStation, useStationRecommendations } from "../hooks";
+import { StationDetailDialog } from "./StationDetailDialog";
+import { ArrowUpRight, Tv } from "lucide-react";
 
 interface StationAnalysisTabProps {
 	stations: StationAnalysisDetail[];
@@ -10,6 +12,9 @@ interface StationAnalysisTabProps {
 }
 
 export function StationAnalysisTab({ stations, isLoading = false }: StationAnalysisTabProps) {
+	const { selectedStation, setSelectedStationId, closeSelectedStation } = useSelectedStation(stations);
+	const recommendations = useStationRecommendations(selectedStation);
+
 	if (isLoading) {
 		return <div className="text-center py-12 text-gray-500">Loading station data...</div>;
 	}
@@ -24,39 +29,28 @@ export function StationAnalysisTab({ stations, isLoading = false }: StationAnaly
 
 	return (
 		<div className="space-y-6">
-			{/* Summary Stats */}
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-				{stations.slice(0, 4).map((station) => (
-					<MetricCard
-						key={station.stationId}
-						label={station.stationName}
-						value={(station.weeklyReach / 1000).toFixed(0)}
-						unit="K Reach"
-						color="blue"
-						trend={{ value: 12, isPositive: true }}
-					/>
-				))}
-			</div>
-
 			{/* Station Cards Grid (2 per row) */}
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				{stations.map((station) => (
-					<Card key={station.stationId} className="overflow-hidden hover:shadow-lg transition-shadow">
+					<Card
+						key={station.stationId}
+						className="overflow-hidden border border-slate-200 bg-slate-50/70 hover:shadow-lg transition-all"
+					>
 						{/* Card Header */}
-						<div className="bg-linear-to-r from-blue-600 to-blue-700 p-6 text-white">
-							<div className="flex items-start justify-between">
-								<div>
-									<h2 className="text-xl font-bold">{station.stationName}</h2>
-									<p className="text-blue-100 text-sm mt-1">{station.mediaType}</p>
+						<div className="bg-slate-100 p-6 border-b border-slate-200">
+							<div className="flex items-start justify-between gap-3">
+								<div className="flex items-center gap-2">
+									<Tv className="w-5 h-5 text-slate-500" />
+									<h2 className="text-xl font-bold text-slate-900">{station.stationName}</h2>
 								</div>
-								<Badge className="bg-blue-500 text-white">{station.mediaType}</Badge>
+								<Badge className="bg-slate-200 text-slate-700">{station.mediaType}</Badge>
 							</div>
 						</div>
 
 						{/* Card Body */}
-						<div className="p-6 space-y-6">
+						<div className="px-6 space-y-6">
 							{/* Key Metrics */}
-							<div className="grid grid-cols-2 gap-4">
+							<div className="grid grid-cols-3 gap-4">
 								<div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
 									<p className="text-xs text-gray-600 font-medium mb-1">Weekly Reach</p>
 									<p className="text-2xl font-bold text-blue-900">
@@ -71,52 +65,30 @@ export function StationAnalysisTab({ stations, isLoading = false }: StationAnaly
 									<p className="text-xs text-gray-600 font-medium mb-1">Average GRP</p>
 									<p className="text-2xl font-bold text-purple-900">{station.averageGrp.toFixed(1)}</p>
 								</div>
-								<div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
-									<p className="text-xs text-gray-600 font-medium mb-1">ROI</p>
-									<p className="text-2xl font-bold text-orange-900">{station.roi.toFixed(2)}x</p>
-								</div>
 							</div>
 
 							{/* Daily Reach Trend */}
 							<div>
 								<h3 className="text-sm font-semibold text-gray-900 mb-3">Daily Reach Trend (Last 30 Days)</h3>
-								<SimpleLineChart
+								{/* <SimpleLineChart
 									data={station.dailyTrend}
 									dataKey="reach"
 									xAxisKey="date"
 									title=""
-									strokeColor="#3b82f6"
+									strokeColor="#9370DB"
+								/> */}
+								<SimpleAreaChart
+									data={station.dailyTrend}
+									dataKey="reach"
+									xAxisKey="date"
+									title=""
+									strokeColor="#9370DB"
+									fillColor="#9370DB"
+									// xAxisLabel="Date"
+									// yAxisLabel="Reach"
 								/>
 							</div>
 
-							{/* Peak Programs */}
-							<div>
-								<h3 className="text-sm font-semibold text-gray-900 mb-3">Peak Programs</h3>
-								<div className="space-y-2">
-									{station.peakPrograms.map((program) => (
-										<div
-											key={program.id}
-											className="flex items-start justify-between p-3 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors"
-										>
-											<div className="flex-1 min-w-0">
-												<p className="font-medium text-gray-900 text-sm truncate">{program.name}</p>
-												<div className="flex items-center gap-2 mt-1 flex-wrap">
-													<Badge variant="outline" className="text-xs">
-														{program.timeSlot.replace(/_/g, " ")}
-													</Badge>
-													<span className="text-xs text-gray-600">
-														Reach: {(program.reach / 1000).toFixed(0)}K
-													</span>
-												</div>
-											</div>
-											<div className="text-right ml-2">
-												<p className="font-bold text-blue-600 text-sm">{program.grp.toFixed(1)}</p>
-												<p className="text-xs text-gray-500">GRP</p>
-											</div>
-										</div>
-									))}
-								</div>
-							</div>
 
 							{/* Additional Stats */}
 							<div className="grid grid-cols-3 gap-2 pt-4 border-t border-gray-200">
@@ -135,10 +107,24 @@ export function StationAnalysisTab({ stations, isLoading = false }: StationAnaly
 									<Badge className="mt-1 justify-center bg-green-600 text-white text-xs">Active</Badge>
 								</div>
 							</div>
+							<button
+								type="button"
+								onClick={() => setSelectedStationId(station.stationId)}
+								className="w-full rounded-lg border border-secondary bg-white px-4 py-2.5 text-sm font-medium text-primary hover:bg-secondary/10 transition-colors inline-flex items-center justify-center gap-2"
+							>
+								Click to view more details
+								<ArrowUpRight className="h-4 w-4" />
+							</button>
 						</div>
 					</Card>
 				))}
 			</div>
+
+			<StationDetailDialog
+				selectedStation={selectedStation}
+				recommendations={recommendations}
+				onClose={closeSelectedStation}
+			/>
 		</div>
 	);
 }

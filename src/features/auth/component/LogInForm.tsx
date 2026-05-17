@@ -8,12 +8,14 @@ import RegistrationModal from "./RegistrationModal";
 import { toast } from "sonner";
 import { useLogin } from "../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/auth-store";
 import { getTenantPrefix } from "@/config/routes.config";
 import { getLoginErrorMessage } from "@/utils/error-handler";
 
 export default function LogInForm() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [showPassword, setShowPassword] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const { control, handleSubmit, formState: { errors } } = useForm<LogInFormData>({
@@ -36,6 +38,11 @@ export default function LogInForm() {
                     const currentUser = useAuthStore.getState().user;
                     if (currentUser?.tenantType) {
                         const tenantPrefix = getTenantPrefix(currentUser.tenantType);
+                        const loginState = location.state as { postLoginAction?: string; packageState?: unknown } | null;
+                        if (loginState?.postLoginAction === "create-media-plan") {
+                            navigate(`${tenantPrefix}/media-planning/create`, { state: loginState.packageState });
+                            return;
+                        }
                         navigate(`${tenantPrefix}/dashboard`);
                     } else {
                         // Fallback to generic dashboard if tenant type is not available

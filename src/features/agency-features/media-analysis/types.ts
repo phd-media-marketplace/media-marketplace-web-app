@@ -23,11 +23,13 @@ export interface MediaStation {
 
 export interface MediaAnalysisFilters {
 	mediaType: AnalysisMediaType;
-	timeSlot: AnalysisTimeSlot;
-	segmentClass: AnalysisSegmentClass;
-	budget: number;
+	// timeSlot: AnalysisTimeSlot;
+	// segmentClass: AnalysisSegmentClass;
+	// budget: number;
 	selectedStationIds: string[];
 	dateRange: DateRangeFilter;
+	startTime?: string;
+	endTime?: string;
 	startDate?: string;
 	endDate?: string;
 }
@@ -41,6 +43,7 @@ export interface StationMetric {
 	averageFrequency: number;
 	roi: number;
 	budgetUsed: number;
+	grp?: number;
 }
 
 export interface TrendPoint {
@@ -81,7 +84,7 @@ export interface PeakProgram {
 	scheduledDays: number;
 }
 
-export interface BudgetSlice {
+export interface GRPDistributionSlice {
 	name: string;
 	value: number;
 }
@@ -102,7 +105,7 @@ export interface StationAnalysisDetail {
 export interface MediaAnalysisResult {
 	stationMetrics: StationMetric[];
 	stationTrends: StationTrendSeries[];
-	budgetDistribution: BudgetSlice[];
+	GRPDistribution: GRPDistributionSlice[];
 }
 
 export interface Program {

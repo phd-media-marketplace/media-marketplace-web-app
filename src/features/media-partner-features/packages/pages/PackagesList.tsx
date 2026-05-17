@@ -1,29 +1,72 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {useQuery, useQueryClient, useMutation} from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Plus, Radio, Tv, Package as PackageIcon, Percent } from "lucide-react";
 import ListCard, { type StatItem } from "@/features/media-partner-features/Common-Components/ListCard";
-import { dummyPackages } from "../dummy-data";
+// import { dummyPackages } from "../dummy-data";
 import { toast } from "sonner";
 import { formatDate } from "@/utils/formatters";
 import NoDataCard from "@/components/universal/NoDataCard";
 import Header from "@/components/universal/Header";
+import ApprovalConfirmationDialogBox from "@/components/universal/ApprovalConfirmationDialogBox";
+import { getFormErrorMessage } from "@/utils/error-handler";
+import { deletePackage, listPackages } from "../api";
+// import type { Package } from "../types";
 
 export default function PackagesList() {
   const [selectedMediaType, setSelectedMediaType] = useState<'FM' | 'TV' | 'ALL'>('ALL');
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const packagesQuery = useQuery({
+    queryKey: ['packages', selectedMediaType],
+    queryFn: () => listPackages(
+      selectedMediaType === 'ALL' 
+      ? undefined 
+      : { mediaType: selectedMediaType }
+    ),
+    staleTime: 60 * 1000, // 1 minute
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deletePackage,
+    onSuccess: () => {
+      toast.success('Package deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['packages'] });
+    },
+    onError: (error: unknown) => {
+      toast.error(getFormErrorMessage(error));
+    },
+  });
+  
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [packageToDelete, setPackageToDelete] = useState<{ id: string; packageName?: string } | null>(null);
+
+  const openDeleteConfirm = (pkg: { id: string; packageName?: string }) => {
+    setPackageToDelete(pkg);
+    setConfirmOpen(true);
+  };
+
+  const closeDeleteConfirm = () => {
+    setPackageToDelete(null);
+    setConfirmOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    if (packageToDelete) {
+      deleteMutation.mutate(packageToDelete.id);
+    }
+    closeDeleteConfirm();
+  };
 
   // Filter packages by media type
   const filteredPackages = selectedMediaType === 'ALL'
-    ? dummyPackages
-    : dummyPackages.filter(pkg => pkg.mediaType === selectedMediaType);
+    ? packagesQuery.data?.packages || []
+    : packagesQuery.data?.packages?.filter(pkg => pkg.mediaType === selectedMediaType) || [];
 
-  const handleDelete = (id: string) => {
-    console.log('Delete package:', id);
-    if (window.confirm('Are you sure you want to delete this package?')) {
-      toast.info('Delete functionality will be implemented with API integration');
-    }
-  };
+  // deletion now handled via confirmation dialog (openDeleteConfirm)
 
   // Helper to create media type icon component
   const createMediaTypeIconComponent = (mediaType: string) => {
@@ -131,7 +174,7 @@ export default function PackagesList() {
                 }
                 onView={() => navigate(`/media-partner/packages/${pkg.id}`)}
                 onEdit={() => navigate(`/media-partner/packages/${pkg.id}/edit`)}
-                onDelete={() => handleDelete(pkg.id)}
+                onDelete={() => openDeleteConfirm(pkg)}
                 showPricingSection={true}
               />
             );
@@ -139,13 +182,24 @@ export default function PackagesList() {
         </div>
       ) : (
           <NoDataCard
-            title="No Packages Found"
+            title="Ooops! No Packages Found"
             message="You haven't created any packages yet or for the selected Media Type. Start by creating a new package to manage your media offerings."
             btnText="Create Package"
             redirectFunc={() => navigate('/media-partner/packages/create')}
             className="w-full lg:h-155 flex items-center justify-center"
           />
       )}
+      <ApprovalConfirmationDialogBox
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title={packageToDelete ? `Delete package "${packageToDelete.packageName ?? ''}"?` : 'Delete package?'}
+        description="This action cannot be undone. Are you sure you want to permanently delete this package?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={closeDeleteConfirm}
+        confirmDisabled={deleteMutation.isPending}
+      />
     </div>
   );
 }

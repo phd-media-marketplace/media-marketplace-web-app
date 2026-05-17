@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { FileText, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Eye, Send } from "lucide-react";
-import type { WorkOrder, WorkOrderStatus } from "@/features/agency-features/work-orders/types";
+import type { WorkOrder, WorkOrderStatus } from "@/types/work-order";
 import { DataTable } from "@/components/universal/DataTable";
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useState, useCallback, type ReactNode } from "react";
 import type { UniversalDataTableColumn } from "@/components/universal/DataTable";
 
 interface MediaPartnerWorkOrdersTableProps {
@@ -22,13 +22,72 @@ export function MediaPartnerWorkOrdersTable({
   getStatusPillClasses,
   headerSlot,
 }: MediaPartnerWorkOrdersTableProps) {
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const toggleRowSelection = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      if (workOrders.length === 0) {
+        return new Set();
+      }
+      if (prev.size === workOrders.length) {
+        return new Set();
+      }
+      return new Set(workOrders.map((workOrder) => workOrder.id));
+    });
+  }, [workOrders]);
+
+  const onFirstPage = useCallback(() => {
+    console.log("First page clicked");
+  }, []);
+
+  const onPrevPage = useCallback(() => {
+    console.log("Previous page clicked");
+  }, []);
+
+  const onNextPage = useCallback(() => {
+    console.log("Next page clicked");
+  }, []);
+
+  const onLastPage = useCallback(() => {
+    console.log("Last page clicked");
+  }, []);
+
   const columns = useMemo<UniversalDataTableColumn<WorkOrder>[]>(() => {
     return [
       {
         id: "select",
-        header: <input type="checkbox" className="h-4 w-4 rounded border-slate-300" aria-label="Select all work orders" />,
+        header: (
+          <input
+            type="checkbox"
+            className="h-4 w-4 rounded border-slate-300"
+            aria-label="Select all work orders"
+            checked={workOrders.length > 0 && selectedIds.size === workOrders.length}
+            onChange={toggleSelectAll}
+          />
+        ),
         cell: (workOrder: WorkOrder) => (
-          <input type="checkbox" className="h-4 w-4 rounded border-slate-300" aria-label={`Select ${workOrder.workOrderNumber}`} />
+          <input
+            type="checkbox"
+            className="h-4 w-4 rounded border-slate-300"
+            aria-label={`Select ${workOrder.workOrderNumber}`}
+            checked={selectedIds.has(workOrder.id)}
+            onChange={(event) => {
+              event.stopPropagation();
+              toggleRowSelection(workOrder.id);
+            }}
+          />
         ),
         widthPx: 56,
         minWidthPx: 56,
@@ -51,11 +110,8 @@ export function MediaPartnerWorkOrdersTable({
       },
       {
         id: "clientAgency",
-        header: "Client/Agency",
-        cell: (workOrder: WorkOrder) =>
-          workOrder.header.clientType === "AGENCY"
-            ? workOrder.header.agencyName
-            : workOrder.header.clientName,
+        header: "Client",
+        cell: (workOrder: WorkOrder) => workOrder.header.clientName || "N/A",
         widthPx: 160,
         minWidthPx: 160,
         widthClassName: "w-40",
@@ -169,7 +225,16 @@ export function MediaPartnerWorkOrdersTable({
         headerAlign: "center",
       },
     ];
-  }, [formatStatusLabel, getStatusPillClasses, onSendWorkOrder, onViewWorkOrder]);
+  }, [
+    formatStatusLabel,
+    getStatusPillClasses,
+    onSendWorkOrder,
+    onViewWorkOrder,
+    selectedIds,
+    toggleRowSelection,
+    toggleSelectAll,
+    workOrders.length,
+  ]);
 
   return (
     <DataTable
@@ -187,16 +252,16 @@ export function MediaPartnerWorkOrdersTable({
       }
       footerSlot={
         <div className="flex items-center justify-end gap-1 border-t border-slate-200 px-4 py-3">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" aria-label="First page">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" aria-label="First page" onClick={onFirstPage}>
             <ChevronsLeft className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" aria-label="Previous page">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" aria-label="Previous page" onClick={onPrevPage}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600" aria-label="Next page">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600" aria-label="Next page" onClick={onNextPage}>
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600" aria-label="Last page">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600" aria-label="Last page" onClick={onLastPage}>
             <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>

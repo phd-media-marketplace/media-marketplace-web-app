@@ -40,7 +40,7 @@ export const formatAdType = (adType: string): string => {
 
 export const getMediaTypeIcon = (type: string) => {
     switch (type) {
-      case 'FM': return '📻';
+    case 'FM': return '📻';
       case 'TV': return '📺';
       case 'OOH': return '🏙️';
       case 'DIGITAL': return '💻';

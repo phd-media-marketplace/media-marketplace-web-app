@@ -26,9 +26,11 @@ export default function ViewPackage() {
     );
   }
 
-  const packageImages = Array.isArray(packageData.metadata?.packageImages)
-    ? packageData.metadata.packageImages.filter((image: unknown): image is string => typeof image === "string" && image.trim().length > 0)
-    : [];
+  const packageImages = Array.isArray(packageData.attachments) && packageData.attachments.length > 0
+    ? packageData.attachments
+    : Array.isArray(packageData.metadata?.packageImages)
+      ? packageData.metadata.packageImages.filter((image: unknown): image is string => typeof image === "string" && image.trim().length > 0)
+      : [];
 
   return (
     <div className="space-y-6 pb-10">
@@ -176,54 +178,6 @@ export default function ViewPackage() {
             IsPreviewView={true}
             packageData={packageData}
           />
-          {/* <Card className="border border-violet-200 bg-linear-to-br from-purple-50 to-blue-50 sticky top-6">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-primary" />
-                <CardTitle className="text-primary text-lg font-bold">Pricing Summary</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center pb-3 border-b border-violet-200">
-                  <span className="text-sm text-gray-600">Subtotal</span>
-                  <span className="text-base font-semibold text-gray-900">
-                    {formatCurrency(packageData.totalPrice)}
-                  </span>
-                </div>
-
-                {packageData.discount && packageData.discount > 0 && (
-                  <div className="flex justify-between items-center pb-3 border-b border-violet-200">
-                    <span className="text-sm text-gray-600">Discount ({packageData.discount}%)</span>
-                    <span className="text-base font-semibold text-green-600">
-                      -{formatCurrency(packageData.totalPrice - packageData.finalPrice)}
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex justify-between items-center pt-2">
-                  <span className="text-base font-bold text-gray-900">Final Price</span>
-                  <span className="text-2xl font-bold text-primary">
-                    {formatCurrency(packageData.finalPrice)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-violet-200">
-                <div className="bg-white/50 p-3 rounded-lg">
-                  <p className="text-xs text-gray-600 mb-2">💡 Package Benefits</p>
-                  <ul className="text-xs text-gray-700 space-y-1">
-                    <li>✓ {packageData.items.length} ad type{packageData.items.length > 1 ? 's' : ''} included</li>
-                    {packageData.discount && packageData.discount > 0 && (
-                      <li>✓ Save {packageData.discount}% on bundle</li>
-                    )}
-                    <li>✓ Flexible scheduling</li>
-                    <li>✓ Priority support</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
           <AssetPreviewCard
             className="mt-6"
             assets={packageImages}

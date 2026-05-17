@@ -37,14 +37,17 @@ export const dummyMediaPackages: MediaPackage[] = [
             popularityScore: 92,
             segment: "News & Current Affairs",
             timeOfDay: "18:00-22:00",
-            daysOfAllocation: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+            daysOfAllocation: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            packageImages: [
+                "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1400&q=80"
+            ]
         }
     },
     {
         id: "mp-002",
         mediaPartnerId: "tenant-mp-002",
         mediaPartnerName: "Joy FM",
-        packageName: "Morning Drive Radio Package",
+        packageName: "Morning Drive FM Package",
         description: "Peak commute hours with high listener engagement",
         mediaType: "FM",
         items: [
@@ -77,7 +80,10 @@ export const dummyMediaPackages: MediaPackage[] = [
             segment: "Morning Show",
             timeOfDay: "06:00-10:00",
             daysOfAllocation: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-            spotDurationSeconds: 60
+            spotDurationSeconds: 60,
+            packageImages: [
+                "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&w=1400&q=80"
+            ]
         }
     },
     {
@@ -113,7 +119,10 @@ export const dummyMediaPackages: MediaPackage[] = [
         metadata: {
             impressions: 1500000,
             clickThroughRate: 2.5,
-            format: "Banner 728x90"
+            format: "Banner 728x90",
+            packageImages: [
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWVqenF3NHE4aWQ4cGJ2bTc4dGJyYTF6Y2Q5NGswOHN3YTB0N3ptdCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l0HlBO7eyXzSZkJri/giphy.gif"
+            ]
         }
     },
     {
@@ -153,7 +162,10 @@ export const dummyMediaPackages: MediaPackage[] = [
             segment: "Sports & Entertainment",
             timeOfDay: "12:00-18:00",
             daysOfAllocation: ["Saturday", "Sunday"],
-            spotDurationSeconds: 30
+            spotDurationSeconds: 30,
+            packageImages: [
+                "https://cdn.coverr.co/videos/coverr-football-field-from-above-1579/1080p.mp4"
+            ]
         }
     },
     {
@@ -193,7 +205,10 @@ export const dummyMediaPackages: MediaPackage[] = [
             segment: "Talk Show",
             timeOfDay: "14:00-17:00",
             daysOfAllocation: ["Monday", "Wednesday", "Friday"],
-            spotDurationSeconds: 45
+            spotDurationSeconds: 45,
+            packageImages: [
+                "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1400&q=80"
+            ]
         }
     },
     {
@@ -231,7 +246,10 @@ export const dummyMediaPackages: MediaPackage[] = [
             size: "48 sheet",
             illuminated: true,
             digital: true,
-            vehicularTraffic: 45000
+            vehicularTraffic: 45000,
+            packageImages: [
+                "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80"
+            ]
         }
     }
 ];

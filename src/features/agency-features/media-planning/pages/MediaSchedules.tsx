@@ -51,9 +51,12 @@ export default function MediaSchedules() {
         );
     }
 
+    const startDateStr = mediaPlan.expectedStartDate || mediaPlan.startDate || '';
+    const endDateStr = mediaPlan.expectedEndDate || mediaPlan.endDate || '';
+
     const calculateWeeks = () => {
-        const start = new Date(mediaPlan.startDate);
-        const end = new Date(mediaPlan.endDate);
+        const start = new Date(startDateStr);
+        const end = new Date(endDateStr);
         const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
         return Math.ceil(days / 7);
     };
@@ -63,7 +66,7 @@ export default function MediaSchedules() {
 
     // Generate date for each week
     const getWeekDates = (weekNum: number) => {
-        const start = new Date(mediaPlan.startDate);
+        const start = new Date(startDateStr);
         const weekStart = new Date(start);
         weekStart.setDate(start.getDate() + (weekNum - 1) * 7);
         const weekEnd = new Date(weekStart);
@@ -80,8 +83,8 @@ export default function MediaSchedules() {
     const calculateChannelTotal = (channel: any) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return channel.segments?.reduce((total: number, segment: any) => {
-            const totalSpots = segment.spotsPerDay * segment.days.length * weeks;
-            return total + (segment.uniteRate * totalSpots);
+            const totalSpots = (segment.totalSpots || 0) * (segment.days?.length || 0) * weeks;
+            return total + ((segment.unitRate || 0) * totalSpots);
         }, 0) || 0;
     };
 
@@ -102,7 +105,7 @@ export default function MediaSchedules() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-primary">Media Schedule</h1>
-                    <p className="text-gray-600 mt-1">{mediaPlan.CampaignTitle}</p>
+                    <p className="text-gray-600 mt-1">{mediaPlan.campaignName || mediaPlan.CampaignTitle}</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={handleExport}>
@@ -121,13 +124,13 @@ export default function MediaSchedules() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div>
                         <p className="text-sm text-gray-600">Client</p>
-                        <p className="font-semibold text-gray-900">{mediaPlan.client}</p>
+                        <p className="font-semibold text-gray-900">{mediaPlan.clientName || mediaPlan.client}</p>
                     </div>
                     <div>
                         <p className="text-sm text-gray-600">Campaign Period</p>
                         <p className="font-semibold text-gray-900 flex items-center">
                             <Calendar className="w-4 h-4 mr-1" />
-                            {new Date(mediaPlan.startDate).toLocaleDateString()} - {new Date(mediaPlan.endDate).toLocaleDateString()}
+                            <span>{new Date(mediaPlan.expectedStartDate || mediaPlan.startDate).toLocaleDateString()} - {new Date(mediaPlan.expectedEndDate || mediaPlan.endDate).toLocaleDateString()}</span>
                         </p>
                     </div>
                     <div>
@@ -138,7 +141,7 @@ export default function MediaSchedules() {
                         <p className="text-sm text-gray-600">Total Budget</p>
                         <p className="font-semibold text-primary flex items-center">
                             <DollarSign className="w-4 h-4 mr-1" />
-                            {formatCurrency(mediaPlan.budget)}
+                            {formatCurrency(mediaPlan.totalBudget || mediaPlan.budget || 0)}
                         </p>
                     </div>
                     {mediaPlan.objective && (
@@ -205,9 +208,11 @@ export default function MediaSchedules() {
                                 <tbody>
                                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                     {channel.segments && channel.segments.map((segment: any, segIdx: number) => {
-                                        const spotsPerWeek = segment.spotsPerDay * segment.days.length;
-                                        const totalSpots = spotsPerWeek * weeks;
-                                        const totalCost = segment.uniteRate * totalSpots;
+                                        const daysCount = (segment.days?.length) || 1;
+                                        const totalSpots = segment.totalSpots || 0;
+                                        const spotsPerDay = Math.ceil(totalSpots / (daysCount * weeks || 1));
+                                        const spotsPerWeek = spotsPerDay * daysCount;
+                                        const totalCost = (segment.unitRate || 0) * totalSpots;
 
                                         return (
                                             <tr key={segIdx} className="hover:bg-gray-50">
@@ -228,10 +233,10 @@ export default function MediaSchedules() {
                                                     </div>
                                                 </td>
                                                 <td className="border border-gray-300 p-3 text-center text-sm">
-                                                    {formatCurrency(segment.uniteRate)}
+                                                    {formatCurrency(segment.unitRate || 0)}
                                                 </td>
                                                 <td className="border border-gray-300 p-3 text-center font-semibold">
-                                                    {segment.spotsPerDay}
+                                                    {spotsPerDay}
                                                 </td>
                                                 <td className="border border-gray-300 p-3 text-center text-sm">
                                                     {segment.durationSeconds}s
@@ -241,12 +246,12 @@ export default function MediaSchedules() {
                                                         {spotsPerWeek}
                                                     </td>
                                                 ))}
-                                                <td className="border border-gray-300 p-3 text-center font-bold text-green-600">
-                                                    {totalSpots}
-                                                </td>
-                                                <td className="border border-gray-300 p-3 text-center font-bold text-primary">
-                                                    {formatCurrency(totalCost)}
-                                                </td>
+                                                 <td className="border border-gray-300 p-3 text-center font-bold text-green-600">
+                                                     {totalSpots}
+                                                 </td>
+                                                 <td className="border border-gray-300 p-3 text-center font-bold text-primary">
+                                                     {formatCurrency(totalCost)}
+                                                 </td>
                                             </tr>
                                         );
                                     })}
@@ -256,20 +261,20 @@ export default function MediaSchedules() {
                                         <td colSpan={6} className="border border-gray-300 p-3 text-right">
                                             Channel Subtotal
                                         </td>
-                                        {weekNumbers.map(weekNum => (
-                                            <td key={weekNum} className="border border-gray-300 p-3 text-center">
-                                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                                {channel.segments?.reduce((sum: number, seg: any) => 
-                                                    sum + (seg.spotsPerDay * seg.days.length), 0
-                                                )}
-                                            </td>
-                                        ))}
-                                        <td className="border border-gray-300 p-3 text-center text-green-600">
-                                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                            {channel.segments?.reduce((sum: number, seg: any) => 
-                                                sum + (seg.spotsPerDay * seg.days.length * weeks), 0
-                                            )}
-                                        </td>
+                                         {weekNumbers.map(weekNum => (
+                                             <td key={weekNum} className="border border-gray-300 p-3 text-center">
+                                                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                 {channel.segments?.reduce((sum: number, seg: any) => 
+                                                     sum + ((seg.totalSpots || 0) / weeks / (seg.days?.length || 1)), 0
+                                                 )}
+                                             </td>
+                                         ))}
+                                         <td className="border border-gray-300 p-3 text-center text-green-600">
+                                             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                             {channel.segments?.reduce((sum: number, seg: any) => 
+                                                 sum + (seg.totalSpots || 0), 0
+                                             )}
+                                         </td>
                                         <td className="border border-gray-300 p-3 text-center text-primary">
                                             {formatCurrency(channelTotal)}
                                         </td>
@@ -286,16 +291,16 @@ export default function MediaSchedules() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
                         <p className="text-sm text-gray-600">Campaign Budget</p>
-                        <p className="text-2xl font-bold text-gray-900">{formatCurrency(mediaPlan.budget)}</p>
+                        <p className="text-2xl font-bold text-gray-900">{formatCurrency(mediaPlan.totalBudget || mediaPlan.budget || 0)}</p>
                     </div>
                     <div className="text-center p-4 bg-green-50 rounded-lg">
                         <p className="text-sm text-gray-600">Total Allocated</p>
                         <p className="text-2xl font-bold text-green-600">{formatCurrency(calculateGrandTotal())}</p>
                     </div>
-                    <div className={`text-center p-4 rounded-lg ${mediaPlan.budget - calculateGrandTotal() >= 0 ? 'bg-gray-50' : 'bg-red-50'}`}>
+                    <div className={`text-center p-4 rounded-lg ${(mediaPlan.totalBudget || mediaPlan.budget || 0) - calculateGrandTotal() >= 0 ? 'bg-gray-50' : 'bg-red-50'}`}>
                         <p className="text-sm text-gray-600">Remaining</p>
-                        <p className={`text-2xl font-bold ${mediaPlan.budget - calculateGrandTotal() >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
-                            {formatCurrency(mediaPlan.budget - calculateGrandTotal())}
+                        <p className={`text-2xl font-bold ${(mediaPlan.totalBudget || mediaPlan.budget || 0) - calculateGrandTotal() >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
+                            {formatCurrency((mediaPlan.totalBudget || mediaPlan.budget || 0) - calculateGrandTotal())}
                         </p>
                     </div>
                 </div>

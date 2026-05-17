@@ -1,10 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpRight, Image as ImageIcon, Sparkles } from "lucide-react";
+import { ArrowUpRight, FileText, Image as ImageIcon, Sparkles } from "lucide-react";
+
+type AssetPreviewItem = string | { url: string; name?: string; type?: string };
+type NormalizedAsset = { url: string; name?: string; type?: string };
 
 export interface AssetPreviewCardProps {
-  assets?: string[];
+  assets?: AssetPreviewItem[];
   title?: string;
   description?: string;
   emptyTitle?: string;
@@ -26,9 +29,27 @@ export default function AssetPreviewCard({
   onAction,
   className = "",
 }: AssetPreviewCardProps) {
-  const assetCount = assets.length;
-  const primaryAsset = assets[0];
-  const thumbnailAssets = assets.slice(0, 4);
+  const normalizedAssets: NormalizedAsset[] = assets
+    .map((asset) => (typeof asset === "string" ? { url: asset } : asset))
+    .filter((asset) => typeof asset.url === "string" && asset.url.trim().length > 0);
+
+  const assetCount = normalizedAssets.length;
+  const primaryAsset = normalizedAssets[0];
+  const thumbnailAssets = normalizedAssets.slice(0, 4);
+
+  const isVideoAsset = (asset: NormalizedAsset) => {
+    const url = asset.url;
+    const type = asset.type || "";
+    const cleanUrl = url.split("?")[0].toLowerCase();
+    return type.startsWith("video/") || /\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(cleanUrl);
+  };
+
+  const isPdfAsset = (asset: NormalizedAsset) => {
+    const url = asset.url;
+    const type = asset.type || "";
+    const cleanUrl = url.split("?")[0].toLowerCase();
+    return type === "application/pdf" || /\.pdf(\?|$)/i.test(cleanUrl);
+  };
 
   return (
     <Card className={`overflow-hidden border border-secondary bg-linear-to-br lg:py-4 from-secondary/5 via-white to-blue-50 shadow-sm ${className}`}>
@@ -47,33 +68,74 @@ export default function AssetPreviewCard({
       <CardContent className="space-y-4 pt-5 lg:px-4">
         {assetCount > 0 && primaryAsset ? (
           <>
-            <div className="relative overflow-hidden rounded-2xl border border-secondary/20 bg-white shadow-sm">
+            <div className="relative flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-2xl border border-secondary/20 bg-white shadow-sm">
               <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-medium text-primary/80 shadow-sm backdrop-blur">
                 <Sparkles className="h-3 w-3" />
                 Primary asset
               </div>
-              <img
-                src={primaryAsset}
-                alt={`${title} preview`}
-                className="h-56 w-full object-cover"
-              />
+              {isVideoAsset(primaryAsset) ? (
+                <video
+                  src={primaryAsset.url}
+                  className="max-h-full max-w-full object-contain p-4"
+                  muted
+                  playsInline
+                  preload="metadata"
+                  controls
+                />
+              ) : isPdfAsset(primaryAsset) ? (
+                <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-secondary/15 text-primary">
+                    <FileText className="h-10 w-10" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">PDF attachment</p>
+                    <p className="mt-1 text-xs text-gray-600">{primaryAsset.name || "Open the file to preview it"}</p>
+                  </div>
+                  <Button asChild size="sm" variant="outline" className="border-secondary/20 text-secondary hover:bg-secondary/10">
+                    <a href={primaryAsset.url} target="_blank" rel="noreferrer">Open PDF</a>
+                  </Button>
+                </div>
+              ) : (
+                <img
+                  src={primaryAsset.url}
+                  alt={primaryAsset.name || `${title} preview`}
+                  className="max-h-full max-w-full object-contain p-4"
+                />
+              )}
             </div>
 
             {thumbnailAssets.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {thumbnailAssets.map((asset, index) => (
                   <a
                     key={`${asset}-${index}`}
-                    href={asset}
+                    href={asset.url}
                     target="_blank"
                     rel="noreferrer"
                     className="group overflow-hidden rounded-xl border border-secondary/20 bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
                   >
-                    <img
-                      src={asset}
-                      alt={`${title} asset ${index + 1}`}
-                      className="h-20 w-full object-cover transition-transform duration-200 group-hover:scale-105"
-                    />
+                    <div className="flex aspect-square items-center justify-center bg-white p-2">
+                        {isVideoAsset(asset) ? (
+                          <video
+                            src={asset.url}
+                            className="max-h-full max-w-full object-contain transition-transform duration-200 group-hover:scale-105"
+                            muted
+                            playsInline
+                            preload="metadata"
+                          />
+                        ) : isPdfAsset(asset) ? (
+                          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
+                            <FileText className="h-8 w-8 text-primary" />
+                            <span className="px-1 text-[10px] font-medium text-gray-600">PDF</span>
+                          </div>
+                        ) : (
+                          <img
+                            src={asset.url}
+                            alt={asset.name || `${title} asset ${index + 1}`}
+                            className="max-h-full max-w-full object-contain transition-transform duration-200 group-hover:scale-105"
+                          />
+                        )}
+                    </div>
                   </a>
                 ))}
               </div>

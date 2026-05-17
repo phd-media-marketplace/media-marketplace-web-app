@@ -10,3 +10,11 @@ export interface NavigationItem {
     icon: React.ElementType;
     items?:items[];
 }
+
+export interface Attachment {
+  name: string;
+  url: string;
+  type: string;
+}
+
+export type MediaType = 'FM' | 'TV' | 'OOH' | 'DIGITAL';

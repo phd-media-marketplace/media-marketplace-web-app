@@ -13,12 +13,12 @@ export const dummyRateCards: RateCard[] = [
     id: 'rc-fm-announcements-001',
     mediaPartnerId: 'mp-heaven-001',
     mediaPartnerName: 'Heaven Media House',
-    mediaType: 'FM',
+    mediaType: 'RADIO',
     isActive: true,
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-03-10T14:30:00Z',
     metadata: {
-      mediaType: 'FM',
+      mediaType: 'RADIO',
       adTypeRates: [
         {
           adType: 'ANNOUNCEMENTS',
@@ -58,12 +58,12 @@ export const dummyRateCards: RateCard[] = [
     id: 'rc-fm-jingles-002',
     mediaPartnerId: 'mp-heaven-001',
     mediaPartnerName: 'Heaven Media House',
-    mediaType: 'FM',
+    mediaType: 'RADIO',
     isActive: true,
     createdAt: '2024-01-20T09:00:00Z',
     updatedAt: '2024-03-12T11:00:00Z',
     metadata: {
-      mediaType: 'FM',
+      mediaType: 'RADIO',
       adTypeRates: [
         {
           adType: 'JINGLES',
@@ -111,12 +111,12 @@ export const dummyRateCards: RateCard[] = [
     id: 'rc-fm-interviews-003',
     mediaPartnerId: 'mp-heaven-001',
     mediaPartnerName: 'Heaven Media House',
-    mediaType: 'FM',
+    mediaType: 'RADIO',
     isActive: true,
     createdAt: '2024-02-01T08:30:00Z',
     updatedAt: '2024-03-15T10:20:00Z',
     metadata: {
-      mediaType: 'FM',
+      mediaType: 'RADIO',
       adTypeRates: [
         {
           adType: 'INTERVIEWS',

@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Funnel, X, Eye, EyeOff } from "lucide-react";
-import type { WorkOrderStatus } from "@/features/agency-features/work-orders/types";
+import type { WorkOrderStatus } from "@/types/work-order";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { DateRangePicker } from "@/components/universal/DateRangePicker";
 import { Button } from "@/components/ui/button";

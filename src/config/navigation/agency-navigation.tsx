@@ -8,6 +8,9 @@ import {
   ClipboardCheck,
   FileCheck,
   BarChart3,
+  User,
+  Users,
+  Settings,
   // LineChart,
 } from "lucide-react";
 
@@ -66,5 +69,23 @@ export const agencyNavigationItems: NavigationItem[] = [
     title: "Reporting",
     url: "/agency/reporting",
     icon: FileText,
+  },
+];
+
+export const agencySettingsNavigationItems: NavigationItem[] = [
+  {
+    title: "Profile",
+    url: "/agency/settings/profile",
+    icon: User,
+  },
+  {
+    title: "Teams",
+    url: "/agency/settings/teams",
+    icon: Users,
+  },
+  {
+    title: "Preferences",
+    url: "/agency/settings/preferences",
+    icon: Settings,
   },
 ];

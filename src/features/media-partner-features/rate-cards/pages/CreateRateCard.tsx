@@ -163,7 +163,7 @@ export default function CreateRateCard() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-violet-100">
-                  <SelectItem value="FM">📻 FM Radio</SelectItem>
+                  <SelectItem value="FM">📻 Radio</SelectItem>
                   <SelectItem value="TV">📺 TV</SelectItem>
                   <SelectItem value="OOH">🏙️ Out-of-Home (OOH)</SelectItem>
                   <SelectItem value="DIGITAL">💻 Digital</SelectItem>

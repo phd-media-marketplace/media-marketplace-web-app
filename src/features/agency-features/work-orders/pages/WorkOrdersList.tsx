@@ -1,12 +1,14 @@
 import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download } from "lucide-react";
+import { CircleX, Clock, Download, FileText, Zap } from "lucide-react";
 import { dummyWorkOrders } from "../dummy-data";
-import type { WorkOrderStatus } from "../types";
+import type { WorkOrderStatus } from "@/types/work-order";
 import { WorkOrdersFilters } from "../components/WorkOrdersFilters";
-import { WorkOrdersSummaryCards } from "../components/WorkOrdersSummaryCards";
 import { WorkOrdersTable } from "../components/WorkOrdersTable";
+import Header from "@/components/universal/Header";
+import { toast } from "sonner";
+import type { SummaryCardsProps } from "@/components/universal/SummaryCards";
+import SummaryCards from "@/components/universal/SummaryCards";
 
 /**
  * WorkOrdersList Component
@@ -48,28 +50,60 @@ export default function WorkOrdersList() {
     rejectedCount: dummyWorkOrders.filter(wo => wo.status === 'REJECTED').length,
   }), []);
 
+  const handleExport = () => {
+    // Implement export functionality (e.g., generate CSV or Excel file)
+    console.log("Exporting work orders...");
+    toast.success("Work orders exported successfully!");
+  }
+
+  const workOrdersSummaryCardsData = useMemo<SummaryCardsProps[]>(() => {
+    return [
+      { 
+        title: "Total Work Orders", 
+        value: summaryStats.totalCount,
+        icon: FileText , // You can replace this with a more relevant icon
+        footerText: ` work orders in the system`,
+        bgColor: "from-blue-500 to-blue-700", 
+      },
+      { title: "Approved", 
+        value: summaryStats.approvedCount, 
+        icon: Zap, 
+        footerText: `${summaryStats.approvedCount ? Math.round(summaryStats.approvedCount / summaryStats.totalCount * 100) : 0}% approved work orders`, 
+        bgColor: "from-green-500 to-green-700" 
+      },
+      { 
+        title: "Pending Approval", 
+        value: summaryStats.pendingCount,
+        icon: Clock,
+        footerText: `${summaryStats.pendingCount ? Math.round(summaryStats.pendingCount / summaryStats.totalCount * 100) : 0}% work orders pending approval`,
+        bgColor: "from-yellow-500 to-yellow-700",
+      },
+      { 
+        title: "Rejected", 
+        value: summaryStats.rejectedCount, 
+        icon: CircleX, 
+        footerText: `${summaryStats.rejectedCount ? Math.round(summaryStats.rejectedCount / summaryStats.totalCount * 100) : 0}% rejected work orders`, 
+        bgColor: "from-rose-500 to-red-700" },
+    ];
+  }, [summaryStats]);
+
+
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-primary tracking-tight">Work Orders</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage and track work orders sent to media partners
-          </p>
-        </div>
-        
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
-        </div>
-      </div>
+      <Header 
+        title="Work Orders"
+        description="Manage and track work orders sent to media partners"
+        backbtnVisible={false}
+        ctabtnText="Export"
+        ctaIcon={Download}
+          ctaFunc={handleExport}
+      />
+    
 
       {/* Filters */}
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="">
           <WorkOrdersFilters
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -81,13 +115,11 @@ export default function WorkOrdersList() {
         </CardContent>
       </Card>
 
-      {/* Summary Stats */}
-      <WorkOrdersSummaryCards
-        totalCount={summaryStats.totalCount}
-        pendingCount={summaryStats.pendingCount}
-        approvedCount={summaryStats.approvedCount}
-        rejectedCount={summaryStats.rejectedCount}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4">
+        {workOrdersSummaryCardsData.map((card, index) => (
+          <SummaryCards key={index} {...card} />
+        ))}
+      </div>
 
       {/* Work Orders Table */}
       <Card>

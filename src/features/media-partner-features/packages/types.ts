@@ -1,6 +1,7 @@
 /**
  * Package Types for Media Partner
  */
+import type { MediaType } from "@/types/index";
 
 export interface PackageItem {
   rateCardId: string;
@@ -19,7 +20,7 @@ export interface Package {
   mediaPartnerName?: string; //
   packageName: string;
   description?: string;
-  mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+  mediaType: MediaType;
   items: PackageItem[];
   reach: number;
   demographics: string[];
@@ -34,8 +35,15 @@ export interface Package {
   validTo?: string;
   createdAt: string;
   updatedAt: string;
+  attachments?: Attachment[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata: Record<string, any>; // For any additional data that doesn't fit into the above fields
+}
+
+export interface Attachment {
+  name: string;
+  url: string;
+  type: string;
 }
 
 export interface CreatePackageRequest {
@@ -43,7 +51,7 @@ export interface CreatePackageRequest {
   mediaPartnerName?: string; // this field should be included when sending the data to the backend from the user's info
   packageName: string;
   description?: string;
-  mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+  mediaType: MediaType;
   reach: number;
   demographics: string[];
   location?: string;
@@ -54,6 +62,7 @@ export interface CreatePackageRequest {
   isActive?: boolean;
   validFrom?: string;
   validTo?: string;
+  attachments?: Attachment[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata: Record<string, any>; // For any additional data that doesn't fit into the above fields
 
@@ -62,6 +71,10 @@ export interface CreatePackageRequest {
 export interface UpdatePackageRequest extends Partial<CreatePackageRequest> {
   id: string;
 }
+
+// export interface UpdatePackageRequest extends Partial<CreatePackageRequest> {
+//   id: string;
+// }
 
 export interface PackageListResponse {
   packages: Package[];

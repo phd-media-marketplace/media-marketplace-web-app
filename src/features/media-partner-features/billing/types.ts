@@ -9,7 +9,7 @@ export type {
     InvoiceMeta,
     InvoiceRecipientType,
     InvoiceStatus,
-    InvoiceTaxDetails,
+    TaxDetails,
     RecordInvoicePaymentRequest,
     SendInvoiceRequest,
     UpdateInvoiceRequest,

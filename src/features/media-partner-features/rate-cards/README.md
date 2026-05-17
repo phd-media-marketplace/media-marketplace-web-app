@@ -1,7 +1,7 @@
 # Rate Cards Feature
 
 ## Overview
-The Rate Cards feature allows media partners to create, manage, and publish their advertising rates for both FM Radio and TV media types.
+The Rate Cards feature allows media partners to create, manage, and publish their advertising rates for both Radio and TV media types.
 
 ## Structure
 
@@ -35,7 +35,7 @@ rate-cards/
 
 ## Media Types
 
-### FM Radio
+### Radio
 Supports the following advertising types:
 - **Segments**: Programme-based time slots
 - **Announcements**: Branded announcements with time intervals

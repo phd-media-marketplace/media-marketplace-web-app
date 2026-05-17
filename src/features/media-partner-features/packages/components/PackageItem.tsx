@@ -137,7 +137,8 @@ export default function PackageItem({
             <Input
               type="number"
               value={item.quantity}
-              onChange={(e) => onUpdate(index, 'quantity', parseInt(e.target.value) || 0)}
+              placeholder="e.g., 10"
+              onChange={(e) => onUpdate(index, 'quantity', parseInt(e.target.value) || "")}
               min="1"
               className="input-field text-sm w-full"
             />

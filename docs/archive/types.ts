@@ -81,7 +81,7 @@ export interface FMSegment {
 }
 
 export interface FMMetadata {
-  mediaType: 'FM';
+  mediaType: 'RADIO';
   segments: FMSegment[];
 }
 
@@ -210,7 +210,7 @@ export interface DIGITALMetadata {
 
 export interface RateCardBase {
   mediaPartnerId: string;
-  mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+  mediaType: 'RADIO' | 'TV' | 'OOH' | 'DIGITAL';
   isActive?: boolean;
   metadata: RateCardMetadata;
 }

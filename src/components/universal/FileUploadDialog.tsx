@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import FileUpload, { type UploadTask } from "./FileUpload";
+// import AssetPreviewCard from "./AssetPreviewCard";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
 
@@ -38,9 +39,17 @@ export default function FileUploadDialog({ isOpen, onOpenChange, onUpload, onTas
 						onValidationError={(message) => toast.error(message)}
 					/>
 
+					{/* <AssetPreviewCard
+						title="Uploaded Assets"
+						description="Preview the package creatives that have been uploaded so far"
+						assets={uploadedFiles}
+						emptyMessage="Upload files above to see their preview here."
+						className="mt-4"
+					/> */}
+
 					<div className="flex items-center justify-between pt-2">
 						{uploadedFiles.length > 0 ? (
-							<p className="text-xs text-green-700">{uploadedFiles.length} uploaded file URL(s) ready for submit</p>
+							<p className="text-xs text-green-700">{uploadedFiles.length} uploaded file(s) ready for submit</p>
 						) : (
 							<p className="text-xs text-gray-500">No uploads completed yet</p>
 						)}

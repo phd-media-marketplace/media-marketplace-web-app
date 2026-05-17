@@ -7,6 +7,8 @@ import {
   BellRing,
   Package,
   FileCheck,
+  User,
+  Users,
 } from "lucide-react";
 
 export const mediaPartnerNavigationItems: NavigationItem[] = [
@@ -48,6 +50,24 @@ export const mediaPartnerNavigationItems: NavigationItem[] = [
   {
     title: "Notifications",
     url: "/media-partner/notifications",
+    icon: BellRing,
+  },
+];
+
+export const mediaPartnerSettingsNavigationItems: NavigationItem[] = [
+  {
+    title: "Profile",
+    url: "/media-partner/settings/profile",
+    icon: User,
+  },
+  {
+    title: "Teams",
+    url: "/media-partner/settings/teams",
+    icon: Users,
+  },
+  {
+    title: "Notifications",
+    url: "/media-partner/settings/notifications",
     icon: BellRing,
   },
 ];

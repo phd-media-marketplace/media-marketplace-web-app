@@ -13,6 +13,7 @@ import Loader from "@/components/universal/Loader";
 import LoadingError from "@/components/universal/LoadingError";
 import {formatDate} from "@/utils/formatters";
 import Header from "@/components/universal/Header";
+import ApprovalConfirmationDialogBox from "@/components/universal/ApprovalConfirmationDialogBox";
 
 interface AdTypeCard {
   id: string;
@@ -54,6 +55,26 @@ export default function RateCardsList() {
       toast.error(getFormErrorMessage(error));
     },
   });
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [rateCardToDelete, setRateCardToDelete] = useState<{ id: string; displayName?: string } | null>(null);
+
+  const openDeleteConfirm = (payload: { id: string; displayName?: string }) => {
+    setRateCardToDelete(payload);
+    setConfirmOpen(true);
+  };
+
+  const closeDeleteConfirm = () => {
+    setRateCardToDelete(null);
+    setConfirmOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    if (rateCardToDelete) {
+      deleteMutation.mutate(rateCardToDelete.id);
+    }
+    closeDeleteConfirm();
+  };
 
   // Transform rate cards into ad type cards
   const getAdTypeCards = (rateCards: RateCard[]): AdTypeCard[] => {
@@ -132,11 +153,7 @@ export default function RateCardsList() {
     ? adTypeCards
     : adTypeCards.filter(card => card.mediaType === selectedMediaType);
 
-  const handleDelete = (rateCardId: string) => {
-    if (window.confirm('Are you sure you want to delete this rate card?')) {
-      deleteMutation.mutate(rateCardId);
-    }
-  };
+
 
   // Helper to create media type icon component
   const createMediaTypeIconComponent = (mediaType: string) => {
@@ -189,7 +206,7 @@ export default function RateCardsList() {
           className={selectedMediaType === 'FM' ? 'bg-primary text-white' : 'border-secondary hover:bg-secondary'}
         >
           <Radio className="w-4 h-4 mr-2" />
-          FM Radio
+          Radio
         </Button>
         <Button
           variant={selectedMediaType === 'TV' ? 'default' : 'outline'}
@@ -251,7 +268,7 @@ export default function RateCardsList() {
                 updatedAt={`Last Updated: ${formatDate(rCard.updatedAt)}`}
                 onView={() => navigate(`/media-partner/rate-cards/${rCard.rateCardId}`)}
                 onEdit={() => navigate(`/media-partner/rate-cards/${rCard.rateCardId}/edit`)}
-                onDelete={() => handleDelete(rCard.rateCardId)}
+                onDelete={() => openDeleteConfirm({ id: rCard.rateCardId, displayName: `${formatAdType(rCard.adType)} - ${rCard.mediaPartnerName}` })}
               />
             );
           })}
@@ -266,6 +283,17 @@ export default function RateCardsList() {
         />
 
       )}
+      <ApprovalConfirmationDialogBox
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title={rateCardToDelete ? `Delete rate card "${rateCardToDelete.displayName ?? ''}"?` : 'Delete rate card?'}
+        description="This action cannot be undone. Are you sure you want to permanently delete this rate card?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={closeDeleteConfirm}
+        confirmDisabled={deleteMutation.isPending}
+      />
     </div>
   );
 }

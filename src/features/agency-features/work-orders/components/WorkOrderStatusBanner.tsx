@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import type { WorkOrderStatus } from "../types";
+import type { WorkOrderStatus } from "@/types/work-order";
 import { WorkOrderStatusBadge } from "./WorkOrderStatusBadge";
 
 interface WorkOrderStatusBannerProps {

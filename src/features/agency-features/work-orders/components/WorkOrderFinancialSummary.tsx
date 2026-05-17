@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/formatters";
 import { Coins } from "lucide-react";
+import type { TaxDetails } from "@/types/invoice";
 
 interface WorkOrderFinancialSummaryProps {
   subtotal: number;
-  tax?: number;
+  tax?: TaxDetails;
   discount?: number;
   totalAmount: number;
 }
@@ -19,6 +20,12 @@ export function WorkOrderFinancialSummary({
   discount,
   totalAmount,
 }: WorkOrderFinancialSummaryProps) {
+  const vat = subtotal * 0.15;
+  const nhis = subtotal * 0.05;
+  const getFund = subtotal * 0.05;
+  const derivedTaxTotal = vat + nhis + getFund;
+  const totalTax = tax?.taxAmount ?? derivedTaxTotal;
+
   return (
     <Card className="py-3">
       <CardHeader className="border-b border-violet-100 [.border-b]:pb-1">
@@ -39,12 +46,26 @@ export function WorkOrderFinancialSummary({
               <span className="text-lg font-semibold">GH{formatCurrency(discount)}</span>
             </div>
           )}
-          {tax && tax > 0 && (
+          <>
+            <div className="pt-2 border-t border-gray-200" />
+            <p className="text-xs text-gray-500">Taxes</p>
             <div className="flex justify-between items-center">
-              <span className="text-gray-700">Tax:</span>
-              <span className="text-lg font-semibold">GH{formatCurrency(tax)}</span>
+              <span className="text-sm text-gray-700">VAT (15%):</span>
+              <span className="text-sm font-semibold text-gray-900">GH{formatCurrency(vat)}</span>
             </div>
-          )}
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-700">NHIS (5%):</span>
+              <span className="text-sm font-semibold text-gray-900">GH{formatCurrency(nhis)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-700">GETFund (5%):</span>
+              <span className="text-sm font-semibold text-gray-900">GH{formatCurrency(getFund)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-700">Total Tax:</span>
+              <span className="text-lg font-semibold">GH{formatCurrency(totalTax)}</span>
+            </div>
+          </>
           <div className="flex justify-between items-center pt-2 border-t border-gray-300">
             <span className="text-lg font-bold text-primary">Total Amount</span>
             <span className="text-xl font-bold text-primary">GH{formatCurrency(totalAmount)}</span>

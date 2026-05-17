@@ -50,7 +50,7 @@ export default function Dashboard() {
         icon: 'bg-cyan-400/30',
         button: 'bg-cyan-500 hover:bg-cyan-600 border-cyan-400'
       },
-      RADIO: {
+      FM: {
         gradient: 'from-orange-600 to-red-700',
         badge: 'bg-orange-400/20 text-orange-100 border-orange-400/30',
         icon: 'bg-orange-400/30',

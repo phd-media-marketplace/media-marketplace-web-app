@@ -46,6 +46,7 @@ export function MainLayout() {
     <SidebarProvider>
       <AppSidebar 
         navigationItems={tenantConfig.navigation}
+        settingsNavigationItems={tenantConfig.settingsNavigation}
         branding={tenantConfig.branding}
       />
       <SidebarInset className="bg-gray-50/10">

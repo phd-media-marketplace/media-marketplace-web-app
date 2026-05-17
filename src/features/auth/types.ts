@@ -11,7 +11,7 @@ export interface User {
     tenantId: string;
     tenantName: string;
     tenantType: "MEDIA_PARTNER" | "AGENCY" | "CLIENT";
-    mediaType: "TV" | "RADIO" | "TV_RADIO" | "OOH" | "DIGITAL";
+    mediaType: "TV" | "FM" | "TV_RADIO" | "OOH" | "DIGITAL";
     roles: string[];
     permissions: string[];
     mediaPartner: {

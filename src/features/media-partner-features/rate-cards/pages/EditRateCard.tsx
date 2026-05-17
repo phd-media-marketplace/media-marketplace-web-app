@@ -146,7 +146,8 @@ export default function EditRateCard() {
           <CardContent>
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
               <p className="text-sm font-semibold text-blue-900">
-                {mediaType === 'FM' ? '📻 FM Radio' : '📺 TV'}
+                {mediaType === 'FM' ? '📻 FM' : '📺 TV'}
+                              {mediaType === 'FM' ? '📻 FM' : '📺 TV'}
               </p>
               <p className="text-xs text-blue-700 mt-1">
                 Media type cannot be changed after creation

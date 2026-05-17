@@ -1,10 +1,5 @@
 import {
-  Users,
   ChevronDown,
-  Settings,
-  User,
-  CreditCard,
-  BellRing,
   BarChart3,
   LogOut,
   Sun,
@@ -38,23 +33,19 @@ import { useLogout } from "@/features/auth/hooks/useLogout";
 import { toast } from "sonner";
 import type { TenantBranding } from "@/config/tenant.config";
 import { useAuthStore } from "@/features/auth/store/auth-store";
-import { getTenantPrefix } from "@/config/routes.config";
 
 // Navigation items
 
 interface AppSidebarProps {
   navigationItems: NavigationItem[];
+  settingsNavigationItems: NavigationItem[];
   branding: TenantBranding;
 }
 
-export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
+export function AppSidebar({ navigationItems, settingsNavigationItems, branding }: AppSidebarProps) {
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
-  
-  // Get tenant prefix for settings routes
-  const tenantPrefix = user?.tenantType ? getTenantPrefix(user.tenantType) : '';
-  const isMediaPartner = user?.tenantType === "MEDIA_PARTNER";
   
   const isActive = (url: string) => location.pathname === url;
   const isSubItemActive = (items?: { url?: string }[]) => {
@@ -144,70 +135,20 @@ export function AppSidebar({ navigationItems, branding }: AppSidebarProps) {
           <SidebarGroupLabel className="text-accent">Settings</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive(`${tenantPrefix}/settings/profile`)}
-                  className={isActive(`${tenantPrefix}/settings/profile`) ? 'bg-primary/50 font-medium' : ''}
-                >
-                  <Link to={`${tenantPrefix}/settings/profile`}>
-                    <User className="w-4 h-4" />
-                    <span>Profile</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild
-                  isActive={isActive(`${tenantPrefix}/settings/teams`)}
-                  className={isActive(`${tenantPrefix}/settings/teams`) ? 'bg-primary/50 font-medium' : ''}
-                >
-                  <Link to={`${tenantPrefix}/settings/teams`}>
-                    <Users className="w-4 h-4" />
-                    <span>Teams</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild
-                  isActive={isActive(isMediaPartner ? `${tenantPrefix}/settings/billing-accounts` : `${tenantPrefix}/settings/preferences`)}
-                  className={isActive(isMediaPartner ? `${tenantPrefix}/settings/billing-accounts` : `${tenantPrefix}/settings/preferences`) ? 'bg-primary/50 font-medium' : ''}
-                >
-                  <Link to={isMediaPartner ? `${tenantPrefix}/settings/billing-accounts` : `${tenantPrefix}/settings/preferences`}>
-                    {isMediaPartner ? <CreditCard className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
-                    <span>{isMediaPartner ? "Billing Accounts" : "Preferences"}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              {isMediaPartner && (
-                <SidebarMenuItem>
+              {settingsNavigationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={isActive(`${tenantPrefix}/settings/notifications`)}
-                    className={isActive(`${tenantPrefix}/settings/notifications`) ? 'bg-primary/50 font-medium' : ''}
+                    isActive={isActive(item.url!)}
+                    className={`text-primary ${isActive(item.url!) ? 'bg-primary/30 font-medium' : ''}`}
                   >
-                    <Link to={`${tenantPrefix}/settings/notifications`}>
-                      <BellRing className="w-4 h-4" />
-                      <span>Notifications</span>
+                    <Link to={item.url!}>
+                      <item.icon className="w-4 h-4" />
+                      <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              )}
-              {!isMediaPartner && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(`${tenantPrefix}/settings/payment`)}
-                    className={isActive(`${tenantPrefix}/settings/payment`) ? 'bg-primary/50 font-medium' : ''}
-                  >
-                    <Link to={`${tenantPrefix}/settings/payment`}>
-                      <CreditCard className="w-4 h-4" />
-                      <span>Payment</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

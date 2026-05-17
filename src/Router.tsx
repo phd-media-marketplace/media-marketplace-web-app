@@ -9,6 +9,8 @@ import Unauthorized from './components/universal/Unauthorized';
 import { MainLayout } from './components/layout/MainLayout';
 import AgencyOrIndividualRegister from './features/auth/pages/AgencyOrIndividualRegister';
 import MediaPartnerRegister from './features/auth/pages/MediaPartnerRegister';
+import LandingPage from './features/landing-page/pages/LandingPage';
+import PublicMarketplacePage from './features/landing-page/pages/PublicMarketplacePage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { tenantRoutes } from './config/routes.config';
 import { TenantRouteGuard } from './components/TenantRouteGuard';
@@ -31,9 +33,21 @@ function createTenantRoutes(tenantType: TenantType): RouteObject[] {
 }
 
 export const router = createBrowserRouter([
-    // Public auth routes (no sidebar, no protection)
+    // Public routes
     {
         path: '/',
+        element: <LandingPage />
+    },
+    {
+        path: '/marketplace',
+        element: <PublicMarketplacePage />
+    },
+    // {
+    //     path: '/marketplace/:id',
+    //     element: <PackageDetails />
+    // },
+    {
+        path: '/login',
         element: <Login />
     },
     {

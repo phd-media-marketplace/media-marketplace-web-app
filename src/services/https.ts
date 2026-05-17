@@ -76,7 +76,7 @@ apiClient.interceptors.response.use(
         // Refresh failed, clear storage and redirect to login
         console.error('Token refresh failed:', refreshError);
         localStorage.clear();
-        window.location.href = "/";
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }

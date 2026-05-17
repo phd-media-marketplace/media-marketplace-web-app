@@ -1,4 +1,4 @@
-
+import type{ Attachment } from "@/types/index";
 export type DayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
 
 export type JingleDuration = '10_SECS' | '15_SECS' | '20_SECS' | '25_SECS' | '30_SECS' | '35_SECS' | '40_SECS' | '45_SECS' | '50_SECS' | '55_SECS' | '60_SECS';
@@ -15,11 +15,14 @@ export interface TimeInterval {
   startTime: string;
   endTime: string;
 }
+
+export type MediaType = 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+export type Status = 'DRAFT' | 'COMPLETED' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED'|'REVISED' ;
 // Media plan and Campaign summary types(DTOs)
 
 // Complete media plan with all details including ID, status, timestamps
 export interface MediaPlan {
-  id: string;
+  id?: string;
   campaignName: string;
   clientName: string;
   campaignObjective: string;
@@ -28,32 +31,51 @@ export interface MediaPlan {
   expectedEndDate: string;
   totalBudget: number;
   budgetAllocated: number;
-  status: 'draft' | 'active' | 'paused' | 'completed' | 'cancelled' | 'pending_approval' | 'approved';
+  discount?: number;
+  discountAmount?: number;
+  status: Status;
   channels: Channel[];
-  createdAt: string;
-  updatedAt: string;
+  createdBy?: string;
+  approvedBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  approvedAt?: string;
+  rejectionReason?: string;
 }
 
-// Legacy media plan interface (for backward compatibility)
-export interface mediaPlan {
-  CampaignTitle: string;
-  client: string;
-  objective: string;
-  targetAudience: string;
-  Channels: Channel[];
-  startDate: string;
-  endDate: string;
-  budget: number;
-}
+  export interface SegmentFormData {
+    segmentType: string;
+    programName: string;
+    startTime: string;
+    endTime: string;
+    days: DayOfWeek[];
+    unitRate: number;
+    totalSpots: number;
+    durationSeconds: number;
+    spotsPerDay?: Partial<Record<DayOfWeek, number>>;
+    discount?: number;
+    attachmments?: Attachment[];
+  }
+
+  export interface ChannelFormData {
+    mediaType: MediaType;
+    channelName: string;
+    id?: string;
+    segments: SegmentFormData[];
+  }
+
+  export interface MediaPlanFormData extends Omit<MediaPlan, 'channels'> {
+    channels: ChannelFormData[];
+  }
+
 
 // The Channel interface represents the different media channels used in a campaign, including the media type and segments for each channel. This allows for detailed tracking and management of campaign performance across various media platforms.
 export interface Channel {
-  mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+  mediaType: MediaType;
   channelName: string;
   segments?: Segment[];
 }
 
-//(work order) The Segment interface represents specific segments within a media channel, including the segment type, time slot, days of the week, rates, and optional details such as duration and various segment-specific configurations.
 export interface Segment {
   // Common fields for all segments
   rateCardId?: string; // Reference to the rate card
@@ -66,6 +88,12 @@ export interface Segment {
   totalSpots: number; // Number of spots/quantity
   adForm?: string; // For TV: '30_SECS', 'LIVE', 'SOCIAL', etc. - auto-populated
   duration?: string; // Optional duration info
+  spotsPerDay?: {
+    [key in DayOfWeek]?: number;
+  }; // Optional breakdown of spots per day
+
+  discount?: number // discount
+  attachmments?:Attachment[] // the ad creatives to be used for a segement. it can be video, audio, images depending on the segment type.
   
   // OOH-specific fields
   placementType?: string;
@@ -76,11 +104,9 @@ export interface Segment {
   platform?: string;
   adFormat?: string;
   targeting?: string;
-  
-  // Optional legacy fields
   startDate?: string;
   endDate?: string;
-  programName?: string; // Optional program/show name
+  programName?: string;
 }
 
 // The CampaignSummary interface represents a comprehensive overview of a marketing campaign, including its title, client, objective, target audience, average performance metrics across all channels, detailed channel information, campaign duration, budget, and current status. This structure allows for a holistic view of the campaign's performance and effectiveness across different media types and channels.
@@ -99,7 +125,7 @@ export interface CampaignSummary {
 
 // channel-specific performance data structure, it includes the media type, media partner name, key performance metrics (reach, frequency, impressions, clicks, CTR, CPC), budget, spend, and optional status. This structure allows for detailed tracking and analysis of each channel's contribution to the overall campaign performance.
 export interface CampaignChannel {
-  mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+  mediaType: MediaType;
   mediaPartnerName: string;
   metrics: MetricsArray;
   budget: number;

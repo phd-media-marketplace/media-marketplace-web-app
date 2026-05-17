@@ -1,4 +1,4 @@
-import type { WorkOrderSegment } from "@/features/agency-features/work-orders/types";
+import type { WorkOrderSegment } from "@/types/work-order";
 
 export type InvoiceRecipientType = "AGENCY" | "CLIENT";
 
@@ -14,7 +14,7 @@ export type InvoiceStatus =
 export type InvoiceSortBy = "invoiceNumber" | "issueDate" | "dueDate" | "totalAmount" | "createdAt";
 export type InvoiceSortOrder = "asc" | "desc";
 
-export interface InvoiceTaxDetails {
+export interface TaxDetails {
   taxRate: number | null;
   taxAmount: number | null;
 }
@@ -34,7 +34,7 @@ export interface CreateInvoiceRequest {
   issueDate: string;
   dueDate: string;
   lineItems: InvoiceLineItem[];
-  tax: InvoiceTaxDetails;
+  tax: TaxDetails;
   discount?: number;
   currency: string;
   notes?: string | null;
@@ -54,7 +54,7 @@ export interface GenerateInvoiceRequest {
 export interface UpdateInvoiceRequest {
   dueDate?: string;
   lineItems?: InvoiceLineItem[];
-  tax?: InvoiceTaxDetails;
+  tax?: TaxDetails;
   discount?: number;
   notes?: string | null;
   status?: InvoiceStatus;
@@ -93,7 +93,7 @@ export interface Invoice {
   issueDate: string;
   dueDate: string;
   subtotal: number;
-  tax: InvoiceTaxDetails;
+  tax: TaxDetails;
   discount: number | null;
   totalAmount: number;
   paidAmount: number;

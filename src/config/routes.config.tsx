@@ -1,10 +1,8 @@
 import Dashboard from "@/features/agency-features/dashboard/pages/Dashboard";
 import PackageDetails from "@/features/agency-features/marketplace/pages/PackageDetails";
 import Packages from "@/features/agency-features/marketplace/pages/Packages";
-import CreateMediaPlan from "@/features/agency-features/media-planning/pages/CreateMediaPlan";
+
 import MediaSchedules from "@/features/agency-features/media-planning/pages/MediaSchedules";
-import MediaPlansList from "@/features/agency-features/media-planning/pages/MediaPlansList";
-import ViewMediaPlan from "@/features/agency-features/media-planning/pages/ViewMediaPlan";
 import WorkOrdersList from "@/features/agency-features/work-orders/pages/WorkOrdersList";
 import ViewWorkOrder from "@/features/agency-features/work-orders/pages/ViewWorkOrder";
 import CampaignsList from "@/features/agency-features/campaigns/pages/CampaignsList";
@@ -30,6 +28,8 @@ import MediaPartnerBillingSettings from "@/features/media-partner-features/setti
 import { RateCardsList, CreateRateCard, ViewRateCard, EditRateCard } from "@/features/media-partner-features/rate-cards";
 import { PackagesList, CreatePackage, ViewPackage, EditPackage } from "@/features/media-partner-features/packages";
 import { MediaPartnerWorkOrdersList, MediaPartnerViewWorkOrder } from "@/features/media-partner-features/work-orders";
+import {MediaPlansList, CreateMediaPlan, EditMediaPlan, ViewMediaPlan} from "@/features/agency-features/media-planning";
+import { EditWorkOrder } from "@/features/agency-features/work-orders";
 
 import type { TenantType } from "@/types/api";
 
@@ -104,6 +104,10 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       element: <ViewMediaPlan />,
     },
     {
+      path: "/agency/media-planning/plans/:id/edit",
+      element: <EditMediaPlan />,
+    },
+    {
       path: "/agency/media-planning/schedules",
       element: <MediaSchedules />,
     },
@@ -114,6 +118,10 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
     {
       path: "/agency/work-orders/:id",
       element: <ViewWorkOrder />,
+    },
+    {
+      path: "/agency/work-orders/:id/edit",
+      element: <EditWorkOrder />,
     },
     {
       path: "/agency/campaigns",
@@ -188,6 +196,10 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
       element: <ViewMediaPlan />,
     },
     {
+      path: "/client/media-planning/plans/:id/edit",
+      element: <EditMediaPlan />,
+    },
+    {
       path: "/client/media-planning/schedules",
       element: <MediaSchedules />,
     },
@@ -198,6 +210,10 @@ export const tenantRoutes: Record<TenantType, RouteConfig[]> = {
     {
       path: "/client/work-orders/:id",
       element: <ViewWorkOrder />,
+    },
+    {
+      path: "/client/work-orders/:id/edit",
+      element: <EditWorkOrder />,
     },
     {
       path: "/client/campaigns",

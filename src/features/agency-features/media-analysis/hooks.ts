@@ -2,21 +2,26 @@ import { useState, useCallback, useMemo } from "react";
 import type {
 	MediaAnalysisFilters,
 	AnalysisMediaType,
-	AnalysisTimeSlot,
-	AnalysisSegmentClass,
-	DateRangeFilter,
 	MediaAnalysisResult,
 	ProgramAnalysisResult,
+	StationAnalysisDetail,
 } from "./types";
 import { compareStations, getStationAnalysisDetail, getProgramAnalysis, getTopStationAnalytics, getMediaStations } from "./api";
 
+type DateRangeValue = {
+	startDate: string;
+	endDate: string;
+};
+
 const DEFAULT_FILTERS: MediaAnalysisFilters = {
 	mediaType: "TV",
-	timeSlot: "PRIME_TIME",
-	segmentClass: "M2",
-	budget: 100000,
+	// timeSlot: "PRIME_TIME",
+	// segmentClass: "M2",
+	// budget: 100000,
 	selectedStationIds: [],
 	dateRange: "30_days",
+	startTime: "00:00",
+	endTime: "23:59",
 };
 
 export function useMediaAnalysisFilters() {
@@ -26,20 +31,21 @@ export function useMediaAnalysisFilters() {
 		setFilters((prev) => ({ ...prev, mediaType, selectedStationIds: [] }));
 	}, []);
 
-	const updateTimeSlot = useCallback((timeSlot: AnalysisTimeSlot) => {
-		setFilters((prev) => ({ ...prev, timeSlot }));
+	const updateDateRange = useCallback((dateRange: DateRangeValue) => {
+		setFilters((prev) => ({
+			...prev,
+			dateRange: "custom",
+			startDate: dateRange.startDate,
+			endDate: dateRange.endDate,
+		}));
 	}, []);
 
-	const updateSegmentClass = useCallback((segmentClass: AnalysisSegmentClass) => {
-		setFilters((prev) => ({ ...prev, segmentClass }));
-	}, []);
-
-	const updateBudget = useCallback((budget: number) => {
-		setFilters((prev) => ({ ...prev, budget }));
-	}, []);
-
-	const updateDateRange = useCallback((dateRange: DateRangeFilter) => {
-		setFilters((prev) => ({ ...prev, dateRange }));
+	const updateTimeInterval = useCallback((timeInterval: { startTime: string; endTime: string }) => {
+		setFilters((prev) => ({
+			...prev,
+			startTime: timeInterval.startTime,
+			endTime: timeInterval.endTime,
+		}));
 	}, []);
 
 	const toggleStationSelection = useCallback((stationId: string) => {
@@ -62,10 +68,8 @@ export function useMediaAnalysisFilters() {
 	return {
 		filters,
 		updateMediaType,
-		updateTimeSlot,
-		updateSegmentClass,
-		updateBudget,
 		updateDateRange,
+		updateTimeInterval,
 		toggleStationSelection,
 		setSelectedStations,
 		resetFilters,
@@ -105,4 +109,81 @@ export function useAvailableStations(mediaType: AnalysisMediaType) {
 	return useMemo(() => {
 		return getMediaStations(mediaType);
 	}, [mediaType]);
+}
+
+export function useComparisonStationSelections(
+	selectedStations: string[],
+	setSelectedStations: (stationIds: string[]) => void,
+	maxStations = 5
+) {
+	const stationSelections = useMemo<string[]>(() => {
+		const selectedSubset = selectedStations.slice(0, maxStations);
+		const emptySlots = Array.from(
+			{ length: Math.max(0, maxStations - selectedSubset.length) },
+			() => ""
+		);
+		return [...selectedSubset, ...emptySlots];
+	}, [selectedStations, maxStations]);
+
+	const handleStationSelection = useCallback(
+		(stationId: string, index: number) => {
+			const nextSelections = [...stationSelections];
+			nextSelections[index] = stationId;
+			setSelectedStations(nextSelections.filter((id): id is string => Boolean(id)));
+		},
+		[stationSelections, setSelectedStations]
+	);
+
+	return {
+		stationSelections,
+		selectedCount: selectedStations.length,
+		handleStationSelection,
+	};
+}
+
+export function useSelectedStation(stations: StationAnalysisDetail[]) {
+	const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
+
+	const selectedStation = useMemo(
+		() => stations.find((station) => station.stationId === selectedStationId) ?? null,
+		[stations, selectedStationId]
+	);
+
+	const closeSelectedStation = useCallback(() => {
+		setSelectedStationId(null);
+	}, []);
+
+	return {
+		selectedStationId,
+		setSelectedStationId,
+		selectedStation,
+		closeSelectedStation,
+	};
+}
+
+export function useStationRecommendations(station: StationAnalysisDetail | null) {
+	return useMemo(() => {
+		if (!station) return [] as string[];
+
+		const recs: string[] = [];
+
+		if (station.roi >= 2.2) {
+			recs.push("Increase allocation gradually for this station in the next planning cycle because ROI is already strong.");
+		} else {
+			recs.push("Test new dayparts and program mixes to improve ROI before scaling budget aggressively.");
+		}
+
+		if (station.averageFrequency < 2.2) {
+			recs.push("Raise frequency with more repeat placements in top-performing programs to improve message recall.");
+		} else {
+			recs.push("Maintain current frequency levels and prioritize incremental reach rather than repetition.");
+		}
+
+		const topProgram = station.peakPrograms[0];
+		if (topProgram) {
+			recs.push(`Prioritize ${topProgram.name} (${topProgram.timeSlot.replace(/_/g, " ")}) as an anchor slot for this station.`);
+		}
+
+		return recs.slice(0, 3);
+	}, [station]);
 }

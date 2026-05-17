@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
-import type { WorkOrder } from "@/features/agency-features/work-orders/types";
+import type { WorkOrder } from "@/types/work-order";
 import RejectionConfirmationDialogBox from "@/components/universal/RejectionConfirmationDialogBox";
 import ApprovalConfirmationDialogBox from "@/components/universal/ApprovalConfirmationDialogBox";
 
 interface MediaPartnerWorkOrderActionsProps {
   workOrder: WorkOrder;
-  onApprove: (workOrderId: string) => void;
-  onReject: (workOrderId: string, reason: string) => void;
+  onApprove: () => void;
+  onReject: (reason: string) => void;
 }
 
 /**
@@ -30,7 +30,7 @@ export function MediaPartnerWorkOrderActions({
   }
 
   const handleApprove = () => {
-    onApprove(workOrder.id);
+    onApprove();
     setShowApproveDialog(false);
   };
 
@@ -38,7 +38,7 @@ export function MediaPartnerWorkOrderActions({
     if (!rejectionReason.trim()) {
       return;
     }
-    onReject(workOrder.id, rejectionReason);
+    onReject(rejectionReason);
     setShowRejectDialog(false);
     setRejectionReason("");
   };

@@ -9,8 +9,9 @@ import { useQuery } from "@tanstack/react-query";
 import SegmentCard from "./SegmentCard";
 import { listRateCards } from "@/features/media-partner-features/rate-cards/api";
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import type {MediaType} from "../types";
 
-const mediaTypes: Array<'FM' | 'TV' | 'OOH' | 'DIGITAL'> = ['FM', 'TV', 'OOH', 'DIGITAL'];
+const mediaTypes: MediaType[] = ['FM', 'TV', 'OOH', 'DIGITAL'];
 
 const mediaIcons = {
     FM: Radio,
@@ -35,19 +36,23 @@ export default function ChannelCard({
     removeChannel 
 }: ChannelCardProps) {
     const [searchQuery, setSearchQuery] = useState('');
-    const previousMediaTypeRef = useRef<'FM' | 'TV' | 'OOH' | 'DIGITAL' | null>(null);
+    const previousMediaTypeRef = useRef<MediaType | null>(null);
     
     const { fields: segmentFields, append: appendSegment, remove: removeSegment } = useFieldArray({
         control,
         name: `channels.${channelIndex}.segments` as const
     });
 
-    const channelMediaType = watch(`channels.${channelIndex}.mediaType`) as 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+    const channelMediaType = watch(`channels.${channelIndex}.mediaType`) as MediaType;
     
     // Fetch rate cards from API
     const { data: rateCardsData } = useQuery({
         queryKey: ['rateCards', channelMediaType],
-        queryFn: () => listRateCards(channelMediaType && ['FM', 'TV'].includes(channelMediaType) ? { mediaType: channelMediaType as 'FM' | 'TV' } : undefined),
+        queryFn: () => listRateCards(
+            channelMediaType && mediaTypes.includes(channelMediaType) 
+            ? { mediaType: channelMediaType as MediaType } 
+            : undefined
+        ),
         staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
     });
@@ -61,8 +66,8 @@ export default function ChannelCard({
             startTime: '06:00',
             endTime: '07:00',
             days: [],
-            uniteRate: 0,
-            spotsPerDay: 0,
+            unitRate: 0,
+            totalSpots: 0,
             durationSeconds: 30
         });
     };
@@ -82,7 +87,7 @@ export default function ChannelCard({
             .filter(card => {
                 // For FM and TV, use the actual mediaType from API
                 if (['FM', 'TV'].includes(channelMediaType)) {
-                    return card.mediaType.trim() === channelMediaType.trim();
+                    return String(card.mediaType).trim() === channelMediaType.trim();
                 }
                 // For OOH and DIGITAL, include all for now (API doesn't support these yet)
                 return true;
@@ -184,7 +189,7 @@ export default function ChannelCard({
                         segmentIndex={segmentIndex}
                         control={control}
                         removeSegment={removeSegment}
-                        mediaType={channelMediaType}
+                            mediaType={channelMediaType}
                         watch={watch}
                         setValue={setValue}
                     />

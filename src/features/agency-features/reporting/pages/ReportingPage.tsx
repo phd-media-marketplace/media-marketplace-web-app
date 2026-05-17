@@ -22,7 +22,7 @@ import { DateRangePicker } from "@/components/universal/DateRangePicker";
 import MultiSelectDropdown, { type MultiSelectOption } from "@/components/universal/MultiSelectDropdown";
 
 type ReportTab = "spend" | "performance" | "campaigns";
-type Channel = "TV" | "RADIO" | "DIGITAL" | "OOH";
+type Channel = "TV" | "FM" | "DIGITAL" | "OOH";
 type MediaPartner = "AdWave" | "PrimeReach" | "VistaMedia" | "PulseNetwork";
 
 type SpendRecord = {
@@ -42,25 +42,25 @@ const chartColors = ["#0f766e", "#0ea5e9", "#f59e0b", "#ef4444", "#22c55e"];
 const sampleData: SpendRecord[] = [
   { month: "2026-01", channel: "TV", mediaPartner: "AdWave", campaign: "Brand Lift 360", spend: 120000, reach: 520000, impressions: 1600000 },
   { month: "2026-01", channel: "DIGITAL", mediaPartner: "PrimeReach", campaign: "Always On Digital", spend: 85000, reach: 490000, impressions: 2200000 },
-  { month: "2026-02", channel: "RADIO", mediaPartner: "VistaMedia", campaign: "Drive Time Blitz", spend: 64000, reach: 300000, impressions: 980000 },
+  { month: "2026-02", channel: "FM", mediaPartner: "VistaMedia", campaign: "Drive Time Blitz", spend: 64000, reach: 300000, impressions: 980000 },
   { month: "2026-02", channel: "TV", mediaPartner: "AdWave", campaign: "Brand Lift 360", spend: 130000, reach: 560000, impressions: 1720000 },
   { month: "2026-03", channel: "OOH", mediaPartner: "PulseNetwork", campaign: "City Domination", spend: 72000, reach: 360000, impressions: 1100000 },
   { month: "2026-03", channel: "DIGITAL", mediaPartner: "PrimeReach", campaign: "Always On Digital", spend: 91000, reach: 510000, impressions: 2360000 },
   { month: "2026-04", channel: "TV", mediaPartner: "VistaMedia", campaign: "Season Launch", spend: 138000, reach: 610000, impressions: 1850000 },
-  { month: "2026-04", channel: "RADIO", mediaPartner: "AdWave", campaign: "Drive Time Blitz", spend: 67000, reach: 310000, impressions: 990000 },
+  { month: "2026-04", channel: "FM", mediaPartner: "AdWave", campaign: "Drive Time Blitz", spend: 67000, reach: 310000, impressions: 990000 },
   { month: "2026-05", channel: "DIGITAL", mediaPartner: "PulseNetwork", campaign: "Retarget + Scale", spend: 98000, reach: 570000, impressions: 2620000 },
   { month: "2026-05", channel: "OOH", mediaPartner: "VistaMedia", campaign: "City Domination", spend: 78000, reach: 390000, impressions: 1190000 },
   { month: "2026-06", channel: "TV", mediaPartner: "AdWave", campaign: "Season Launch", spend: 146000, reach: 640000, impressions: 1940000 },
   { month: "2026-06", channel: "DIGITAL", mediaPartner: "PrimeReach", campaign: "Retarget + Scale", spend: 103000, reach: 600000, impressions: 2750000 },
-  { month: "2026-07", channel: "RADIO", mediaPartner: "PulseNetwork", campaign: "Morning Reach", spend: 70000, reach: 335000, impressions: 1040000 },
+  { month: "2026-07", channel: "FM", mediaPartner: "PulseNetwork", campaign: "Morning Reach", spend: 70000, reach: 335000, impressions: 1040000 },
   { month: "2026-07", channel: "OOH", mediaPartner: "AdWave", campaign: "Transit Visibility", spend: 82000, reach: 420000, impressions: 1260000 },
   { month: "2026-08", channel: "TV", mediaPartner: "VistaMedia", campaign: "Brand Lift 360", spend: 149000, reach: 655000, impressions: 1980000 },
   { month: "2026-08", channel: "DIGITAL", mediaPartner: "PrimeReach", campaign: "Always On Digital", spend: 108000, reach: 620000, impressions: 2830000 },
   { month: "2026-09", channel: "OOH", mediaPartner: "PulseNetwork", campaign: "Transit Visibility", spend: 86000, reach: 435000, impressions: 1310000 },
-  { month: "2026-09", channel: "RADIO", mediaPartner: "AdWave", campaign: "Morning Reach", spend: 73000, reach: 350000, impressions: 1070000 },
+  { month: "2026-09", channel: "FM", mediaPartner: "AdWave", campaign: "Morning Reach", spend: 73000, reach: 350000, impressions: 1070000 },
   { month: "2026-10", channel: "TV", mediaPartner: "AdWave", campaign: "Holiday Push", spend: 155000, reach: 680000, impressions: 2060000 },
   { month: "2026-10", channel: "DIGITAL", mediaPartner: "PrimeReach", campaign: "Holiday Push", spend: 111000, reach: 640000, impressions: 2910000 },
-  { month: "2026-11", channel: "RADIO", mediaPartner: "VistaMedia", campaign: "Holiday Push", spend: 76000, reach: 366000, impressions: 1120000 },
+  { month: "2026-11", channel: "FM", mediaPartner: "VistaMedia", campaign: "Holiday Push", spend: 76000, reach: 366000, impressions: 1120000 },
   { month: "2026-11", channel: "OOH", mediaPartner: "PulseNetwork", campaign: "Retail Visibility", spend: 89000, reach: 450000, impressions: 1370000 },
   { month: "2026-12", channel: "TV", mediaPartner: "VistaMedia", campaign: "Year End Burst", spend: 162000, reach: 705000, impressions: 2140000 },
   { month: "2026-12", channel: "DIGITAL", mediaPartner: "AdWave", campaign: "Year End Burst", spend: 116000, reach: 665000, impressions: 3030000 },
@@ -89,7 +89,7 @@ export default function ReportingPage() {
   const [activeTab, setActiveTab] = useState<ReportTab>("spend");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedQuarters, setSelectedQuarters] = useState<QuarterFilter[]>(["Q1", "Q2", "Q3", "Q4"]);
-  const [selectedChannels, setSelectedChannels] = useState<Channel[]>(["TV", "RADIO", "DIGITAL", "OOH"]);
+  const [selectedChannels, setSelectedChannels] = useState<Channel[]>(["TV", "FM", "DIGITAL", "OOH"]);
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>(() => [...new Set(sampleData.map((r) => r.campaign))]);
   const [selectedPartners, setSelectedPartners] = useState<MediaPartner[]>(["AdWave", "PrimeReach", "VistaMedia", "PulseNetwork"]);
   const [startDate, setStartDate] = useState("2026-01-01");
@@ -104,7 +104,7 @@ export default function ReportingPage() {
   ];
   const channelOptions: MultiSelectOption<Channel>[] = [
     { value: "TV", label: "TV" },
-    { value: "RADIO", label: "Radio" },
+    { value: "FM", label: "FM" },
     { value: "DIGITAL", label: "Digital" },
     { value: "OOH", label: "OOH" },
   ];
@@ -156,10 +156,10 @@ export default function ReportingPage() {
   }, [filteredData]);
 
   const quarterlyByChannel = useMemo(() => {
-    const grouped = filteredData.reduce<Record<string, { TV: number; RADIO: number; DIGITAL: number; OOH: number }>>((acc, item) => {
+    const grouped = filteredData.reduce<Record<string, { TV: number; FM: number; DIGITAL: number; OOH: number }>>((acc, item) => {
       const q = quarterFromMonth(item.month);
       if (!acc[q]) {
-        acc[q] = { TV: 0, RADIO: 0, DIGITAL: 0, OOH: 0 };
+        acc[q] = { TV: 0, FM: 0, DIGITAL: 0, OOH: 0 };
       }
       acc[q][item.channel] += item.spend;
       return acc;
@@ -345,7 +345,7 @@ export default function ReportingPage() {
                     <Tooltip formatter={(value: number) => formatCurrency(value)} />
                     <Legend />
                     <Bar dataKey="TV" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="RADIO" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="FM" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="DIGITAL" fill="#0f766e" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="OOH" fill="#ef4444" radius={[4, 4, 0, 0]} />
                   </ComposedChart>

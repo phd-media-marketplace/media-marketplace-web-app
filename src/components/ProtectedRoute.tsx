@@ -12,7 +12,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, al
     
     // check if user is authenticated
     if (!token) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/login" replace />;
     }
     // If allowedRoles is provided, check if the user has at least one of the required roles
     if (allowedRoles && allowedRoles.length > 0 && user) {

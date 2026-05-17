@@ -1,6 +1,8 @@
 import {
 	LineChart,
 	Line,
+	AreaChart,
+	Area,
 	BarChart,
 	Bar,
 	PieChart,
@@ -8,13 +10,29 @@ import {
 	Cell,
 	XAxis,
 	YAxis,
-	CartesianGrid,
 	Tooltip,
 	Legend,
 	ResponsiveContainer,
+	CartesianGrid,
 } from "recharts";
 import { Card } from "@/components/ui/card";
 
+function formatNumberShort(value: number) {
+	if (Math.abs(value) >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+	if (Math.abs(value) >= 1_000) return `${(value / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+	return String(value);
+}
+
+function getAutoYDomain(data: Record<string, unknown>[], keys: string[]): [number, number] {
+	const values = data
+		.flatMap((row) => keys.map((key) => Number(row[key])))
+		.filter((v) => Number.isFinite(v));
+
+	if (values.length === 0) return [0, 5000];
+
+	const max = Math.max(...values);
+	return [0, max + 5000];
+}
 interface SimpleLineChartProps {
     
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,6 +41,7 @@ interface SimpleLineChartProps {
 	title: string;
 	xAxisKey: string;
 	strokeColor?: string;
+	xAxisInterval?: number
 }
 
 export function SimpleLineChart({
@@ -31,30 +50,33 @@ export function SimpleLineChart({
 	title,
 	xAxisKey,
 	strokeColor = "#2563eb",
+	xAxisInterval = 3
+	
 }: SimpleLineChartProps) {
 	return (
-		<Card className="p-4">
-			<h3 className="text-sm font-semibold text-gray-900 mb-4">{title}</h3>
-			<ResponsiveContainer width="100%" height={300}>
+		<Card className="p-0">
+			<h3 className="text-sm font-semibold text-gray-900 mb-2">{title}</h3>
+			<ResponsiveContainer width="100%" height={300} className="-mx-4">
 				<LineChart data={data}>
-					<CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-					<XAxis dataKey={xAxisKey} stroke="#6b7280" />
-					<YAxis stroke="#6b7280" />
+					<CartesianGrid vertical={false} strokeDasharray="3" />
+					<XAxis dataKey={xAxisKey} stroke="#6b7280" angle={-30} textAnchor="end" interval={xAxisInterval} height={60} />
+					<YAxis stroke="#6b7280" tickFormatter={formatNumberShort} axisLine={false}/>
 					<Tooltip
 						contentStyle={{
-							backgroundColor: "#1f2937",
-							border: "1px solid #374151",
+							backgroundColor: "#2f0d68",
+							border: "1px solid #2f0d68",
 							borderRadius: "8px",
 						}}
 						labelStyle={{ color: "#f3f4f6" }}
+						formatter={(value: number | string) => (typeof value === 'number' ? formatNumberShort(value) : String(value))}
 					/>
 					<Line
 						type="monotone"
 						dataKey={dataKey}
 						stroke={strokeColor}
-						dot={{ fill: strokeColor, r: 4 }}
-						activeDot={{ r: 6 }}
 						strokeWidth={2}
+						dot={false}
+						isAnimationActive={false}
 					/>
 				</LineChart>
 			</ResponsiveContainer>
@@ -68,24 +90,27 @@ interface MultiLineChartProps {
 	lines: Array<{ dataKey: string; strokeColor: string; name: string }>;
 	title: string;
 	xAxisKey: string;
+	xAxisInterval?: number;
 }
 
-export function MultiLineChart({ data, lines, title, xAxisKey }: MultiLineChartProps) {
+export function MultiLineChart({ data, lines, title, xAxisKey, xAxisInterval = 3 }: MultiLineChartProps) {
 	return (
 		<Card className="p-4">
 			<h3 className="text-sm font-semibold text-gray-900 mb-4">{title}</h3>
 			<ResponsiveContainer width="100%" height={350}>
 				<LineChart data={data}>
-					<CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-					<XAxis dataKey={xAxisKey} stroke="#6b7280" />
-					<YAxis stroke="#6b7280" />
+					<CartesianGrid vertical={false} strokeDasharray="3" />
+					<XAxis dataKey={xAxisKey} stroke="#6b7280" angle={-45} textAnchor="end" interval={xAxisInterval} height={60} />
+					<YAxis stroke="#6b7280" tickFormatter={formatNumberShort}  />
 					<Tooltip
 						contentStyle={{
-							backgroundColor: "#1f2937",
-							border: "1px solid #374151",
+							backgroundColor: "#2f0d68",
+							border: "1px solid #2f0d68",
 							borderRadius: "8px",
+							// color: "whitesmoke",
 						}}
-						labelStyle={{ color: "#f3f4f6" }}
+						labelStyle={{ color: "#ffffff" }}
+						formatter={(value: number | string) => (typeof value === 'number' ? formatNumberShort(value) : String(value))}
 					/>
 					<Legend />
 					{lines.map((line) => (
@@ -95,12 +120,166 @@ export function MultiLineChart({ data, lines, title, xAxisKey }: MultiLineChartP
 							dataKey={line.dataKey}
 							stroke={line.strokeColor}
 							name={line.name}
-							dot={{ r: 3 }}
-							activeDot={{ r: 5 }}
 							strokeWidth={2}
+							dot={false}
+							isAnimationActive={false}
 						/>
 					))}
 				</LineChart>
+			</ResponsiveContainer>
+		</Card>
+	);
+}
+
+interface SimpleAreaChartProps {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data: Record<string, any>[];
+	dataKey: string;
+	title: string;
+	xAxisKey: string;
+	strokeColor?: string;
+	fillColor?: string;
+	xAxisLabel?: string;
+	yAxisLabel?: string;
+	autoScaleY?: boolean;
+	xAxisInterval?: number
+}
+
+export function SimpleAreaChart({
+	data,
+	dataKey,
+	title,
+	xAxisKey,
+	strokeColor = "#2563eb",
+	fillColor = "#2563eb",
+	xAxisLabel,
+	yAxisLabel,
+	autoScaleY = false,
+	xAxisInterval = 3
+}: SimpleAreaChartProps) {
+	const yDomain = autoScaleY ? getAutoYDomain(data, [dataKey]) : undefined;
+
+	return (
+		<Card className="p-0">
+			<h3 className="text-sm font-semibold text-gray-900 mb-2">{title}</h3>
+			<ResponsiveContainer width="100%" height={300} className="-mx-4">
+				<AreaChart data={data}>
+					<defs>
+						<linearGradient id={`simple-area-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+							<stop offset="5%" stopColor={fillColor} stopOpacity={0.35} />
+							<stop offset="95%" stopColor={fillColor} stopOpacity={0.05} />
+						</linearGradient>
+					</defs>
+					<CartesianGrid vertical={false} strokeDasharray="3" />
+					<XAxis
+						dataKey={xAxisKey}
+						stroke="#6b7280"
+						angle={-30}
+						textAnchor="end"
+						interval={xAxisInterval}
+						height={60}
+						label={xAxisLabel ? { value: xAxisLabel, position: "insideBottom", offset: -8, fill: "#6b7280" } : undefined}
+					/>
+					<YAxis
+						stroke="#6b7280"
+						tickFormatter={formatNumberShort}
+						axisLine={false}
+						domain={yDomain}
+						label={yAxisLabel ? { value: yAxisLabel, angle: -90, position: "insideLeft", fill: "#6b7280" } : undefined}
+					/>
+					<Tooltip
+						contentStyle={{
+							backgroundColor: "#2f0d68",
+							border: "1px solid #2f0d68",
+							borderRadius: "8px",
+						}}
+						labelStyle={{ color: "#f3f4f6" }}
+						formatter={(value: number | string) => (typeof value === 'number' ? formatNumberShort(value) : String(value))}
+					/>
+					<Area
+						type="monotone"
+						dataKey={dataKey}
+						stroke={strokeColor}
+						fill={`url(#simple-area-${dataKey})`}
+						strokeWidth={2}
+						dot={false}
+						isAnimationActive={false}
+					/>
+				</AreaChart>
+			</ResponsiveContainer>
+		</Card>
+	);
+}
+
+interface MultiAreaChartProps {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data: Record<string, any>[];
+	areas: Array<{ dataKey: string; strokeColor: string; fillColor?: string; name: string }>;
+	title: string;
+	xAxisKey: string;
+	xAxisLabel?: string;
+	yAxisLabel?: string;
+	autoScaleY?: boolean;
+	xAxisInterval?: number;
+}
+
+export function MultiAreaChart({ data, areas, title, xAxisKey, xAxisLabel, yAxisLabel, autoScaleY = true, xAxisInterval = 3 }: MultiAreaChartProps) {
+	const yDomain = autoScaleY ? getAutoYDomain(data, areas.map((a) => a.dataKey)) : undefined;
+
+	return (
+		<Card className="p-4">
+			<h3 className="text-sm font-semibold text-gray-900 mb-4">{title}</h3>
+			<ResponsiveContainer width="100%" height={350}>
+				<AreaChart data={data}>
+					<defs>
+						{areas.map((area) => (
+							<linearGradient key={area.dataKey} id={`multi-area-${area.dataKey}`} x1="0" y1="0" x2="0" y2="1">
+								<stop offset="5%" stopColor={area.fillColor ?? area.strokeColor} stopOpacity={0.35} />
+								<stop offset="95%" stopColor={area.fillColor ?? area.strokeColor} stopOpacity={0.05} />
+							</linearGradient>
+						))}
+					</defs>
+					<CartesianGrid vertical={false} strokeDasharray="3" />
+					<XAxis
+						dataKey={xAxisKey}
+						stroke="#6b7280"
+						angle={-30}
+						textAnchor="end"
+						interval={xAxisInterval}
+						height={60}
+						label={xAxisLabel ? { value: xAxisLabel, position: "insideBottom", offset: -8, fill: "#6b7280" } : undefined}
+					/>
+					<YAxis
+						stroke="#6b7280"
+						tickFormatter={formatNumberShort}
+						domain={yDomain}
+						label={yAxisLabel ? { value: yAxisLabel, angle: -90, position: "insideLeft", fill: "#6b7280" } : undefined}
+					/>
+					<Tooltip
+						contentStyle={{
+							backgroundColor: "#2f0d68",
+							border: "1px solid #2f0d68",
+							borderRadius: "8px",
+						}}
+						labelStyle={{ color: "#ffffff" }}
+						formatter={(value: number | string) => (typeof value === 'number' ? formatNumberShort(value) : String(value))}
+					/>
+					<Legend />
+					{areas.map((area) => (
+						<Area
+							key={area.dataKey}
+							type="monotone"
+							dataKey={area.dataKey}
+							stroke={area.strokeColor}
+							fill={`url(#multi-area-${area.dataKey})`}
+							fillOpacity={0.16}
+							name={area.name}
+							strokeWidth={2}
+							dot={false}
+							isAnimationActive={false}
+						/>
+					))}
+				</AreaChart>
 			</ResponsiveContainer>
 		</Card>
 	);
@@ -120,16 +299,17 @@ export function GroupedBarChart({ data, bars, title, xAxisKey }: GroupedBarChart
 			<h3 className="text-sm font-semibold text-gray-900 mb-4">{title}</h3>
 			<ResponsiveContainer width="100%" height={350}>
 				<BarChart data={data}>
-					<CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-					<XAxis dataKey={xAxisKey} stroke="#6b7280" />
-					<YAxis stroke="#6b7280" />
+					<CartesianGrid vertical={false} strokeDasharray="3" />
+					<XAxis dataKey={xAxisKey} stroke="#6b7280" angle={-30} textAnchor="end" interval={0} minTickGap={8} height={60} />
+					<YAxis stroke="#6b7280" tickFormatter={formatNumberShort} />
 					<Tooltip
 						contentStyle={{
-							backgroundColor: "#1f2937",
-							border: "1px solid #374151",
+							backgroundColor: "#2f0d68",
+							border: "1px solid #2f0d68",
 							borderRadius: "8px",
 						}}
 						labelStyle={{ color: "#f3f4f6" }}
+						formatter={(value: number | string) => (typeof value === 'number' ? formatNumberShort(value) : String(value))}
 					/>
 					<Legend />
 					{bars.map((bar) => (
@@ -170,6 +350,7 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
 						outerRadius={80}
 						fill="#8884d8"
 						dataKey="value"
+						innerRadius={40}
 					>
 						{data.map((_, index) => (
 							<Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
@@ -182,8 +363,8 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
 							return `${value} (${percent}%)`;
 						}}
 						contentStyle={{
-							backgroundColor: "#1f2937",
-							border: "1px solid #374151",
+							backgroundColor: "#2f0d68",
+							border: "1px solid #2f0d68",
 							borderRadius: "8px",
 							color: "#f3f4f6",
 						}}

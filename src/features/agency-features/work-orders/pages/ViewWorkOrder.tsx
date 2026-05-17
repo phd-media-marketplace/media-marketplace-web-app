@@ -1,103 +1,86 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download, Mail, Edit } from "lucide-react";
 import { dummyWorkOrders } from "../dummy-data";
 import { WorkOrderStatusBanner } from "../components/WorkOrderStatusBanner";
-import { WorkOrderActions } from "../components/WorkOrderActions";
 import { WorkOrderInfoCard } from "../components/WorkOrderInfoCard";
 import { WorkOrderSegmentsTable } from "../components/WorkOrderSegmentsTable";
 import { WorkOrderFinancialSummary } from "../components/WorkOrderFinancialSummary";
 import { WorkOrderApprovalDetails } from "../components/WorkOrderApprovalDetails";
+import Header from "@/components/universal/Header";
+import { useAuthStore } from "@/features/auth/store/auth-store";
+import RejectionConfirmationDialogBox from "@/components/universal/RejectionConfirmationDialogBox";
+import { toast } from "sonner";
 
 /**
  * ViewWorkOrder Component
- * Displays complete work order details including header info, segments table, and totals
- * Allows media partners to approve/reject work orders
+ * Displays complete work order details including header info, segments table, and totals.
  */
 export default function ViewWorkOrder() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const [showStopDialog, setShowStopDialog] = useState(false);
+  const [stopReason, setStopReason] = useState("");
 
-  // Find the work order by ID
-  const workOrder = dummyWorkOrders.find(wo => wo.id === id);
+  const workOrder = dummyWorkOrders.find((wo) => wo.id === id);
 
   if (!workOrder) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <div className="flex flex-col items-center justify-center gap-4">
         <h2 className="text-2xl font-semibold text-gray-900">Work Order Not Found</h2>
         <p className="text-gray-500">The work order you're looking for doesn't exist.</p>
-        <Button onClick={() => navigate('/agency/work-orders')}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
+        <Button onClick={() => navigate(`/${user?.tenantType?.toLowerCase() || "agency"}/work-orders`)}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Work Orders
         </Button>
       </div>
     );
   }
 
-  // Handle approve work order
-  const handleApprove = () => {
-    // TODO: Implement actual API call
-    alert('Work Order Approved! (Demo - actual implementation pending)');
-  };
-
-  // Handle reject work order
-  const handleReject = () => {
-    // TODO: Implement actual API call with rejection reason dialog
-    const reason = prompt('Please provide a reason for rejection:');
-    if (reason) {
-      alert(`Work Order Rejected with reason: ${reason}\n(Demo - actual implementation pending)`);
-    }
-  };
-
-  // Handle download PDF
   const handleDownload = () => {
-    alert('Download PDF functionality (Demo - actual implementation pending)');
+    alert("Download PDF functionality (Demo - actual implementation pending)");
   };
 
-  // Handle send email
   const handleEmail = () => {
-    alert('Send Email functionality (Demo - actual implementation pending)');
+    alert("Send Email functionality (Demo - actual implementation pending)");
   };
 
-  // Handle revise work order
   const handleRevise = () => {
-    alert('Revise Work Order functionality (Demo - actual implementation pending)');
+    navigate(`/${user?.tenantType?.toLowerCase() || "agency"}/work-orders/${workOrder.id}/edit`);
+  };
+
+  const handleStopOrder = () => {
+    if (!stopReason.trim()) return;
+    toast.success(`Stop order submitted for ${workOrder.workOrderNumber}`);
+    setShowStopDialog(false);
+    setStopReason("");
   };
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => navigate('/agency/work-orders')}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-primary tracking-tight">
-              {workOrder.workOrderNumber}
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Work Order Details
-            </p>
-          </div>
-        </div>
-        
-        <WorkOrderActions
-          status={workOrder.status}
-          onApprove={handleApprove}
-          onReject={handleReject}
-          onRevise={handleRevise}
-          onDownload={handleDownload}
-          onEmail={handleEmail}
-        />
-      </div>
+    <div className="space-y-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate(`/${user?.tenantType?.toLowerCase() || "agency"}/work-orders`)}
+        className="mb-4 text-primary transition-colors duration-100 hover:bg-primary hover:text-white"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Work Orders
+      </Button>
 
-      {/* Status Banner */}
+      <Header
+        title={workOrder.workOrderNumber}
+        description={`${workOrder.header.brandName} • ${workOrder.header.campaignName}`}
+        returnTofunc={handleDownload}
+        backbtnText="Download"
+        backIcon={Download}
+        ctaFunc={workOrder.status === "REJECTED" ? handleRevise : handleEmail}
+        ctaIcon={workOrder.status === "REJECTED" ? Edit : Mail}
+        ctabtnText={workOrder.status === "REJECTED" ? "Revise" : "Email"}
+      />
+
       <WorkOrderStatusBanner
         status={workOrder.status}
         approvalDate={workOrder.approvalDate}
@@ -105,7 +88,6 @@ export default function ViewWorkOrder() {
         rejectionReason={workOrder.rejectionReason}
       />
 
-      {/* Work Order Header Information */}
       <WorkOrderInfoCard
         header={workOrder.header}
         mediaPartnerName={workOrder.mediaPartnerName}
@@ -114,24 +96,54 @@ export default function ViewWorkOrder() {
         preparedByTitle={workOrder.preparedByTitle}
       />
 
-      {/* Segments Table */}
       <WorkOrderSegmentsTable segments={workOrder.segments} />
 
-      {/* Financial Summary */}
       <WorkOrderFinancialSummary
         subtotal={workOrder.subtotal}
         tax={workOrder.tax}
         totalAmount={workOrder.totalAmount}
       />
 
-      {/* Approval Section */}
-      {workOrder.status === 'APPROVED' && (
+      {workOrder.status === "APPROVED" && (
         <WorkOrderApprovalDetails
           approvedBy={workOrder.approvedBy}
           approvedByTitle={workOrder.approvedByTitle}
           approvalDate={workOrder.approvalDate}
         />
       )}
+
+      {workOrder.status === "APPROVED" && (
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            className="border-red-500 text-red-600 hover:bg-red-50"
+            onClick={() => setShowStopDialog(true)}
+          >
+            Stop Order
+          </Button>
+        </div>
+      )}
+
+      <RejectionConfirmationDialogBox
+        open={showStopDialog}
+        onOpenChange={setShowStopDialog}
+        title="Stop Order"
+        description={
+          <>
+            Provide a reason for stopping work order <strong>{workOrder.workOrderNumber}</strong>. The media partner will be notified.
+          </>
+        }
+        content={{
+          contentLabel: "Stop Order Reason",
+          contentPlaceholder: "Enter the reason for stopping this work order...",
+          contentValue: stopReason,
+          setContentValue: setStopReason,
+        }}
+        confirmText="Confirm Stop Order"
+        cancelText="Cancel"
+        onConfirm={handleStopOrder}
+        confirmVariant="destructive"
+      />
     </div>
   );
 }

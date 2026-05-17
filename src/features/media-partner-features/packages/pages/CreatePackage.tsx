@@ -1,79 +1,119 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, useWatch } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Save, Plus } from "lucide-react";
 import type { CreatePackageRequest } from "../types";
 import { useAuthStore } from "@/features/auth/store/auth-store";
 import { toast } from "sonner";
-import { dummyRateCards } from "../../../../../docs/archive/dummy-data";
-import type { RadioMetadata, TVMetadata } from "../../rate-cards/types";
+import { listRateCards } from "../../rate-cards/api";
+import type { RateCard, RadioMetadata, TVMetadata } from "../../rate-cards/types";
 import PackageBasicInfo from "../components/PackageBasicInfo";
 import PackageItem from "../components/PackageItem";
 import PricingSummary from "../components/PricingSummary";
 import Header from "@/components/universal/Header";
+import AssetPreviewCard from "@/components/universal/AssetPreviewCard";
+import { createPackage } from "../api";
+import { getFormErrorMessage } from "@/utils/error-handler";
+import { sanitizePayload } from "@/utils/Sanitizer";
+
+function isRadioRateCardMediaType(mediaType: string): boolean {
+  return mediaType === "FM";
+}
 
 // Helper function to get available ad types for a media type
-function getAdTypesForMediaType(mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL'): string[] {
-  const rateCards = dummyRateCards.filter(rc => rc.mediaType === mediaType && rc.isActive);
+function getAdTypesForMediaType(rateCards: RateCard[], mediaType: CreatePackageRequest['mediaType']): string[] {
+  const targetMediaType = mediaType === 'FM' ? 'FM' : mediaType;
   const adTypes = new Set<string>();
-  
-  rateCards.forEach(rc => {
-    if (mediaType === 'FM' && rc.metadata?.mediaType === 'FM') {
-      const metadata = rc.metadata as RadioMetadata;
-      metadata.adTypeRates.forEach(atr => adTypes.add(atr.adType));
-    } else if (mediaType === 'TV' && rc.metadata?.mediaType === 'TV') {
-      const metadata = rc.metadata as TVMetadata;
-      metadata.adTypeRates.forEach(atr => adTypes.add(atr.adType));
-    }
-  });
-  
+
+  rateCards
+    .filter((rateCard) => {
+      const rateCardMediaType = String(rateCard.mediaType);
+      return targetMediaType === 'FM'
+        ? isRadioRateCardMediaType(rateCardMediaType) && rateCard.isActive
+        : rateCardMediaType === targetMediaType && rateCard.isActive;
+    })
+    .forEach((rateCard) => {
+      if (targetMediaType === 'FM' && rateCard.metadata?.mediaType === 'FM') {
+        const metadata = rateCard.metadata as RadioMetadata;
+        metadata.adTypeRates.forEach((atr) => adTypes.add(atr.adType));
+      } else if (targetMediaType === 'TV' && rateCard.metadata?.mediaType === 'TV') {
+        const metadata = rateCard.metadata as TVMetadata;
+        metadata.adTypeRates.forEach((atr) => adTypes.add(atr.adType));
+      }
+    });
+
   return Array.from(adTypes);
 }
 
 // Helper function to get segments for a specific ad type and media type
-function getSegmentsForAdType(mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL', adType: string): Array<{ class: string; className: string; unitRate: number; rateCardId: string }> {
-  const rateCards = dummyRateCards.filter(rc => rc.mediaType === mediaType && rc.isActive);
+function getSegmentsForAdType(
+  rateCards: RateCard[],
+  mediaType: CreatePackageRequest['mediaType'],
+  adType: string
+): Array<{ class: string; className: string; unitRate: number; rateCardId: string }> {
+  const targetMediaType = mediaType === 'FM' ? 'FM' : mediaType;
   const segments: Array<{ class: string; className: string; unitRate: number; rateCardId: string }> = [];
-  
-  rateCards.forEach(rc => {
-    if (mediaType === 'FM' && rc.metadata?.mediaType === 'FM') {
-      const metadata = rc.metadata as RadioMetadata;
-      const adTypeRate = metadata.adTypeRates.find(atr => atr.adType === adType);
-      if (adTypeRate) {
-        adTypeRate.RadioSegment.filter(seg => seg.isActive).forEach(seg => {
-          segments.push({
-            class: seg.Class,
-            className: seg.ClassName || seg.Class,
-            unitRate: seg.UnitRate,
-            rateCardId: rc.id
+
+  rateCards
+    .filter((rateCard) => {
+      const rateCardMediaType = String(rateCard.mediaType);
+      return targetMediaType === 'FM'
+        ? isRadioRateCardMediaType(rateCardMediaType) && rateCard.isActive
+        : rateCardMediaType === targetMediaType && rateCard.isActive;
+    })
+    .forEach((rateCard) => {
+      if (targetMediaType === 'FM' && rateCard.metadata?.mediaType === 'FM') {
+        const metadata = rateCard.metadata as RadioMetadata;
+        const adTypeRate = metadata.adTypeRates.find((atr) => atr.adType === adType);
+        if (adTypeRate) {
+          adTypeRate.RadioSegment.filter((seg) => seg.isActive).forEach((seg) => {
+            segments.push({
+              class: seg.Class,
+              className: seg.ClassName || seg.Class,
+              unitRate: seg.UnitRate,
+              rateCardId: rateCard.id,
+            });
           });
-        });
-      }
-    } else if (mediaType === 'TV' && rc.metadata?.mediaType === 'TV') {
-      const metadata = rc.metadata as TVMetadata;
-      const adTypeRate = metadata.adTypeRates.find(atr => atr.adType === adType);
-      if (adTypeRate) {
-        adTypeRate.TVSegment.filter(seg => seg.isActive).forEach(seg => {
-          segments.push({
-            class: seg.Class,
-            className: seg.ClassName || seg.Class,
-            unitRate: seg.UnitRate,
-            rateCardId: rc.id
+        }
+      } else if (targetMediaType === 'TV' && rateCard.metadata?.mediaType === 'TV') {
+        const metadata = rateCard.metadata as TVMetadata;
+        const adTypeRate = metadata.adTypeRates.find((atr) => atr.adType === adType);
+        if (adTypeRate) {
+          adTypeRate.TVSegment.filter((seg) => seg.isActive).forEach((seg) => {
+            segments.push({
+              class: seg.Class,
+              className: seg.ClassName || seg.Class,
+              unitRate: seg.UnitRate,
+              rateCardId: rateCard.id,
+            });
           });
-        });
+        }
       }
-    }
-  });
-  
+    });
+
   return segments;
 }
 
 export default function CreatePackage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  const rateCardsQuery = useQuery({
+    queryKey: ["rateCards", "create-package"],
+    queryFn: async () => {
+      const [radioRateCards, tvRateCards] = await Promise.all([
+        listRateCards({ mediaType: "FM", limit: 1000 }),
+        listRateCards({ mediaType: "TV", limit: 1000 }),
+      ]);
+
+      return [...radioRateCards.rateCards, ...tvRateCards.rateCards];
+    },
+    staleTime: 60 * 1000,
+  });
 
   const { control, register, setValue, handleSubmit, formState: { errors } } = useForm<CreatePackageRequest>({
     defaultValues: {
@@ -96,9 +136,16 @@ export default function CreatePackage() {
   const items = useWatch({ control, name: 'items' }) || [];
   const discount = useWatch({ control, name: 'discount' }) || 0;
   const mediaType = useWatch({ control, name: 'mediaType' });
+  const metadata = useWatch({ control, name: 'metadata' }) || {};
+  const attachments = Array.isArray((useWatch({ control, name: 'attachments' }) || [])) ? useWatch({ control, name: 'attachments' }) || [] : [];
+  const packageImages = attachments.length > 0 ? attachments : (Array.isArray(metadata.packageImages) ? metadata.packageImages : []);
+  const rateCards = useMemo(() => rateCardsQuery.data ?? [], [rateCardsQuery.data]);
 
   // Get available ad types for current media type
-  const availableAdTypes = useMemo(() => getAdTypesForMediaType(mediaType), [mediaType]);
+  const availableAdTypes = useMemo(
+    () => getAdTypesForMediaType(rateCards, mediaType),
+    [rateCards, mediaType]
+  );
 
   const addItem = () => {
     setValue('items', [
@@ -141,7 +188,7 @@ export default function CreatePackage() {
   // Handle segment class selection - auto-populate unit rate and rate card ID
   const handleSegmentClassChange = (index: number, segmentClass: string) => {
     const item = items[index];
-    const segments = getSegmentsForAdType(mediaType, item.adType);
+    const segments = getSegmentsForAdType(rateCards, mediaType, item.adType);
     const selectedSegment = segments.find(seg => seg.class === segmentClass);
     
     if (selectedSegment) {
@@ -166,21 +213,40 @@ export default function CreatePackage() {
 
   const { totalPrice, finalPrice } = calculateTotals();
 
-  const onSubmit = handleSubmit((data) => {
-    if (!user?.tenantId) {
-      toast.error('Media partner ID not found');
-      return;
-    }
-
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Package created:', data);
+  const createMutation = useMutation({
+    mutationFn: createPackage,
+    onSuccess:() => {
+      queryClient.invalidateQueries({queryKey: ['packages']});
       toast.success('Package created successfully');
-      setIsLoading(false);
       navigate('/media-partner/packages');
-    }, 1000);
+    },
+    onError: (error: unknown) => {
+      const errorMessage = getFormErrorMessage(error);
+      toast.error(errorMessage);
+    }
+  });
+
+  const onSubmit = handleSubmit((data) => {
+    try {
+      // Ensure media partner ID is included
+      if (!user?.mediaPartner?.id) {
+        toast.error('Media partner ID not found. Please log in again or Check with your administrator.');
+        return;
+      }
+      //
+      const packageData: CreatePackageRequest = {
+        ...data,
+        mediaPartnerId: user.mediaPartner.id,
+        mediaPartnerName: user.mediaPartner.name, // Include media partner name for better context in backend
+      };
+      // Sanitize payload to remove any undefined or null values before sending to backend
+      const sanitizedPackageData = sanitizePayload(packageData);
+      // Create the package using the mutation
+      createMutation.mutate(sanitizedPackageData);
+    } catch (error) {
+      const errorMessage = getFormErrorMessage(error);
+      toast.error(errorMessage); 
+    }
   });
 
   return (
@@ -226,7 +292,7 @@ export default function CreatePackage() {
                       item={item}
                       index={index}
                       availableAdTypes={availableAdTypes}
-                      segments={getSegmentsForAdType(mediaType, item.adType)}
+                      segments={getSegmentsForAdType(rateCards, mediaType, item.adType)}
                       onAdTypeChange={handleAdTypeChange}
                       onSegmentClassChange={handleSegmentClassChange}
                       onUpdate={updateItem}
@@ -240,7 +306,20 @@ export default function CreatePackage() {
 
           {/* Pricing Summary */}
           <div className="lg:col-span-1">
-            <PricingSummary totalPrice={totalPrice} discount={discount} finalPrice={finalPrice} IsPreviewView={false} />
+            <PricingSummary 
+              totalPrice={totalPrice} 
+              discount={discount} 
+              finalPrice={finalPrice} 
+              IsPreviewView={false} 
+            />
+
+            <AssetPreviewCard
+              className="mt-6"
+              title="Package Assets"
+              description="Preview images or flyers for this package"
+              assets={packageImages}
+              emptyMessage="Upload package flyers or preview images to see them here."
+            />
           </div>
 
         </div>
@@ -258,10 +337,10 @@ export default function CreatePackage() {
           <Button 
             type="submit" 
             className="bg-primary text-white hover:bg-primary/90"
-            disabled={isLoading || items.length === 0}
+            disabled={createMutation.isPending || items.length === 0}
           >
             <Save className="w-4 h-4 mr-2" />
-            {isLoading ? 'Creating...' : 'Create Package'}
+            {createMutation.isPending ? 'Creating...' : 'Create Package'}
           </Button>
         </div>
       </form>

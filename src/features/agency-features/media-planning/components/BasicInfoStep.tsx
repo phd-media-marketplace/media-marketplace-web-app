@@ -8,17 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar, Target, Users, ArrowRight, Coins } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from "@/components/ui/select";
 import { CAMPAIGN_OBJECTIVES } from "@/features/media-partner-features/rate-cards/constant";
-
-interface MediaPlanFormData {
-    CampaignTitle: string;
-    client: string;
-    objective: string;
-    targetAudience: string;
-    startDate: string;
-    endDate: string;
-    budget: number;
-    channels: unknown[];
-}
+import { formatAdType } from "@/utils/formatters";
+import type { MediaPlanFormData } from "../types";
 
 interface BasicInfoStepProps {
     control: Control<MediaPlanFormData>;
@@ -48,15 +39,15 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                             Campaign Title <span className="text-red-500">*</span>
                         </label>
                         <Controller
-                            name="CampaignTitle"
+                            name="campaignName"
                             control={control}
                             rules={{ required: "Campaign title is required" }}
                             render={({ field }) => (
                                 <Input {...field} placeholder="Enter campaign title" className="w-full input-field" />
                             )}
                         />
-                        {errors.CampaignTitle && (
-                            <p className="text-sm text-red-500">{errors.CampaignTitle.message}</p>
+                        {errors.campaignName && (
+                            <p className="text-sm text-red-500">{errors.campaignName.message}</p>
                         )}
                     </div>
 
@@ -65,7 +56,7 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                             Client/Brand Name <span className="text-red-500">*</span>
                         </label>
                         <Controller
-                            name="client"
+                            name="clientName"
                             control={control}
                             rules={{ required: "Client is required" }}
                             render={({ field }) => (
@@ -76,8 +67,8 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                                 />
                             )}
                         />
-                        {errors.client && (
-                            <p className="text-sm text-red-500">{errors.client.message}</p>
+                        {errors.clientName && (
+                            <p className="text-sm text-red-500">{errors.clientName.message}</p>
                         )}
                     </div>
 
@@ -87,7 +78,7 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                             Start Date <span className="text-red-500">*</span>
                         </label>
                         <Controller
-                            name="startDate"
+                            name="expectedStartDate"
                             control={control}
                             rules={{ 
                                 required: "Start date is required",
@@ -112,8 +103,8 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                                 />
                             )}
                         />
-                        {errors.startDate && (
-                            <p className="text-sm text-red-500">{errors.startDate.message}</p>
+                        {errors.expectedStartDate && (
+                            <p className="text-sm text-red-500">{errors.expectedStartDate.message}</p>
                         )}
                     </div>
 
@@ -123,12 +114,12 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                             End Date <span className="text-red-500">*</span>
                         </label>
                         <Controller
-                            name="endDate"
+                            name="expectedEndDate"
                             control={control}
                             rules={{ 
                                 required: "End date is required",
                                 validate: (value) => {
-                                    const startDate = watch('startDate') as string;
+                                    const startDate = watch('expectedStartDate') as string;
                                     if (!startDate) {
                                         return "Please select start date first";
                                     }
@@ -161,8 +152,8 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                                 />
                             )}
                         />
-                        {errors.endDate && (
-                            <p className="text-sm text-red-500">{errors.endDate.message}</p>
+                        {errors.expectedEndDate && (
+                            <p className="text-sm text-red-500">{errors.expectedEndDate.message}</p>
                         )}
                     </div>
 
@@ -172,21 +163,15 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                             Total Budget (GHS) <span className="text-red-500">*</span>
                         </label>
                         <Controller
-                            name="budget"
+                            name="totalBudget"
                             control={control}
-                            rules={{ required: "Budget is required", min: 1 }}
+                            rules={{ required: "Total budget is required" }}
                             render={({ field }) => (
-                                <Input 
-                                    {...field} 
-                                    type="number" 
-                                    placeholder="0.00"
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                                    className="w-full input-field"
-                                />
+                                <Input {...field} type="number" min={0} className="w-full input-field" placeholder="Enter total budget" />
                             )}
                         />
-                        {errors.budget && (
-                            <p className="text-sm text-red-500">{errors.budget.message}</p>
+                        {errors.totalBudget && (
+                            <p className="text-sm text-red-500">{errors.totalBudget.message}</p>
                         )}
                     </div>
 
@@ -196,27 +181,21 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                             Campaign Objective <span className="text-red-500">*</span>
                         </label>
                         <Controller
-                            name="objective"
+                            name="campaignObjective"
                             control={control}
                             render={({ field }) => (
-                                // <Input {...field} placeholder="e.g., Brand Awareness" className="w-full input-field" />
-                                <Select value={field.value} onValueChange={field.onChange}>
+                                <Select onValueChange={field.onChange} value={field.value as string}>
                                     <SelectTrigger className="w-full input-field">
-                                        <SelectValue placeholder="Select campaign objective" />
+                                        <SelectValue placeholder="Select objective" />
                                     </SelectTrigger>
                                     <SelectContent className="w-full bg-white border-primary/10">
-                                        {CAMPAIGN_OBJECTIVES.map((objective) => (
-                                            <SelectItem key={objective} value={objective}>
-                                                {objective.replace(/_/g, " ").charAt(0).toUpperCase() + objective.replace(/_/g, " ").slice(1).toLowerCase()}
-                                            </SelectItem>
+                                        {CAMPAIGN_OBJECTIVES.map(obj => (
+                                            <SelectItem key={obj} value={obj}>{formatAdType(obj)}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             )}
                         />
-                        {errors.objective && (
-                            <p className="text-sm text-red-500">{errors.objective.message}</p>
-                        )}
                     </div>
 
                     <div className="md:col-span-2 space-y-2">
@@ -230,7 +209,7 @@ export default function BasicInfoStep({ control, errors, watch, onNext }: BasicI
                             render={({ field }) => (
                                 <Textarea 
                                     {...field} 
-                                    placeholder="Describe your target audience..."
+                                    placeholder="Describe your target audience... e.g., Adults 25-45, Urban dwellers, Tech enthusiasts, etc."
                                     className="w-full min-h-25 input-field"
                                 />
                             )}

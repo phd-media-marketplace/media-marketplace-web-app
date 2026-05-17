@@ -76,7 +76,7 @@ export const campaignChannels: CampaignChannel[] = [
     icon: '📻',
     status: 'active',
     trend: 'down',
-    mediaType: 'RADIO'
+    mediaType: 'FM'
   },
   {
     id: '4',
@@ -184,8 +184,8 @@ export const recommendedPackages: RecommendedPackage[] = [
   },
   {
     id: '3',
-    title: 'Drive Time Radio',
-    mediaType: 'RADIO',
+    title: 'Drive Time FM',
+    mediaType: 'FM',
     channel: 'Adom FM',
     cost: 8500,
     discount: 10, // 10% discount

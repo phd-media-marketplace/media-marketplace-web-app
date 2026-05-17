@@ -101,7 +101,7 @@ input[type="checkbox"] {
 }
 
 .select-trigger-bg {
-  @apply bg-white border-0
+  @apply bg-white border-0 w-full
 }
 
 /* Prevent body overflow hidden except when dialog is open */

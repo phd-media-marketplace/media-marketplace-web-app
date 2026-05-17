@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Download, Mail, CheckCircle, XCircle, Edit } from "lucide-react";
-import type { WorkOrderStatus } from "../types";
+import type { WorkOrderStatus } from "@/types/work-order";
 
 interface WorkOrderActionsProps {
   status: WorkOrderStatus;

@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import type { WorkOrderStatus } from "../types";
+import type { WorkOrderStatus } from "@/types/work-order";
 
 interface WorkOrdersFiltersProps {
   searchQuery: string;
@@ -25,24 +25,40 @@ export function WorkOrdersFilters({
   onMediaTypeChange,
 }: WorkOrdersFiltersProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-4">
       {/* Search */}
-      <div className="md:col-span-2">
-        <div className="relative">
+      <div className="md:col-span-2 w-full">
+        <div className="relative ">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             placeholder="Search by WO number, media partner, campaign..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-9"
+            className="filter-input-field"
           />
         </div>
       </div>
 
+      {/* Media Type Filter */}
+      <div className="w-full">
+        <Select value={mediaTypeFilter} onValueChange={onMediaTypeChange}>
+          <SelectTrigger className="w-full input-field">
+            <SelectValue placeholder="All Media Types" />
+          </SelectTrigger>
+          <SelectContent className="bg-white">
+            <SelectItem value="ALL">All Media Types</SelectItem>
+            <SelectItem value="FM">Radio</SelectItem>
+            <SelectItem value="TV">TV</SelectItem>
+            <SelectItem value="OOH">Out-of-Home</SelectItem>
+            <SelectItem value="DIGITAL">Digital</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Status Filter */}
-      <div>
+      <div className="w-full">
         <Select value={statusFilter} onValueChange={onStatusChange}>
-          <SelectTrigger>
+          <SelectTrigger className="w-full input-field">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent className="bg-white">
@@ -55,21 +71,6 @@ export function WorkOrdersFilters({
         </Select>
       </div>
 
-      {/* Media Type Filter */}
-      <div>
-        <Select value={mediaTypeFilter} onValueChange={onMediaTypeChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="All Media Types" />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-            <SelectItem value="ALL">All Media Types</SelectItem>
-            <SelectItem value="FM">FM Radio</SelectItem>
-            <SelectItem value="TV">TV</SelectItem>
-            <SelectItem value="OOH">Out-of-Home</SelectItem>
-            <SelectItem value="DIGITAL">Digital</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
     </div>
   );
 }

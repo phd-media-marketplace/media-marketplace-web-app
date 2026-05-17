@@ -3,13 +3,14 @@ import FMSegmentCard from "./FMSegmentCard";
 import TVSegmentCard from "./TVSegmentCard";
 import OOHSegmentCard from "./OOHSegmentCard";
 import DIGITALSegmentCard from "./DIGITALSegmentCard";
+import type { MediaType } from "../types";
 
 interface SegmentCardProps {
     channelIndex: number;
     segmentIndex: number;
     control: Control<FieldValues>;
     removeSegment: UseFieldArrayRemove;
-    mediaType: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
+    mediaType: MediaType;
     watch: UseFormWatch<FieldValues>;
     setValue: UseFormSetValue<FieldValues>;
 }
@@ -27,8 +28,10 @@ export default function SegmentCard({
     watch,
     setValue
 }: SegmentCardProps) {
+    const normalizedMediaType: MediaType = mediaType;
+
     // Route to the appropriate media-type-specific component
-    switch (mediaType) {
+    switch (normalizedMediaType) {
         case 'FM':
             return (
                 <FMSegmentCard

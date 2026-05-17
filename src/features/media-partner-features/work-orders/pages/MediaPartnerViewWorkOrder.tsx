@@ -10,10 +10,14 @@ import {
   WorkOrderFinancialSummary,
   WorkOrderApprovalDetails,
 } from "@/features/agency-features/work-orders/components";
-import { dummyWorkOrders } from "@/features/agency-features/work-orders/dummy-data";
 import { toast } from "sonner";
 import Header from "@/components/universal/Header";
 import { generateInvoice, listInvoices } from "@/features/media-partner-features/billing/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { respondToWorkOrder, getMediaPartnerWorkOrder } from "../api";
+import Loader from "@/components/universal/Loader";
+import LoadingError from "@/components/universal/LoadingError";
+import InvalidID from "@/components/universal/InvalidID";
 
 /**
  * MediaPartnerViewWorkOrder Component
@@ -25,9 +29,29 @@ export default function MediaPartnerViewWorkOrder() {
   const [invoiceCheckLoading, setInvoiceCheckLoading] = useState(false);
   const [invoiceGenerating, setInvoiceGenerating] = useState(false);
   const [generatedInvoiceId, setGeneratedInvoiceId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  // Find the work order by ID
-  const workOrder = dummyWorkOrders.find(wo => wo.id === id);
+  // Fetch the work order by ID from API
+  const workOrderQuery = useQuery({
+    queryKey: ['media-partner-work-order', id],
+    queryFn: () => getMediaPartnerWorkOrder(id || ''),
+    enabled: !!id,
+  });
+
+  const workOrder = workOrderQuery.data;
+
+  // Define mutation before any conditional returns (React Hooks Rule)
+  const workOrderResponseMutation = useMutation({
+    mutationFn: ({ accepted, rejectionReason }: { accepted: boolean; rejectionReason?: string }) => 
+      respondToWorkOrder(workOrder?.id || '', accepted, rejectionReason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["media-partner-work-orders"] });
+    },
+    onError: (error) => {
+      toast.error("An error occurred while responding to the work order. Please try again.");
+      console.error("Error responding to work order:", error);
+    }
+  });
 
   useEffect(() => {
     if (!workOrder || workOrder.status !== "APPROVED") return;
@@ -65,29 +89,56 @@ export default function MediaPartnerViewWorkOrder() {
     };
   }, [workOrder]);
 
-  if (!workOrder) {
+  if(!id) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 gap-4">
-        <h2 className="text-2xl font-semibold text-gray-900">Work Order Not Found</h2>
-        <p className="text-gray-500">The work order you're looking for doesn't exist.</p>
-        <Button onClick={() => navigate('/media-partner/work-orders')}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Work Orders
-        </Button>
-      </div>
+      <InvalidID
+        title="Invalid Work Order ID"
+        message="The provided work order ID is invalid."
+        btnText="Back to Work Orders"
+        redirectPath="/media-partner/work-orders"
+      />
     );
   }
 
-  const handleApprove = (workOrderId: string) => {
-    // TODO: Call API to approve work order
-    toast.success(`Work Order ${workOrder.workOrderNumber} approved successfully!`);
-    console.log('Approving work order:', workOrderId);
+  // Show loading state
+  if (workOrderQuery.isLoading) {
+    return <Loader
+      message="Loading work order details..."
+      className="min-h-100"
+
+     />;
+  }
+
+  // Show error state
+  if (workOrderQuery.isError) {
+    return (
+      <LoadingError
+        message="Failed to load work order"
+        onRetry={() => workOrderQuery.refetch()}
+        OnReturn={() => navigate("/media-partner/work-orders")}
+        returnBtnText="Back to Work Orders"
+      />
+    );
+  }
+
+  // Show not found state
+  if (!workOrder) {
+    return (
+      <InvalidID
+        title="Work Order Not Found"
+        message="The requested work order does not exist."
+        btnText="Back to Work Orders"
+        redirectPath="/media-partner/work-orders"
+      />
+    );
+  }
+
+  const handleApprove = () => {
+    workOrderResponseMutation.mutate({ accepted: true });
   };
 
-  const handleReject = (workOrderId: string, reason: string) => {
-    // TODO: Call API to reject work order with reason
-    toast.error(`Work Order ${workOrder.workOrderNumber} rejected.`);
-    console.log('Rejecting work order:', workOrderId, 'Reason:', reason);
+  const handleReject = (reason: string) => {
+    workOrderResponseMutation.mutate({ accepted: false, rejectionReason: reason });
   };
 
   const handleDownload = () => {

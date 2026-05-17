@@ -13,25 +13,6 @@ import { FilterX } from "lucide-react";
 
 import type { ReportQuarter, ReportFiltersProps  } from "../types";
 
-// export type ReportQuarter = "ALL" | "Q1" | "Q2" | "Q3" | "Q4";
-
-// export interface ReportFiltersState {
-//   quarter: ReportQuarter;
-//   startDate: string;
-//   endDate: string;
-//   clients: string[];
-// }
-
-// interface ReportFiltersProps {
-//   value: ReportFiltersState;
-//   clientOptions: string[];
-//   onQuarterChange: (quarter: ReportQuarter) => void;
-//   onStartDateChange: (startDate: string) => void;
-//   onEndDateChange: (endDate: string) => void;
-//   onClientsChange: (clients: string[]) => void;
-//   onReset: () => void;
-// }
-
 export default function ReportFilters({
   value,
   clientOptions,

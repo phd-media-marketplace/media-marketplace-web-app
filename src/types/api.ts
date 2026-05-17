@@ -1,6 +1,6 @@
 
 export type TenantType = 'AGENCY' | 'CLIENT' | 'MEDIA_PARTNER';
-export type MediaType = "TV" | "RADIO" | "TV_RADIO" | "OOH" | "DIGITAL";
+export type MediaType = "TV" | "FM" | "TV_RADIO" | "OOH" | "DIGITAL";
 
 export interface RegisterData {
     email: string;
@@ -55,7 +55,7 @@ export interface User {
     tenantId: string;
     tenantName: string;
     tenantType: "MEDIA_PARTNER" | "AGENCY" | "CLIENT";
-    mediaType: "TV" | "RADIO" | "TV_RADIO" | "OOH" | "DIGITAL";
+    mediaType: "TV" | "FM" | "TV_RADIO" | "OOH" | "DIGITAL";
     roles: string[];
     permissions: string[];
     mediaPartner: {

@@ -37,7 +37,7 @@ export const getRateCard = async (id: string): Promise<RateCard> => {
 
 // Get all rate cards (with optional filters)
 export const listRateCards = async (params?: {
-  mediaType?: 'FM' | 'TV';
+  mediaType?: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
   page?: number;
   limit?: number;
   isActive?: boolean;

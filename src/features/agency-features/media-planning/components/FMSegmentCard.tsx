@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { X, AlertCircle } from "lucide-react";
 import type { DayOfWeek } from "../types";
 import { useQuery } from "@tanstack/react-query";
 import { listRateCards } from "@/features/media-partner-features/rate-cards/api";
 import type { RadioMetadata, RadioRate, RadioSegment, TimeDetails } from "@/features/media-partner-features/rate-cards/types";
 import { useMemo, useEffect } from "react";
+import SpotsPerDayGrid from "./SpotsPerDayGrid";
 
 interface FMSegmentCardProps {
     channelIndex: number;
@@ -35,6 +36,8 @@ export default function FMSegmentCard({
     const adType = watch(`channels.${channelIndex}.segments.${segmentIndex}.adType`);
     const segmentClass = watch(`channels.${channelIndex}.segments.${segmentIndex}.segmentClass`);
     const selectedDays = watch(`channels.${channelIndex}.segments.${segmentIndex}.days`) || [];
+    const startDate = watch('expectedStartDate');
+    const endDate = watch('expectedEndDate');
 
     // Fetch FM rate cards from API
     const { data: rateCardsData } = useQuery({
@@ -44,7 +47,8 @@ export default function FMSegmentCard({
         gcTime: 10 * 60 * 1000,
     });
 
-    const rateCards = rateCardsData?.rateCards || [];
+    // Memoize rateCards to avoid dependency issues
+    const rateCards = useMemo(() => rateCardsData?.rateCards || [], [rateCardsData]);
 
     // Get available ad types for the selected channel
     const availableAdTypes = useMemo(() => {
@@ -246,6 +250,28 @@ export default function FMSegmentCard({
                     <p className="text-xs text-gray-500">Auto-populated from rate card</p>
                 </div>
 
+                {/* Discount */}
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Discount (%) (Optional)</label>
+                    <Controller
+                        name={`channels.${channelIndex}.segments.${segmentIndex}.discount`}
+                        control={control}
+                        render={({ field }) => (
+                            <Input 
+                                {...field}
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                placeholder="0.00"
+                                onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                                className="input-field"
+                            />
+                        )}
+                    />
+                    <p className="text-xs text-gray-500">Enter discount percentage if applicable</p>
+                </div>
+                
                 {/* Total Spots */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">
@@ -267,6 +293,7 @@ export default function FMSegmentCard({
                         )}
                     />
                 </div>
+            </div>
                 {/* Days Selection */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">
@@ -288,7 +315,6 @@ export default function FMSegmentCard({
                         ))}
                     </div>
                 </div>
-            </div>
 
 
             {/* Time Slot Display (Read-only) */}
@@ -312,6 +338,54 @@ export default function FMSegmentCard({
                 </div>
             )}
 
+            {/* Spots Per Day */}
+            <div className="space-y-3 p-3 bg-blue-50 rounded border border-blue-200">
+                <div className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                        <label className="text-sm font-medium text-gray-700">
+                            Spots Per Day <span className="text-red-500">*</span>
+                        </label>
+                        <p className="text-xs text-gray-600 mt-1">Enter spots per occurrence for each selected day. The system will multiply by the number of times that day appears in your campaign period to calculate the total.</p>
+                    </div>
+                </div>
+                <SpotsPerDayGrid 
+                    channelIndex={channelIndex}
+                    segmentIndex={segmentIndex}
+                    selectedDays={selectedDays}
+                    totalSpots={watch(`channels.${channelIndex}.segments.${segmentIndex}.totalSpots`) || 0}
+                    control={control}
+                    setValue={setValue}
+                    watch={watch}
+                    startDate={startDate}
+                    endDate={endDate}
+                />
+            </div>
+
+
+            {/* Attachments */}
+            <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Ad Creatives (Optional)</label>
+                <Controller
+                    name={`channels.${channelIndex}.segments.${segmentIndex}.attachmments`}
+                    control={control}
+                    render={({ field }) => (
+                        <Input 
+                            type="file"
+                            multiple
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                const files = e.target.files ? Array.from(e.target.files) : [];
+                                field.onChange(files);
+                            }}
+                            className="cursor-pointer input-field"
+                        />
+                    )}
+                />
+                <p className="text-xs text-gray-500">Upload audio files for this FM segment</p>
+            </div>
+
         </div>
     );
 }
+
+

@@ -1,5 +1,5 @@
 import type { Invoice } from "@/types/invoice";
-import type { WorkOrderSegment } from "@/features/agency-features/work-orders/types";
+import type { WorkOrderSegment } from "@/types/work-order";
 
 export function buildLineItem(segmentName: string, unitRate: number): WorkOrderSegment {
   return {

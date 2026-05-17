@@ -103,14 +103,24 @@ export default function FileUpload({
 }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const abortControllersRef = useRef<Record<string, AbortController>>({});
+  const tasksRef = useRef<UploadTask[]>([]);
+  const onTasksChangeRef = useRef<FileUploadProps["onTasksChange"]>(onTasksChange);
   const previewUrlsRef = useRef<Record<string, string>>({});
   const [tasks, setTasks] = useState<UploadTask[]>([]);
   const [dragging, setDragging] = useState(false);
   const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({});
-  // Sync tasks with parent component
   useEffect(() => {
-    onTasksChange?.(tasks);
-  }, [tasks, onTasksChange]);
+    onTasksChangeRef.current = onTasksChange;
+  }, [onTasksChange]);
+
+  // Sync tasks with parent component only when task state changes.
+  useEffect(() => {
+    onTasksChangeRef.current?.(tasks);
+  }, [tasks]);
+  // Keep a live task snapshot for async upload triggers to avoid stale closures.
+  useEffect(() => {
+    tasksRef.current = tasks;
+  }, [tasks]);
   // Keep refs updated for cleanup
   useEffect(() => {
     previewUrlsRef.current = previewUrls;
@@ -136,7 +146,7 @@ export default function FileUpload({
 
   // Start the upload process for a specific task
   const startUpload = async (taskId: string) => {
-    const target = tasks.find((task) => task.id === taskId);
+    const target = tasksRef.current.find((task) => task.id === taskId);
     if (!target || target.status === "uploading") return;
 
     const controller = new AbortController();

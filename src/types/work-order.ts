@@ -1,5 +1,6 @@
 import type { UUID } from "@/features/media-partner-features/rate-cards/types";
-import type { DayOfWeek } from "../media-planning/types";
+import type { DayOfWeek } from "@/features/agency-features/media-planning/types";
+import type { TaxDetails } from "@/types/invoice";
 
 /**
  * Work Order Status
@@ -38,6 +39,9 @@ export interface WorkOrderSegment {
   totalAmount: number;
   programName?: string;
   adForm?: string;
+  spotsPerDay?: {
+    [key in DayOfWeek]?: number;
+  };
 }
 
 /**
@@ -46,12 +50,11 @@ export interface WorkOrderSegment {
 export interface WorkOrderHeader {
   // Client/Agency Information
   clientType: 'AGENCY' | 'DIRECT_CLIENT';
-  agencyName?: string;
-  clientName?: string;
+  clientName: string;
   brandName: string;
   
   // Order Details
-  poNumber: string;          // Purchase Order Number
+  poNumber: string;          // Purchase Order Number (optional client tenant type but required for agency tenant type)
   mpoNumber: string;         // Media Purchase Order Number
   startDate: string;
   endDate: string;
@@ -84,7 +87,7 @@ export interface WorkOrder {
   
   // Financial Summary
   subtotal: number;
-  tax?: number;
+  tax?: TaxDetails;
   totalAmount: number;
   
   // Status & Tracking
@@ -138,11 +141,4 @@ export interface WorkOrderFilters {
   mediaType?: 'FM' | 'TV' | 'OOH' | 'DIGITAL';
 }
 
-// export interface taxes {
-//   Discount
-//   Commission : 15%
 
-//   Getfund:2.5%
-//   NHIS :2.5%
-//   Vat: 12.5%15.00%
-// }

@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { type UploadTask } from "@/components/universal/FileUpload";
 import { uploadPackageImage } from "../api";
 import FileUploadDialog from "@/components/universal/FileUploadDialog";
+import type { Attachment } from "../types";
 
 type PackageBasicInfoFields = {
 	packageName: unknown;
@@ -18,6 +19,7 @@ type PackageBasicInfoFields = {
 	packageDurationValue: unknown;
 	packageDurationUnit: string;
 	discount: unknown;
+	attachments?: Attachment[];
 	metadata?: Record<string, unknown>;
 };
 
@@ -38,26 +40,26 @@ export default function PackageBasicInfo({ control, register, setValue, errors }
 	const mediaType = useWatch({ control: formControl, name: "mediaType" });
 	const packageDurationUnit = useWatch({ control: formControl, name: "packageDurationUnit" });
 	const demographics = (useWatch({ control: formControl, name: "demographics" }) || []) as string[];
-	const metadata = (useWatch({ control: formControl, name: "metadata" }) || {}) as Record<string, unknown>;
 	const packageNameError = formErrors.packageName as { message?: string } | undefined;
+	const attachments = (useWatch({ control: formControl, name: "attachments" }) || []) as Attachment[];
 	const reachError = formErrors.reach as { message?: string } | undefined;
 	const packageDurationValueError = formErrors.packageDurationValue as { message?: string } | undefined;
 	const packageNameMessage = typeof packageNameError?.message === "string" ? packageNameError.message : "";
 	const reachMessage = typeof reachError?.message === "string" ? reachError.message : "";
-	const uploadedFiles = (metadata.packageImages as string[] | undefined) || [];
 
 	const handleUploadTasks = (tasks: UploadTask[]) => {
-		const urls = tasks
+		const newAttachments = tasks
 			.filter((task) => task.status === "success" && task.result?.url)
-			.map((task) => task.result?.url)
-			.filter((url): url is string => Boolean(url));
+			.map((task) => ({
+				name: task.file.name,
+				url: task.result?.url || "",
+				type: task.file.type || "application/octet-stream",
+			}))
+			.filter((att): att is Attachment => Boolean(att.url));
 
-		if (urls.length === 0 && uploadedFiles.length === 0) return;
+		if (newAttachments.length === 0 && attachments.length === 0) return;
 
-		formSetValue("metadata", {
-			...metadata,
-			packageImages: urls,
-		});
+		formSetValue("attachments", newAttachments);
 	};
 
 	return (
@@ -93,7 +95,7 @@ export default function PackageBasicInfo({ control, register, setValue, errors }
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent className="bg-white border-none">
-								<SelectItem value="FM">📻 Radio</SelectItem>
+								<SelectItem value="FM">📻 FM</SelectItem>
 								<SelectItem value="TV">📺 TV</SelectItem>
 								<SelectItem value="OOH">🏙️ Out-of-Home</SelectItem>
 								<SelectItem value="DIGITAL">💻 Digital</SelectItem>
@@ -162,8 +164,8 @@ export default function PackageBasicInfo({ control, register, setValue, errors }
                             className="input-field flex w-full items-center justify-between rounded-md border px-3 py-2 text-left"
                         >
                             <span className="text-sm text-gray-600">
-                                {uploadedFiles.length > 0
-                                    ? `${uploadedFiles.length} file(s) uploaded`
+								{attachments.length > 0
+									? `${attachments.length} file(s) uploaded`
                                     : "No files uploaded yet"}
                             </span>
                             <span className="text-xs font-medium text-primary">Manage Uploads</span>
@@ -200,7 +202,7 @@ export default function PackageBasicInfo({ control, register, setValue, errors }
 							<SelectContent className="bg-white border-none">
 								<SelectItem value="DAYS">Days</SelectItem>
 								<SelectItem value="WEEKS">Weeks</SelectItem>
-								<SelectItem value="MONTHS">Months</SelectItem>
+								<SelectItem value="MONTHS">Month(s)</SelectItem>
 							</SelectContent>
 						</Select>
 					</div>
@@ -226,7 +228,7 @@ export default function PackageBasicInfo({ control, register, setValue, errors }
                 onOpenChange={setIsUploadDialogOpen}
                 onUpload={(file, options) => uploadPackageImage(file, options)}
                 onTasksChange={handleUploadTasks}
-                uploadedFiles={uploadedFiles}
+				uploadedFiles={attachments.map((att) => att.url)}
             />
 		</Card>
 	);

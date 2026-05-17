@@ -5,7 +5,7 @@ import type {
   UpdateWorkOrderStatusRequest,
   WorkOrderListResponse,
   WorkOrderFilters
-} from "./types";
+} from "@/types/work-order";
 
 /**
  * Generate work orders from an approved media plan
