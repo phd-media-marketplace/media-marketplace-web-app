@@ -41,7 +41,7 @@ export default function AddToPlanDialog({
     const [planMode, setPlanMode] = useState<AddToPlanMode>("existing");
     const [selectedDraftPlanId, setSelectedDraftPlanId] = useState<string>("");
 
-    const draftPlans = useMemo(() => dummyMediaPlans.filter((plan) => plan.status === "draft"), []);
+    const draftPlans = useMemo(() => dummyMediaPlans.filter((plan) => plan.status === "DRAFT"), []);
 
     const loginState = {
         postLoginAction: "create-media-plan",
@@ -121,7 +121,7 @@ export default function AddToPlanDialog({
                                 <SelectContent className="w-full select-trigger-bg">
                                     {draftPlans.length > 0 ? (
                                         draftPlans.map((plan) => (
-                                            <SelectItem key={plan.id} value={plan.id}>
+                                            <SelectItem key={plan.id} value={plan.id!}>
                                                 {plan.campaignName} - {plan.clientName}
                                             </SelectItem>
                                         ))

@@ -18,7 +18,7 @@ export const dummyRateCards: RateCard[] = [
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-03-10T14:30:00Z',
     metadata: {
-      mediaType: 'RADIO',
+      mediaType: 'FM',
       adTypeRates: [
         {
           adType: 'ANNOUNCEMENTS',
@@ -63,7 +63,7 @@ export const dummyRateCards: RateCard[] = [
     createdAt: '2024-01-20T09:00:00Z',
     updatedAt: '2024-03-12T11:00:00Z',
     metadata: {
-      mediaType: 'RADIO',
+      mediaType: 'FM',
       adTypeRates: [
         {
           adType: 'JINGLES',
@@ -116,7 +116,7 @@ export const dummyRateCards: RateCard[] = [
     createdAt: '2024-02-01T08:30:00Z',
     updatedAt: '2024-03-15T10:20:00Z',
     metadata: {
-      mediaType: 'RADIO',
+      mediaType: 'FM',
       adTypeRates: [
         {
           adType: 'INTERVIEWS',

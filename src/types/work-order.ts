@@ -1,5 +1,5 @@
 import type { UUID } from "@/features/media-partner-features/rate-cards/types";
-import type { DayOfWeek } from "@/features/agency-features/media-planning/types";
+import type { DayOfWeek } from "@/features/agency-client-features/media-planning/types";
 import type { TaxDetails } from "@/types/invoice";
 
 /**
