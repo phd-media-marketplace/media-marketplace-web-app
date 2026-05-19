@@ -9,7 +9,7 @@ import {
   WorkOrderSegmentsTable,
   WorkOrderFinancialSummary,
   WorkOrderApprovalDetails,
-} from "@/features/agency-features/work-orders/components";
+} from "@/features/agency-client-features/work-orders/components";
 import { toast } from "sonner";
 import Header from "@/components/universal/Header";
 import { generateInvoice, listInvoices } from "@/features/media-partner-features/billing/api";

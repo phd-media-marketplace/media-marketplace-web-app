@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, ShieldCheck, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import Packages from "@/features/agency-features/marketplace/pages/Packages";
+import Packages from "@/features/agency-client-features/marketplace/pages/Packages";
 
 export default function PublicMarketplacePage() {
   const navigate = useNavigate();

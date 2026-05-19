@@ -1,20 +1,17 @@
-import Dashboard from "@/features/agency-features/dashboard/pages/Dashboard";
-import PackageDetails from "@/features/agency-features/marketplace/pages/PackageDetails";
-import Packages from "@/features/agency-features/marketplace/pages/Packages";
+import Dashboard from "@/features/agency-client-features/dashboard/pages/Dashboard";
+import PackageDetails from "@/features/agency-client-features/marketplace/pages/PackageDetails";
+import Packages from "@/features/agency-client-features/marketplace/pages/Packages";
 
-import MediaSchedules from "@/features/agency-features/media-planning/pages/MediaSchedules";
-import WorkOrdersList from "@/features/agency-features/work-orders/pages/WorkOrdersList";
-import ViewWorkOrder from "@/features/agency-features/work-orders/pages/ViewWorkOrder";
-import CampaignsList from "@/features/agency-features/campaigns/pages/CampaignsList";
-import ViewCampaign from "@/features/agency-features/campaigns/pages/ViewCampaign";
-import ViewCampaignCharts from "@/features/agency-features/campaigns/pages/ViewCampaignCharts";
-import MediaAnalysisPage from "@/features/agency-features/media-analysis/pages/MediaAnalysisPage";
-import ReportingPage from "@/features/agency-features/reporting/pages/ReportingPage";
-import BillingPage from "@/features/agency-features/billing/pages/BillingPage";
-import TeamSettingsPage from "@/features/agency-features/settings/pages/TeamSettingsPage";
-import PreferencesSettingsPage from "@/features/agency-features/settings/pages/PreferencesSettingsPage";
-import ProfileSettingsPage from "@/features/agency-features/settings/pages/ProfileSettingsPage";
-import PaymentSettingsPage from "@/features/agency-features/settings/pages/PaymentSettingsPage";
+import MediaSchedules from "@/features/agency-client-features/media-planning/pages/MediaSchedules";
+import WorkOrdersList from "@/features/agency-client-features/work-orders/pages/WorkOrdersList";
+import ViewWorkOrder from "@/features/agency-client-features/work-orders/pages/ViewWorkOrder";
+import CampaignsList from "@/features/agency-client-features/campaigns/pages/CampaignsList";
+import ViewCampaign from "@/features/agency-client-features/campaigns/pages/ViewCampaign";
+import ViewCampaignCharts from "@/features/agency-client-features/campaigns/pages/ViewCampaignCharts";
+import MediaAnalysisPage from "@/features/agency-client-features/media-analysis/pages/MediaAnalysisPage";
+import ReportingPage from "@/features/agency-client-features/reporting/pages/ReportingPage";
+import BillingPage from "@/features/agency-client-features/billing/pages/BillingPage";
+import PaymentSettingsPage from "@/features/agency-client-features/settings/pages/PaymentSettingsPage";
 import MediaPartnerDashboard from "@/features/media-partner-features/dashboard/pages/MediaPartnerDashboard";
 import MediaPartnerBillingPage from "@/features/media-partner-features/billing/pages/MediaPartnerBillingPage";
 import ViewInvoicePage from "@/features/media-partner-features/billing/pages/ViewInvoicePage";
@@ -28,8 +25,9 @@ import MediaPartnerBillingSettings from "@/features/media-partner-features/setti
 import { RateCardsList, CreateRateCard, ViewRateCard, EditRateCard } from "@/features/media-partner-features/rate-cards";
 import { PackagesList, CreatePackage, ViewPackage, EditPackage } from "@/features/media-partner-features/packages";
 import { MediaPartnerWorkOrdersList, MediaPartnerViewWorkOrder } from "@/features/media-partner-features/work-orders";
-import {MediaPlansList, CreateMediaPlan, EditMediaPlan, ViewMediaPlan} from "@/features/agency-features/media-planning";
-import { EditWorkOrder } from "@/features/agency-features/work-orders";
+import {MediaPlansList, CreateMediaPlan, EditMediaPlan, ViewMediaPlan} from "@/features/agency-client-features/media-planning";
+import { EditWorkOrder } from "@/features/agency-client-features/work-orders";
+import { ProfileSettingsPage, TeamSettingsPage, PreferencesSettingsPage } from "@/features/agency-client-features/settings/pages/index";
 
 import type { TenantType } from "@/types/api";
 

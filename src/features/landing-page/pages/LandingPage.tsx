@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { dummyMediaPackages } from "@/features/agency-features/marketplace/dummy-data";
-import PackageCard from "@/features/agency-features/marketplace/components/PackageCard";
+import { dummyMediaPackages } from "@/features/agency-client-features/marketplace/dummy-data";
+import PackageCard from "@/features/agency-client-features/marketplace/components/PackageCard";
 
 const featureCards = [
   {

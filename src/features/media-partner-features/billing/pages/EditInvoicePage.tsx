@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/universal/Header";
-import { WorkOrderSegmentsTable } from "@/features/agency-features/work-orders/components";
+import { WorkOrderSegmentsTable } from "@/features/agency-client-features/work-orders/components";
 import { getInvoice, updateInvoice } from "@/features/media-partner-features/billing/api";
 import { getSampleInvoiceById, sampleInvoices } from "@/features/media-partner-features/billing/dummy-data";
 import { getErrorMessage } from "@/utils/error-handler";

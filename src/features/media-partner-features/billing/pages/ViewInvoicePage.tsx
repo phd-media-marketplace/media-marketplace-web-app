@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Header from "@/components/universal/Header";
-import { WorkOrderSegmentsTable } from "@/features/agency-features/work-orders/components";
+import { WorkOrderSegmentsTable } from "@/features/agency-client-features/work-orders/components";
 import { getInvoice } from "@/features/media-partner-features/billing/api";
 import { getSampleInvoiceById, sampleInvoices } from "@/features/media-partner-features/billing/dummy-data";
 import { getErrorMessage } from "@/utils/error-handler";

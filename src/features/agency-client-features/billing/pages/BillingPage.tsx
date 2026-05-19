@@ -8,14 +8,14 @@ import Header from "@/components/universal/Header";
 import { formatCurrency } from "@/utils/formatters";
 import { getErrorMessage } from "@/utils/error-handler";
 import { useAuthStore } from "@/features/auth/store/auth-store";
-import { InvoicesTable } from "@/features/agency-features/billing/components";
+import { InvoicesTable } from "@/features/agency-client-features/billing/components";
 import {
   cancelInvoice,
   listInvoices,
   recordPayment,
   sendInvoice,
-} from "@/features/agency-features/billing/api";
-import type { DayOfWeek } from "@/features/agency-features/media-planning/types";
+} from "@/features/agency-client-features/billing/api";
+import type { DayOfWeek } from "@/features/agency-client-features/media-planning/types";
 import type { Invoice, InvoiceStatus } from "@/types/invoice";
 
 function buildLineItem(segmentName: string, unitRate: number) {
