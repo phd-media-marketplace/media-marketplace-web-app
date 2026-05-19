@@ -3,9 +3,8 @@ import type {
     UserProfile,
     MediaPartnerCompanyProfile,
     TeamMember,
-    BillingAccountFormValues,
 } from "./types";
-}
+
 
 export const getMediaPartner = async (mediaPartnerId: string) => {
     try {
